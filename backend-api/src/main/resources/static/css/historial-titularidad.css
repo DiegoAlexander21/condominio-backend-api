@@ -1,0 +1,75 @@
+:root {
+    --cream:   #F7F4EB;
+    --slate:   #C2CBD4;
+    --navy:    #313852;
+    --white:   #ffffff;
+    --radius:  10px;
+}
+
+.form-section {
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 1.3rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--navy);
+}
+
+.form-group input {
+    padding: 0.75rem;
+    border: 1px solid var(--slate);
+    border-radius: 6px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    border-color: var(--navy);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-save {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 0.8rem 1.8rem;
+    border-radius: 999px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-save:hover {
+    opacity: 0.9;
+}
+
+
+.table-wrapper {
+    margin-top: 0.5rem;
+}
