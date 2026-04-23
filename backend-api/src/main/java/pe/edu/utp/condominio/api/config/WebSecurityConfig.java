@@ -15,7 +15,6 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/gestion-condominio/**", "/css/**", "/js/**").permitAll()
                         .anyRequest().permitAll());
 
         return http.build();

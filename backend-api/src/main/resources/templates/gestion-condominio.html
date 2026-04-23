@@ -4,101 +4,92 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestión de Condominio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" th:href="@{/css/gestion-condominio.css}" />
+    <script defer th:src="@{/js/gestion-condominio.js}"></script>
   </head>
   <body>
-    <header class="site-header">
-      <div class="header-inner">
-        <div class="header-text">
+    <header class="encabezado">
+      <div class="contenedor encabezado-contenido">
+        <div>
           <h1>Gestión de Condominio</h1>
-          <p>
-            Registro y actualización de datos estructurales: nombre, torres y
-            pisos por torre.
-          </p>
+          <p>Administra las torres y pisos de tus condominios.</p>
         </div>
-        <a
-          class="btn-new"
-          th:href="@{/registro-condominio}"
-          aria-label="Registrar condominio"
-        >
-          Registrar
-        </a>
+        <nav>
+          <a class="boton-principal" th:href="@{/registro-condominio}">+ Nuevo condominio</a>
+        </nav>
       </div>
     </header>
 
-    <main>
-      <div th:if="${successMessage != null or errorMessage != null}">
+    <main class="contenedor pagina">
+      <section th:if="${successMessage != null or errorMessage != null}">
         <p
-          class="alert success"
+          class="alerta alerta-exito"
           th:if="${successMessage != null}"
           th:text="${successMessage}"
-        >
-          Operación correcta.
-        </p>
+        ></p>
         <p
-          class="alert error"
+          class="alerta alerta-error"
           th:if="${errorMessage != null}"
           th:text="${errorMessage}"
-        >
-          Error al procesar la solicitud.
-        </p>
-      </div>
+        ></p>
+      </section>
 
-      <div class="stats-grid">
-        <div class="stat-card">
+      <section class="estadisticas">
+        <article class="tarjeta">
           <h3>Condominios</h3>
-          <p class="stat-value" th:text="${#lists.size(condominios)}">0</p>
-        </div>
-        <div class="stat-card">
+          <p class="tarjeta-valor" th:text="${#lists.size(condominios)}">0</p>
+        </article>
+        <article class="tarjeta">
           <h3>Total de Torres</h3>
-          <p class="stat-value" th:text="${totalTorres}">0</p>
-        </div>
-        <div class="stat-card">
+          <p class="tarjeta-valor" th:text="${totalTorres}">0</p>
+        </article>
+        <article class="tarjeta">
           <h3>Pisos Acumulados</h3>
-          <p class="stat-value" th:text="${totalPisos}">0</p>
-        </div>
-      </div>
+          <p class="tarjeta-valor" th:text="${totalPisos}">0</p>
+        </article>
+      </section>
 
-      <div class="card">
-        <div class="card-header">
+      <section class="panel">
+        <div class="panel-cabecera">
           <h2>Condominios registrados</h2>
           <span
-            class="badge"
+            class="etiqueta"
             th:text="${#lists.size(condominios)} + ' registros'"
-            >0 registros</span
-          >
+          >0 registros</span>
         </div>
-        <div class="table-wrapper">
+        <div class="tabla-contenedor">
           <table>
             <thead>
               <tr>
                 <th>Condominio</th>
                 <th>Torres</th>
                 <th>Pisos por torre</th>
-                <th>Última actualización</th>
+                <th>Actualizado</th>
               </tr>
             </thead>
-            <tbody>
-              <tr th:if="${#lists.isEmpty(condominios)}">
-                <td colspan="4" class="empty">
-                  Aún no hay condominios registrados.
-                </td>
+            <tbody id="cuerpoTabla">
+              <tr th:if="${#lists.isEmpty(condominios)}" class="fila-vacia">
+                <td colspan="4">No hay registros aún.</td>
               </tr>
-              <tr th:each="condominio : ${condominios}">
-                <td th:text="${condominio.nombre}">Condominio Mirador</td>
-                <td th:text="${condominio.torres}">3</td>
-                <td th:text="${condominio.pisosPorTorre}">12</td>
-                <td
-                  th:text="${#temporals.format(condominio.fechaActualizacion, 'dd/MM/yyyy HH:mm')}"
-                ></td>
+              <tr th:each="condominio : ${condominios}" class="fila-dato">
+                <td th:text="${condominio.nombre}"></td>
+                <td th:text="${condominio.torres}"></td>
+                <td th:text="${condominio.pisosPorTorre}"></td>
+                <td th:text="${#temporals.format(condominio.fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="pie-pagina">
       <p>Todos los derechos reservados - Gestión de Condominio</p>
     </footer>
   </body>
