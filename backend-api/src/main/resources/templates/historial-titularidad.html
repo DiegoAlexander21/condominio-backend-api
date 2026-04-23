@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historial de Titularidad</title>
+    <link rel="stylesheet" th:href="@{/css/gestion-condominio.css}" />
+    <link rel="stylesheet" th:href="@{/css/historial-titularidad.css}" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="header-text">
+          <h1>Historial de Titularidad</h1>
+          <p>Registro de cambios de dueño y trazabilidad de unidades por condominio.</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div id="container-msj">
+        <p class="alert success" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+        <p class="alert error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+      </div>
+
+      <section class="card form-section">
+        <div class="card-header">
+          <h2>Registrar Cambio de Dueño</h2>
+        </div>
+        <div class="card-body">
+          <form th:action="@{/historial-titularidad/registrar}" th:object="${historialForm}" method="post" id="formHistorial">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="departamentoId">ID Departamento</label>
+                <input type="number" id="departamentoId" th:field="*{departamentoId}" placeholder="Ej: 101" />
+              </div>
+              <div class="form-group">
+                <label for="propietarioAnterior">Dueño Anterior</label>
+                <input type="text" id="propietarioAnterior" th:field="*{propietarioAnterior}" placeholder="Nombre completo" />
+              </div>
+              <div class="form-group">
+                <label for="nuevoPropietario">Dueño Actual</label>
+                <input type="text" id="nuevoPropietario" th:field="*{nuevoPropietario}" placeholder="Nombre completo" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-save">Registrar Movimiento</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Historial de Cambios Registrados</h2>
+          <span class="badge" th:text="${#lists.size(listaHistorial)} + ' movimientos'">0 movimientos</span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID Departamento</th>
+                <th>Dueño Anterior</th>
+                <th>Dueño Actual</th>
+                <th>Fecha de Registro</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:if="${#lists.isEmpty(listaHistorial)}">
+                <td colspan="4" class="empty">No se han registrado cambios de titularidad aún.</td>
+              </tr>
+              <tr th:each="historial : ${listaHistorial}">
+                <td th:text="${historial.departamentoId}"></td>
+                <td th:text="${historial.propietarioAnterior}"></td>
+                <td th:text="${historial.nuevoPropietario}"></td>
+                <td th:text="${#temporals.format(historial.fechaCambio, 'dd/MM/yyyy HH:mm')}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Todos los derechos reservados - Historial de Titularidad</p>
+    </footer>
+
+    <script th:src="@{/js/historial-titularidad.js}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.transition = "opacity 0.5s ease";
+                    alert.style.opacity = "0";
+                    setTimeout(() => alert.remove(), 500);
+                }, 3000);
+            });
+        });
+    </script>
+  </body>
+</html>
