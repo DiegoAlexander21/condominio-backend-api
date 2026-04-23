@@ -1,15 +1,44 @@
 package pe.edu.utp.condominio.api.dto;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class UnidadForm {
 
     private Long id;
+
+    @NotBlank(message = "Debe seleccionar un condominio.")
     private String nombreCondominio;
+
+    @NotBlank(message = "El numero de unidad es obligatorio.")
+    @Size(min = 1, max = 20, message = "El numero de unidad debe tener entre 1 y 20 caracteres.")
     private String numeroUnidad;
+
+    @NotBlank(message = "La torre no puede estar vacia.")
+    @Size(min = 1, max = 10, message = "La torre debe tener entre 1 y 10 caracteres.")
     private String torre;
-    private int piso;
-    private double area;
+
+    @NotNull(message = "El piso es obligatorio.")
+    @Min(value = 1, message = "El piso debe ser mayor a cero.")
+    @Max(value = 200, message = "El piso no puede ser mayor a 200.")
+    private Integer piso;
+
+    @NotNull(message = "El area es obligatoria.")
+    @DecimalMin(value = "1.0", message = "El area debe ser mayor a cero.")
+    private Double area;
+
+    @NotBlank(message = "El nombre del propietario es obligatorio.")
+    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres.")
     private String nombrePropietario;
+
+    @NotBlank(message = "El DNI del propietario es obligatorio.")
+    @Size(min = 8, max = 8, message = "El DNI debe tener exactamente 8 digitos.")
     private String dniPropietario;
+
     private String emailPropietario;
     private String telefonoPropietario;
     private String nombreResidente;
@@ -52,19 +81,19 @@ public class UnidadForm {
         this.torre = torre;
     }
 
-    public int getPiso() {
+    public Integer getPiso() {
         return piso;
     }
 
-    public void setPiso(int piso) {
+    public void setPiso(Integer piso) {
         this.piso = piso;
     }
 
-    public double getArea() {
+    public Double getArea() {
         return area;
     }
 
-    public void setArea(double area) {
+    public void setArea(Double area) {
         this.area = area;
     }
 

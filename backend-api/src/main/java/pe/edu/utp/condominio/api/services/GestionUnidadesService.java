@@ -17,7 +17,6 @@ public class GestionUnidadesService {
     public synchronized Unidad registrarOActualizarUnidad(UnidadForm form) {
         validarUnidad(form);
 
-        // Si tiene ID, es una edición directa
         if (form.getId() != null) {
             for (Unidad unidad : unidades) {
                 if (unidad.getId().equals(form.getId())) {
@@ -27,13 +26,10 @@ public class GestionUnidadesService {
             }
         }
 
-        // Si no tiene ID, buscar por clave (torre-piso-numero)
         String claveUnidad = generarClaveUnidad(form.getNumeroUnidad(), form.getTorre(), form.getPiso());
 
-        // ESTRUCTURA FOR - buscar si la unidad ya existe
         for (Unidad unidad : unidades) {
             String claveExistente = generarClaveUnidad(unidad.getNumeroUnidad(), unidad.getTorre(), unidad.getPiso());
-            // ESTRUCTURA IF - validar si la unidad ya existe
             if (claveExistente.equals(claveUnidad)) {
                 actualizarUnidadExistente(unidad, form);
                 return unidad;
@@ -43,34 +39,13 @@ public class GestionUnidadesService {
         return crearNuevaUnidad(form);
     }
 
-    public List<Unidad> obtenerUnidades() {
+    public synchronized List<Unidad> obtenerUnidades() {
         List<Unidad> copia = new ArrayList<>(unidades);
         copia.sort(Comparator.comparing(Unidad::getNumeroUnidad, String.CASE_INSENSITIVE_ORDER));
-        return copia;
+        return List.copyOf(copia);
     }
 
-    // ESTRUCTURA FOR + IF - filtrar unidades por torre
-    public List<Unidad> obtenerUnidadesPorTorre(String torre) {
-        List<Unidad> resultado = new ArrayList<>();
-        for (Unidad unidad : unidades) {
-            if (unidad.getTorre().equalsIgnoreCase(torre)) {
-                resultado.add(unidad);
-            }
-        }
-        return resultado;
-    }
-
-    // ESTRUCTURA FOR - calcular area total
-    public double obtenerAreaTotal() {
-        double areaTotal = 0;
-        for (Unidad unidad : unidades) {
-            areaTotal += unidad.getArea();
-        }
-        return areaTotal;
-    }
-
-    // ESTRUCTURA FOR + IF - contar propietarios
-    public int contarPropietarios() {
+    public synchronized int contarPropietarios() {
         int contador = 0;
         for (Unidad unidad : unidades) {
             if (unidad.getNombrePropietario() != null && !unidad.getNombrePropietario().isBlank()) {
@@ -80,8 +55,7 @@ public class GestionUnidadesService {
         return contador;
     }
 
-    // ESTRUCTURA FOR + IF - contar residentes activos
-    public int contarResidentesActivos() {
+    public synchronized int contarResidentesActivos() {
         int contador = 0;
         for (Unidad unidad : unidades) {
             if (unidad.isResidenteActivo() && unidad.getNombreResidente() != null) {
@@ -91,18 +65,7 @@ public class GestionUnidadesService {
         return contador;
     }
 
-    // ESTRUCTURA FOR + IF - buscar unidad por número
-    public Unidad buscarPorNumero(String numeroUnidad) {
-        for (Unidad unidad : unidades) {
-            if (unidad.getNumeroUnidad().equalsIgnoreCase(numeroUnidad)) {
-                return unidad;
-            }
-        }
-        return null;
-    }
-
-    // ESTRUCTURA FOR + IF - buscar unidad por ID
-    public Unidad buscarPorId(Long id) {
+    public synchronized Unidad buscarPorId(Long id) {
         for (Unidad unidad : unidades) {
             if (unidad.getId().equals(id)) {
                 return unidad;
@@ -111,7 +74,6 @@ public class GestionUnidadesService {
         return null;
     }
 
-    // Convertir Unidad a UnidadForm para edición
     public UnidadForm convertirAForm(Unidad unidad) {
         UnidadForm form = new UnidadForm();
         form.setId(unidad.getId());
@@ -184,11 +146,11 @@ public class GestionUnidadesService {
         }
 
         if (form.getNumeroUnidad() == null || form.getNumeroUnidad().isBlank()) {
-            throw new IllegalArgumentException("El número de unidad no puede estar vacío.");
+            throw new IllegalArgumentException("El numero de unidad no puede estar vacio.");
         }
 
         if (form.getTorre() == null || form.getTorre().isBlank()) {
-            throw new IllegalArgumentException("La torre no puede estar vacía.");
+            throw new IllegalArgumentException("La torre no puede estar vacia.");
         }
 
         if (form.getPiso() <= 0) {
@@ -196,7 +158,7 @@ public class GestionUnidadesService {
         }
 
         if (form.getArea() <= 0) {
-            throw new IllegalArgumentException("El área debe ser mayor a cero.");
+            throw new IllegalArgumentException("El area debe ser mayor a cero.");
         }
 
         if (form.getNombrePropietario() == null || form.getNombrePropietario().isBlank()) {
