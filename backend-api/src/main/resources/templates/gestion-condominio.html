@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Condominio</title>
+    <link rel="stylesheet" th:href="@{/css/gestion-condominio.css}" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="header-text">
+          <h1>Gestión de Condominio</h1>
+          <p>
+            Registro y actualización de datos estructurales: nombre, torres y
+            pisos por torre.
+          </p>
+        </div>
+        <a
+          class="btn-new"
+          th:href="@{/registro-condominio}"
+          aria-label="Registrar condominio"
+        >
+          Registrar
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <div th:if="${successMessage != null or errorMessage != null}">
+        <p
+          class="alert success"
+          th:if="${successMessage != null}"
+          th:text="${successMessage}"
+        >
+          Operación correcta.
+        </p>
+        <p
+          class="alert error"
+          th:if="${errorMessage != null}"
+          th:text="${errorMessage}"
+        >
+          Error al procesar la solicitud.
+        </p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Condominios</h3>
+          <p class="stat-value" th:text="${#lists.size(condominios)}">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total de Torres</h3>
+          <p class="stat-value" th:text="${totalTorres}">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Pisos Acumulados</h3>
+          <p class="stat-value" th:text="${totalPisos}">0</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Condominios registrados</h2>
+          <span
+            class="badge"
+            th:text="${#lists.size(condominios)} + ' registros'"
+            >0 registros</span
+          >
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Condominio</th>
+                <th>Torres</th>
+                <th>Pisos por torre</th>
+                <th>Última actualización</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:if="${#lists.isEmpty(condominios)}">
+                <td colspan="4" class="empty">
+                  Aún no hay condominios registrados.
+                </td>
+              </tr>
+              <tr th:each="condominio : ${condominios}">
+                <td th:text="${condominio.nombre}">Condominio Mirador</td>
+                <td th:text="${condominio.torres}">3</td>
+                <td th:text="${condominio.pisosPorTorre}">12</td>
+                <td
+                  th:text="${#temporals.format(condominio.fechaActualizacion, 'dd/MM/yyyy HH:mm')}"
+                ></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>Todos los derechos reservados - Gestión de Condominio</p>
+    </footer>
+  </body>
+</html>
