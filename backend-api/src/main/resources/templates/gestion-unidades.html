@@ -4,70 +4,66 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestión de Unidades</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" th:href="@{/css/gestion-unidades.css}" />
+    <script defer th:src="@{/js/gestion-unidades.js}"></script>
   </head>
   <body>
-    <header class="site-header">
-      <div class="header-inner">
-        <div class="header-text">
+    <header class="encabezado">
+      <div class="contenedor encabezado-contenido">
+        <div>
           <h1>Gestión de Unidades</h1>
-          <p>
-            Registro y administración de departamentos/unidades con sus propietarios y residentes.
-          </p>
+          <p>Registro y administración de departamentos con propietarios y residentes.</p>
         </div>
-        <a
-          class="btn-new"
-          th:href="@{/registro-unidad}"
-          aria-label="Registrar unidad"
-        >
-          Registrar
-        </a>
+        <nav>
+          <a class="boton-principal" th:href="@{/registro-unidad}">+ Nueva unidad</a>
+        </nav>
       </div>
     </header>
 
-    <main>
-      <div th:if="${successMessage != null or errorMessage != null}">
+    <main class="contenedor pagina">
+      <section th:if="${successMessage != null or errorMessage != null}">
         <p
-          class="alert success"
+          class="alerta alerta-exito"
           th:if="${successMessage != null}"
           th:text="${successMessage}"
-        >
-          Operación correcta.
-        </p>
+        ></p>
         <p
-          class="alert error"
+          class="alerta alerta-error"
           th:if="${errorMessage != null}"
           th:text="${errorMessage}"
-        >
-          Error al procesar la solicitud.
-        </p>
-      </div>
+        ></p>
+      </section>
 
-      <div class="stats-grid">
-        <div class="stat-card">
+      <section class="estadisticas">
+        <article class="tarjeta">
           <h3>Unidades</h3>
-          <p class="stat-value" th:text="${#lists.size(unidades)}">0</p>
-        </div>
-        <div class="stat-card">
+          <p class="tarjeta-valor" th:text="${#lists.size(unidades)}">0</p>
+        </article>
+        <article class="tarjeta">
           <h3>Propietarios</h3>
-          <p class="stat-value" th:text="${totalPropietarios}">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>Residentes</h3>
-          <p class="stat-value" th:text="${totalResidentes}">0</p>
-        </div>
-      </div>
+          <p class="tarjeta-valor" th:text="${totalPropietarios}">0</p>
+        </article>
+        <article class="tarjeta">
+          <h3>Residentes Activos</h3>
+          <p class="tarjeta-valor" th:text="${totalResidentes}">0</p>
+        </article>
+      </section>
 
-      <div class="card">
-        <div class="card-header">
+      <section class="panel">
+        <div class="panel-cabecera">
           <h2>Unidades registradas</h2>
           <span
-            class="badge"
+            class="etiqueta"
             th:text="${#lists.size(unidades)} + ' registros'"
-            >0 registros</span
-          >
+          >0 registros</span>
         </div>
-        <div class="table-wrapper">
+        <div class="tabla-contenedor">
           <table>
             <thead>
               <tr>
@@ -81,47 +77,46 @@
                 <th>Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              <tr th:if="${#lists.isEmpty(unidades)}">
-                <td colspan="8" class="empty">
-                  Aún no hay unidades registradas.
-                </td>
+            <tbody id="cuerpoTabla">
+              <tr th:if="${#lists.isEmpty(unidades)}" class="fila-vacia">
+                <td colspan="8">No hay registros aún.</td>
               </tr>
-              <tr th:each="unidad : ${unidades}">
-                <td th:text="${unidad.numeroUnidad}">A-101</td>
-                <td th:text="${unidad.torre}">Torre A</td>
-                <td th:text="${unidad.piso}">1</td>
-                <td th:text="${unidad.area}">85.5</td>
-                <td th:text="${unidad.nombrePropietario}">Juan Pérez</td>
+              <tr th:each="unidad : ${unidades}" class="fila-dato">
+                <td th:text="${unidad.numeroUnidad}"></td>
+                <td th:text="${unidad.torre}"></td>
+                <td th:text="${unidad.piso}"></td>
+                <td th:text="${unidad.area}"></td>
+                <td th:text="${unidad.nombrePropietario}"></td>
                 <td>
-                  <span th:if="${unidad.nombreResidente != null and not #strings.isEmpty(unidad.nombreResidente)}"
-                        th:text="${unidad.nombreResidente}">María Pérez</span>
-                  <span th:unless="${unidad.nombreResidente != null and not #strings.isEmpty(unidad.nombreResidente)}"
-                        class="text-muted">—</span>
+                  <span
+                    th:if="${unidad.nombreResidente != null and not #strings.isEmpty(unidad.nombreResidente)}"
+                    th:text="${unidad.nombreResidente}"
+                  ></span>
+                  <span
+                    th:unless="${unidad.nombreResidente != null and not #strings.isEmpty(unidad.nombreResidente)}"
+                    class="texto-vacio"
+                  >—</span>
                 </td>
                 <td>
                   <span
-                    th:class="${unidad.residenteActivo} ? 'badge-activo' : 'badge-inactivo'"
+                    th:class="${unidad.residenteActivo} ? 'insignia-activo' : 'insignia-inactivo'"
                     th:text="${unidad.residenteActivo} ? 'Ocupada' : 'Disponible'"
-                  >Disponible</span>
+                  ></span>
                 </td>
-                <td class="acciones-cell">
+                <td class="celda-acciones">
                   <a
                     th:href="@{/editar-unidad(id=${unidad.id})}"
-                    class="btn-edit"
-                    aria-label="Editar unidad"
-                  >
-                    Editar
-                  </a>
+                    class="boton-editar"
+                  >Editar</a>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="pie-pagina">
       <p>Todos los derechos reservados - Gestión de Unidades</p>
     </footer>
   </body>

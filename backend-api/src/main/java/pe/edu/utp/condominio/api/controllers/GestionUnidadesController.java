@@ -1,10 +1,13 @@
 package pe.edu.utp.condominio.api.controllers;
 
+import jakarta.validation.Valid;
 import pe.edu.utp.condominio.api.dto.UnidadForm;
 import pe.edu.utp.condominio.api.models.Unidad;
+import pe.edu.utp.condominio.api.services.GestionCondominioService;
 import pe.edu.utp.condominio.api.services.GestionUnidadesService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +18,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class GestionUnidadesController {
 
     private final GestionUnidadesService gestionUnidadesService;
+    private final GestionCondominioService gestionCondominioService;
 
-    public GestionUnidadesController(GestionUnidadesService gestionUnidadesService) {
+    public GestionUnidadesController(GestionUnidadesService gestionUnidadesService,
+            GestionCondominioService gestionCondominioService) {
         this.gestionUnidadesService = gestionUnidadesService;
+        this.gestionCondominioService = gestionCondominioService;
     }
 
     @GetMapping("/gestion-unidades")
@@ -32,6 +38,7 @@ public class GestionUnidadesController {
             model.addAttribute("unidadForm", new UnidadForm());
             model.addAttribute("esEdicion", false);
         }
+        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         return "registro-unidad";
     }
 
@@ -44,21 +51,31 @@ public class GestionUnidadesController {
         UnidadForm form = gestionUnidadesService.convertirAForm(unidad);
         model.addAttribute("unidadForm", form);
         model.addAttribute("esEdicion", true);
+        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         return "registro-unidad";
     }
 
     @PostMapping("/gestion-unidades/unidad")
-    public String registrarUnidad(@ModelAttribute("unidadForm") UnidadForm unidadForm,
+    public String registrarUnidad(
+            @Valid @ModelAttribute("unidadForm") UnidadForm unidadForm,
+            BindingResult bindingResult,
+            Model model,
             RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage", "Revisa los campos del formulario.");
+            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            return "registro-unidad";
+        }
+
         try {
             gestionUnidadesService.registrarOActualizarUnidad(unidadForm);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Unidad registrada o actualizada correctamente.");
             return "redirect:/gestion-unidades";
         } catch (IllegalArgumentException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-            redirectAttributes.addFlashAttribute("unidadForm", unidadForm);
-            return "redirect:/registro-unidad";
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            return "registro-unidad";
         }
     }
 

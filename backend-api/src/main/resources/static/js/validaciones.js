@@ -19,13 +19,26 @@ function validarTexto(entrada) {
   return true;
 }
 
+function validarTextoOpcional(entrada) {
+  limpiarError(entrada);
+  var valor = entrada.value ? entrada.value.trim() : "";
+  if (valor === "") {
+    return true;
+  }
+  if (valor.length < 3) {
+    mostrarError(entrada, "Debe ingresar al menos 3 caracteres.");
+    return false;
+  }
+  return true;
+}
+
 function validarNumero(entrada) {
   limpiarError(entrada);
   var texto = entrada.value ? entrada.value.trim() : "";
   var minimo = Number(entrada.min || 1);
   var maximo = Number(entrada.max || Number.MAX_SAFE_INTEGER);
   if (texto === "") {
-    mostrarError(entrada, "Ingrese un número válido.");
+    mostrarError(entrada, "Ingrese un numero valido.");
     return false;
   }
   var valor = Number(texto);
@@ -37,68 +50,95 @@ function validarNumero(entrada) {
   return true;
 }
 
-function normalizarNumeroDecimal(input) {
-  limpiarError(input);
-
-  var valorTexto = input.value ? input.value.trim() : "";
-  var minimo = Number(input.min || 0);
-
-  if (valorTexto === "") {
-    mostrarError(input, "Ingrese un valor válido.");
+function validarDecimal(entrada) {
+  limpiarError(entrada);
+  var texto = entrada.value ? entrada.value.trim() : "";
+  var minimo = Number(entrada.min || 0);
+  if (texto === "") {
+    mostrarError(entrada, "Ingrese un valor valido.");
     return false;
   }
-
-  var valor = Number(valorTexto);
-
+  var valor = Number(texto);
   if (Number.isNaN(valor) || valor < minimo) {
-    mostrarError(
-      input,
-      "Debe ingresar un valor mayor o igual a " + minimo + ".",
-    );
+    mostrarError(entrada, "Debe ingresar un valor mayor o igual a " + minimo + ".");
     return false;
   }
-
   return true;
 }
 
-function validarDNI(input) {
-  limpiarError(input);
-
-  var valorTexto = input.value ? input.value.trim() : "";
-
-  if (valorTexto === "") {
-    mostrarError(input, "El DNI es obligatorio.");
+function validarSeleccion(entrada) {
+  limpiarError(entrada);
+  if (!entrada.value || entrada.value.trim() === "") {
+    mostrarError(entrada, "Debe seleccionar una opcion.");
     return false;
   }
-
-  if (valorTexto.length < 8) {
-    mostrarError(input, "El DNI debe tener al menos 8 dígitos.");
-    return false;
-  }
-
-  if (!/^\d+$/.test(valorTexto)) {
-    mostrarError(input, "El DNI solo puede contener números.");
-    return false;
-  }
-
   return true;
 }
 
-function validarEmail(input) {
-  limpiarError(input);
-
-  var valorTexto = input.value ? input.value.trim() : "";
-
-  if (valorTexto === "") {
-    mostrarError(input, "El email es obligatorio.");
+function validarDNI(entrada) {
+  limpiarError(entrada);
+  var valor = entrada.value ? entrada.value.trim() : "";
+  if (valor === "") {
+    mostrarError(entrada, "El DNI es obligatorio.");
     return false;
   }
-
-  var patronEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!patronEmail.test(valorTexto)) {
-    mostrarError(input, "Ingrese un email válido (ejemplo: usuario@email.com).");
+  if (valor.length < 8) {
+    mostrarError(entrada, "El DNI debe tener al menos 8 digitos.");
     return false;
   }
+  if (!/^\d+$/.test(valor)) {
+    mostrarError(entrada, "El DNI solo puede contener numeros.");
+    return false;
+  }
+  return true;
+}
 
+function validarDNIOpcional(entrada) {
+  limpiarError(entrada);
+  var valor = entrada.value ? entrada.value.trim() : "";
+  if (valor === "") {
+    return true;
+  }
+  if (valor.length < 8) {
+    mostrarError(entrada, "El DNI debe tener al menos 8 digitos.");
+    return false;
+  }
+  if (!/^\d+$/.test(valor)) {
+    mostrarError(entrada, "El DNI solo puede contener numeros.");
+    return false;
+  }
+  return true;
+}
+
+function validarEmail(entrada) {
+  limpiarError(entrada);
+  var valor = entrada.value ? entrada.value.trim() : "";
+  if (valor === "") {
+    mostrarError(entrada, "El email es obligatorio.");
+    return false;
+  }
+  var patron = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!patron.test(valor)) {
+    mostrarError(entrada, "Ingrese un email valido.");
+    return false;
+  }
+  return true;
+}
+
+function validarTelefono(entrada) {
+  limpiarError(entrada);
+  var valor = entrada.value ? entrada.value.trim() : "";
+  if (valor === "") {
+    mostrarError(entrada, "El telefono es obligatorio.");
+    return false;
+  }
+  if (valor.length < 9) {
+    mostrarError(entrada, "El telefono debe tener al menos 9 digitos.");
+    return false;
+  }
+  if (!/^\d+$/.test(valor)) {
+    mostrarError(entrada, "El telefono solo puede contener numeros.");
+    return false;
+  }
   return true;
 }
