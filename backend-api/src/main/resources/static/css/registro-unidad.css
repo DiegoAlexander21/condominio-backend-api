@@ -1,0 +1,297 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap');
+
+:root {
+    --cream:   #F7F4EB;
+    --slate:   #C2CBD4;
+    --navy:    #313852;
+    --ink:     #1e2435;
+    --muted:   #6b7280;
+    --white:   #ffffff;
+    --radius:  10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Sora', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header ─────────────────────────────── */
+.site-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 1.6rem 2rem;
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: transparent;
+    color: var(--slate);
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+}
+
+.back-link:hover {
+    background: var(--slate);
+    color: var(--navy);
+}
+
+.header-text h1 {
+    font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.header-text p {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--slate);
+    font-weight: 300;
+}
+
+/* ── Main ───────────────────────────────── */
+main {
+    flex: 1;
+    max-width: 900px;
+    width: 100%;
+    margin: 1.5rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    gap: 2.0rem;
+    align-content: start;
+}
+
+/* ── Alerts ─────────────────────────────── */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.alert.success {
+    background: #dff0e8;
+    border: 1px solid #a8d5b9;
+    color: #1e5a38;
+}
+
+.alert.error {
+    background: #f5e9e9;
+    border: 1px solid #d9a8a8;
+    color: #6b2929;
+}
+
+/* ── Card / Form ────────────────────────── */
+.card {
+    background: var(--white);
+    border: 1px solid var(--slate);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1rem 1.3rem;
+    border-bottom: 1px solid #e8eaed;
+}
+
+.card-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+}
+
+.card-header p {
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+
+.card-body {
+    padding: 1.3rem;
+    display: grid;
+    gap: 1.5rem;
+}
+
+/* ── Fieldset ───────────────────────────── */
+.fieldset {
+    border: 1px solid var(--slate);
+    border-radius: 8px;
+    padding: 1.2rem;
+}
+
+.fieldset legend {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--navy);
+    padding: 0 0.5rem;
+}
+
+/* ── Fields ─────────────────────────────── */
+.field {
+    display: grid;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.field:last-child {
+    margin-bottom: 0;
+}
+
+.field label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.field input,
+.field select {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--slate);
+    border-radius: 8px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field input:focus,
+.field select:focus {
+    outline: none;
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(49, 56, 82, 0.1);
+}
+
+.field input::placeholder {
+    color: var(--muted);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+/* ── Card Footer / Submit ───────────────── */
+.card-footer {
+    padding: 1rem 1.3rem;
+    border-top: 1px solid #e8eaed;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Sora', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-submit:hover {
+    background: var(--ink);
+}
+
+.btn-submit:active {
+    transform: scale(0.98);
+}
+
+/* ── Footer ─────────────────────────────── */
+.site-footer {
+    padding: 1.1rem;
+    text-align: center;
+    background: var(--navy);
+    color: var(--slate);
+    font-size: 0.8rem;
+    font-weight: 300;
+}
+
+/* ── Responsive ─────────────────────────── */
+@media (max-width: 640px) {
+    main { padding: 0 1rem; margin: 1.2rem auto; }
+    .site-header { padding: 1.2rem 1rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .card-body { padding: 1rem; }
+}
+
+/* ── Toast ──────────────────────────────── */
+#toast-contenedor {
+    position: fixed;
+    top: 1.2rem;
+    right: 1.2rem;
+    display: grid;
+    gap: 0.6rem;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: all;
+    min-width: 260px;
+    max-width: 360px;
+    padding: 0.85rem 1.1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: 'Sora', sans-serif;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-oculto {
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+.toast-exito {
+    background: #dff0e8;
+    border: 1px solid #a8d5b9;
+    color: #1e5a38;
+}
+
+.toast-error {
+    background: #f5e9e9;
+    border: 1px solid #d9a8a8;
+    color: #6b2929;
+}

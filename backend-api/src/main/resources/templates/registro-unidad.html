@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Unidad</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/registro-unidad.css}" />
+    <script defer th:src="@{/js/toast.js}"></script>
+    <script defer th:src="@{/js/validaciones.js}"></script>
+    <script defer th:src="@{/js/gestion-unidades.js}"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="back-link" th:href="@{/gestion-unidades}"
+          >Volver a gestión</a
+        >
+        <div class="header-text">
+          <h1>Registro de Unidad</h1>
+          <p>
+            Ingresa los datos de la unidad, propietario y residente para guardar el registro.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div th:if="${successMessage != null or errorMessage != null}">
+        <p
+          class="alert success"
+          th:if="${successMessage != null}"
+          th:text="${successMessage}"
+        >
+          Operación correcta.
+        </p>
+        <p
+          class="alert error"
+          th:if="${errorMessage != null}"
+          th:text="${errorMessage}"
+        >
+          Error al procesar la solicitud.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2 th:text="${esEdicion} ? 'Editar Unidad' : 'Registrar Unidad'">Registrar Unidad</h2>
+          <p th:text="${esEdicion} ? 'Modifica los datos de la unidad.' : 'Completa todos los campos para guardar el registro.'">Completa todos los campos para guardar el registro.</p>
+        </div>
+
+        <form
+          id="formUnidad"
+          th:action="@{/gestion-unidades/unidad}"
+          th:object="${unidadForm}"
+          method="post"
+          novalidate
+        >
+          <input type="hidden" th:field="*{id}" />
+          <div class="card-body">
+            <fieldset class="fieldset">
+              <legend>Datos de la Unidad</legend>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="nombreCondominio">Condominio</label>
+                  <select
+                    id="nombreCondominio"
+                    th:field="*{nombreCondominio}"
+                    required
+                  >
+                    <option value="">Seleccione un condominio</option>
+                    <option value="Condominio Mirador">Condominio Mirador</option>
+                    <option value="Residencial Los Pinos">Residencial Los Pinos</option>
+                    <option value="Condominio Las Acacias">Condominio Las Acacias</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="numeroUnidad">Número de unidad</label>
+                  <input
+                    id="numeroUnidad"
+                    type="text"
+                    th:field="*{numeroUnidad}"
+                    placeholder="Ej: A-101"
+                    minlength="2"
+                    maxlength="20"
+                    required
+                    onchange="validarTextoInput(this)"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="torre">Torre</label>
+                  <select
+                    id="torre"
+                    th:field="*{torre}"
+                    required
+                    onchange="limpiarError(this)"
+                  >
+                    <option value="">Seleccione torre</option>
+                    <option value="Torre A">Torre A</option>
+                    <option value="Torre B">Torre B</option>
+                    <option value="Torre C">Torre C</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="piso">Piso</label>
+                  <input
+                    id="piso"
+                    type="number"
+                    th:field="*{piso}"
+                    min="1"
+                    max="50"
+                    placeholder="Ej: 5"
+                    required
+                    onchange="normalizarNumero(this)"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="area">Área (m²)</label>
+                  <input
+                    id="area"
+                    type="number"
+                    th:field="*{area}"
+                    min="10"
+                    step="0.01"
+                    placeholder="Ej: 85.5"
+                    required
+                    onchange="normalizarNumeroDecimal(this)"
+                  />
+                </div>
+                <div class="field">
+                  <label for="residenteActivo">Estado</label>
+                  <select
+                    id="residenteActivo"
+                    th:field="*{residenteActivo}"
+                    required
+                    onchange="actualizarEstadoDesdeSelect(this)"
+                  >
+                    <option value="true">Ocupada</option>
+                    <option value="false">Disponible</option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="fieldset">
+              <legend>Datos del Propietario</legend>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="nombrePropietario">Nombre completo</label>
+                  <input
+                    id="nombrePropietario"
+                    type="text"
+                    th:field="*{nombrePropietario}"
+                    placeholder="Ej: Juan Pérez García"
+                    minlength="5"
+                    maxlength="100"
+                    required
+                    onchange="validarTextoInput(this)"
+                  />
+                </div>
+                <div class="field">
+                  <label for="dniPropietario">DNI</label>
+                  <input
+                    id="dniPropietario"
+                    type="text"
+                    th:field="*{dniPropietario}"
+                    placeholder="Ej: 12345678"
+                    minlength="8"
+                    maxlength="12"
+                    required
+                    onchange="validarDNI(this)"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="emailPropietario">Email</label>
+                  <input
+                    id="emailPropietario"
+                    type="email"
+                    th:field="*{emailPropietario}"
+                    placeholder="Ej: juan@email.com"
+                    maxlength="100"
+                    required
+                    onchange="validarEmail(this)"
+                  />
+                </div>
+                <div class="field">
+                  <label for="telefonoPropietario">Teléfono</label>
+                  <input
+                    id="telefonoPropietario"
+                    type="tel"
+                    th:field="*{telefonoPropietario}"
+                    placeholder="Ej: 987654321"
+                    minlength="9"
+                    maxlength="12"
+                    required
+                    onchange="validarTelefono(this)"
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="fieldset">
+              <legend>Datos del Residente (opcional)</legend>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="nombreResidente">Nombre completo</label>
+                  <input
+                    id="nombreResidente"
+                    type="text"
+                    th:field="*{nombreResidente}"
+                    placeholder="Ej: María Pérez López"
+                    minlength="3"
+                    maxlength="100"
+                    onchange="validarTextoInputOpcional(this)"
+                  />
+                </div>
+                <div class="field">
+                  <label for="dniResidente">DNI</label>
+                  <input
+                    id="dniResidente"
+                    type="text"
+                    th:field="*{dniResidente}"
+                    placeholder="Ej: 87654321"
+                    minlength="8"
+                    maxlength="12"
+                    onchange="validarDNIOpcional(this)"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label for="parentesco">Parentesco</label>
+                  <select
+                    id="parentesco"
+                    th:field="*{parentesco}"
+                  >
+                    <option value="">Seleccione parentesco</option>
+                    <option value="Cónyuge">Cónyuge</option>
+                    <option value="Hijo(a)">Hijo(a)</option>
+                    <option value="Padre/Madre">Padre/Madre</option>
+                    <option value="Hermano(a)">Hermano(a)</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="tipoResidente">Tipo</label>
+                  <select
+                    id="tipoResidente"
+                    onchange="actualizarEstadoResidente(this)"
+                  >
+                    <option value="">Seleccione tipo</option>
+                    <option value="activo">Residente Activo</option>
+                    <option value="inactivo">No reside actualmente</option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="card-footer">
+            <button
+              type="submit"
+              class="btn-submit"
+              onclick="return validarFormularioUnidad(event);"
+              th:text="${esEdicion} ? 'Actualizar unidad' : 'Guardar unidad'"
+            >
+              Guardar unidad
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>Todos los derechos reservados &mdash; Gestión de Unidades</p>
+    </footer>
+  </body>
+</html>
