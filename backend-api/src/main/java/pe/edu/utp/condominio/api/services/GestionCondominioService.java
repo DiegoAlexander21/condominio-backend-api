@@ -19,11 +19,14 @@ public class GestionCondominioService {
         validarCondominio(form);
 
         String nombreNormalizado = form.getNombre().trim();
+        int torres = form.getTorres();
+        int pisosPorTorre = form.getPisosPorTorre();
 
         for (Condominio condominio : condominios) {
             if (condominio.getNombre().equalsIgnoreCase(nombreNormalizado)) {
-                condominio.setTorres(form.getTorres());
-                condominio.setPisosPorTorre(form.getPisosPorTorre());
+                condominio.setNombre(nombreNormalizado);
+                condominio.setTorres(torres);
+                condominio.setPisosPorTorre(pisosPorTorre);
                 condominio.setFechaActualizacion(LocalDateTime.now());
                 return condominio;
             }
@@ -32,8 +35,8 @@ public class GestionCondominioService {
         Condominio nuevo = new Condominio();
         nuevo.setId(secuenciaCondominio++);
         nuevo.setNombre(nombreNormalizado);
-        nuevo.setTorres(form.getTorres());
-        nuevo.setPisosPorTorre(form.getPisosPorTorre());
+        nuevo.setTorres(torres);
+        nuevo.setPisosPorTorre(pisosPorTorre);
         nuevo.setFechaRegistro(LocalDateTime.now());
         nuevo.setFechaActualizacion(LocalDateTime.now());
 
@@ -41,13 +44,13 @@ public class GestionCondominioService {
         return nuevo;
     }
 
-    public List<Condominio> obtenerCondominios() {
+    public synchronized List<Condominio> obtenerCondominios() {
         List<Condominio> copia = new ArrayList<>(condominios);
         copia.sort(Comparator.comparing(Condominio::getNombre, String.CASE_INSENSITIVE_ORDER));
-        return copia;
+        return List.copyOf(copia);
     }
 
-    public int obtenerTotalTorres() {
+    public synchronized int obtenerTotalTorres() {
         int total = 0;
 
         for (Condominio condominio : condominios) {
@@ -57,11 +60,11 @@ public class GestionCondominioService {
         return total;
     }
 
-    public int obtenerTotalPisosPorTorre() {
+    public synchronized int obtenerTotalPisos() {
         int total = 0;
 
         for (Condominio condominio : condominios) {
-            total += condominio.getPisosPorTorre();
+            total += condominio.getTorres() * condominio.getPisosPorTorre();
         }
 
         return total;
@@ -76,12 +79,20 @@ public class GestionCondominioService {
             throw new IllegalArgumentException("El nombre del condominio no puede estar vacio.");
         }
 
-        if (form.getTorres() <= 0) {
+        if (form.getTorres() == null || form.getTorres() <= 0) {
             throw new IllegalArgumentException("El numero de torres debe ser mayor a cero.");
         }
 
-        if (form.getPisosPorTorre() <= 0) {
+        if (form.getTorres() > 100) {
+            throw new IllegalArgumentException("El numero de torres no puede ser mayor a 100.");
+        }
+
+        if (form.getPisosPorTorre() == null || form.getPisosPorTorre() <= 0) {
             throw new IllegalArgumentException("El numero de pisos por torre debe ser mayor a cero.");
+        }
+
+        if (form.getPisosPorTorre() > 200) {
+            throw new IllegalArgumentException("El numero de pisos por torre no puede ser mayor a 200.");
         }
     }
 }
