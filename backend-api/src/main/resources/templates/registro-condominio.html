@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Condominio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/registro-condominio.css}" />
+    <script defer th:src="@{/js/toast.js}"></script>
+    <script defer th:src="@{/js/validaciones.js}"></script>
+    <script defer th:src="@{/js/registro-condominio.js}"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="back-link" th:href="@{/gestion-condominio}"
+          >Volver a gestión</a
+        >
+        <div class="header-text">
+          <h1>Registro de Condominio</h1>
+          <p>
+            Ingresa los datos base del condominio para agregarlo o actualizarlo.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div th:if="${successMessage != null or errorMessage != null}">
+        <p
+          class="alert success"
+          th:if="${successMessage != null}"
+          th:text="${successMessage}"
+        >
+          Operación correcta.
+        </p>
+        <p
+          class="alert error"
+          th:if="${errorMessage != null}"
+          th:text="${errorMessage}"
+        >
+          Error al procesar la solicitud.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>Registrar o Actualizar Condominio</h2>
+          <p>Completa todos los campos para guardar el registro.</p>
+        </div>
+
+        <form
+          id="formCondominio"
+          th:action="@{/gestion-condominio/condominio}"
+          th:object="${condominioForm}"
+          method="post"
+          novalidate
+        >
+          <div class="card-body">
+            <div class="field">
+              <label for="nombreCondominio">Nombre del condominio</label>
+              <input
+                id="nombreCondominio"
+                type="text"
+                th:field="*{nombre}"
+                placeholder="Ejemplo: Condominio Mirador"
+                minlength="3"
+                maxlength="80"
+                required
+                onchange="validarTextoInput(this)"
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label for="torres">Número de torres</label>
+                <input
+                  id="torres"
+                  type="number"
+                  th:field="*{torres}"
+                  min="1"
+                  max="100"
+                  required
+                  onchange="normalizarNumero(this)"
+                />
+              </div>
+              <div class="field">
+                <label for="pisosPorTorre">Pisos por torre</label>
+                <input
+                  id="pisosPorTorre"
+                  type="number"
+                  th:field="*{pisosPorTorre}"
+                  min="1"
+                  max="200"
+                  required
+                  onchange="normalizarNumero(this)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button
+              type="submit"
+              class="btn-submit"
+              onclick="return validarFormularioCondominio(event);"
+            >
+              Guardar condominio
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>Todos los derechos reservados &mdash; Gestión de Condominio</p>
+    </footer>
+  </body>
+</html>
