@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Unidades</title>
+    <link rel="stylesheet" th:href="@{/css/gestion-unidades.css}" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="header-text">
+          <h1>Gestión de Unidades</h1>
+          <p>
+            Registro y administración de departamentos/unidades con sus propietarios y residentes.
+          </p>
+        </div>
+        <a
+          class="btn-new"
+          th:href="@{/registro-unidad}"
+          aria-label="Registrar unidad"
+        >
+          Registrar
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <div th:if="${successMessage != null or errorMessage != null}">
+        <p
+          class="alert success"
+          th:if="${successMessage != null}"
+          th:text="${successMessage}"
+        >
+          Operación correcta.
+        </p>
+        <p
+          class="alert error"
+          th:if="${errorMessage != null}"
+          th:text="${errorMessage}"
+        >
+          Error al procesar la solicitud.
+        </p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Unidades</h3>
+          <p class="stat-value" th:text="${#lists.size(unidades)}">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Propietarios</h3>
+          <p class="stat-value" th:text="${totalPropietarios}">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Residentes</h3>
+          <p class="stat-value" th:text="${totalResidentes}">0</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Unidades registradas</h2>
+          <span
+            class="badge"
+            th:text="${#lists.size(unidades)} + ' registros'"
+            >0 registros</span
+          >
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Unidad</th>
+                <th>Torre</th>
+                <th>Piso</th>
+                <th>Área (m²)</th>
+                <th>Propietario</th>
+                <th>Residente</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:if="${#lists.isEmpty(unidades)}">
+                <td colspan="8" class="empty">
+                  Aún no hay unidades registradas.
+                </td>
+              </tr>
+              <tr th:each="unidad : ${unidades}">
+                <td th:text="${unidad.numeroUnidad}">A-101</td>
+                <td th:text="${unidad.torre}">Torre A</td>
+                <td th:text="${unidad.piso}">1</td>
+                <td th:text="${unidad.area}">85.5</td>
+                <td th:text="${unidad.nombrePropietario}">Juan Pérez</td>
+                <td>
+                  <span th:if="${unidad.nombreResidente != null and not #strings.isEmpty(unidad.nombreResidente)}"
+                        th:text="${unidad.nombreResidente}">María Pérez</span>
+                  <span th:unless="${unidad.nombreResidente != null and not #strings.isEmpty(unidad.nombreResidente)}"
+                        class="text-muted">—</span>
+                </td>
+                <td>
+                  <span
+                    th:class="${unidad.residenteActivo} ? 'badge-activo' : 'badge-inactivo'"
+                    th:text="${unidad.residenteActivo} ? 'Ocupada' : 'Disponible'"
+                  >Disponible</span>
+                </td>
+                <td class="acciones-cell">
+                  <a
+                    th:href="@{/editar-unidad(id=${unidad.id})}"
+                    class="btn-edit"
+                    aria-label="Editar unidad"
+                  >
+                    Editar
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>Todos los derechos reservados - Gestión de Unidades</p>
+    </footer>
+  </body>
+</html>
