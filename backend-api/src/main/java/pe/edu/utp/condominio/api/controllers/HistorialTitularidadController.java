@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
-
-import java.util.stream.Collectors;
-
 @Controller
 public class HistorialTitularidadController {
 
@@ -34,30 +30,26 @@ public class HistorialTitularidadController {
     }
 
     @PostMapping("/historial-titularidad/registrar")
-    public String registrarCambio(@Valid @ModelAttribute("historialForm") HistorialForm form, 
-
-                            BindingResult bindingResult,
-                            RedirectAttributes redirectAttributes) {
-        
-        // 1. Validar errores de anotaciones (@Size, @NotBlank, etc.)
+    public String registrarCambio(
+            @Valid @ModelAttribute("historialForm") HistorialForm form,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            String errores = bindingResult.getFieldErrors().stream()
-                    .map(error -> error.getDefaultMessage())
-                    .collect(Collectors.joining(" | "));
-            
-            redirectAttributes.addFlashAttribute("errorMessage", errores);
-            redirectAttributes.addFlashAttribute("historialForm", form);
-            return "redirect:/historial-titularidad";
+            model.addAttribute("errorMessage", "Revisa los campos del formulario.");
+            model.addAttribute("listaHistorial", historialService.obtenerTodoElHistorial());
+            return "historial-titularidad";
         }
 
         try {
             historialService.registrarCambioTitularidad(form);
-            redirectAttributes.addFlashAttribute("successMessage","Cambio de propietario registrado exitosamente.");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Cambio de propietario registrado exitosamente.");
             return "redirect:/historial-titularidad";
         } catch (IllegalArgumentException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-            redirectAttributes.addFlashAttribute("historialForm", form);
-            return "redirect:/historial-titularidad";
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("listaHistorial", historialService.obtenerTodoElHistorial());
+            return "historial-titularidad";
         }
     }
 }

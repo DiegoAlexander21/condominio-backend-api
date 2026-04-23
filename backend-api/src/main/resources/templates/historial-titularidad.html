@@ -4,58 +4,122 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Historial de Titularidad</title>
-    <link rel="stylesheet" th:href="@{/css/gestion-condominio.css}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" th:href="@{/css/historial-titularidad.css}" />
+    <script defer th:src="@{/js/validaciones.js}"></script>
+    <script defer th:src="@{/js/historial-titularidad.js}"></script>
   </head>
   <body>
-    <header class="site-header">
-      <div class="header-inner">
-        <div class="header-text">
+    <header class="encabezado">
+      <div class="contenedor encabezado-contenido">
+        <div>
           <h1>Historial de Titularidad</h1>
           <p>Registro de cambios de dueño y trazabilidad de unidades por condominio.</p>
         </div>
       </div>
     </header>
 
-    <main>
-      <div id="container-msj">
-        <p class="alert success" th:if="${successMessage != null}" th:text="${successMessage}"></p>
-        <p class="alert error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
-      </div>
-
-      <section class="card form-section">
-        <div class="card-header">
-          <h2>Registrar Cambio de Dueño</h2>
-        </div>
-        <div class="card-body">
-          <form th:action="@{/historial-titularidad/registrar}" th:object="${historialForm}" method="post" id="formHistorial">
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="departamentoId">ID Departamento</label>
-                <input type="number" id="departamentoId" th:field="*{departamentoId}" placeholder="Ej: 101" />
-              </div>
-              <div class="form-group">
-                <label for="propietarioAnterior">Dueño Anterior</label>
-                <input type="text" id="propietarioAnterior" th:field="*{propietarioAnterior}" placeholder="Nombre completo" />
-              </div>
-              <div class="form-group">
-                <label for="nuevoPropietario">Dueño Actual</label>
-                <input type="text" id="nuevoPropietario" th:field="*{nuevoPropietario}" placeholder="Nombre completo" />
-              </div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn-save">Registrar Movimiento</button>
-            </div>
-          </form>
-        </div>
+    <main class="contenedor pagina">
+      <section th:if="${successMessage != null or errorMessage != null}">
+        <p
+          class="alerta alerta-exito"
+          th:if="${successMessage != null}"
+          th:text="${successMessage}"
+        ></p>
+        <p
+          class="alerta alerta-error"
+          th:if="${errorMessage != null}"
+          th:text="${errorMessage}"
+        ></p>
       </section>
 
-      <section class="card">
-        <div class="card-header">
-          <h2>Historial de Cambios Registrados</h2>
-          <span class="badge" th:text="${#lists.size(listaHistorial)} + ' movimientos'">0 movimientos</span>
+      <section class="panel">
+        <div class="panel-cabecera">
+          <h2>Registrar Cambio de Dueño</h2>
         </div>
-        <div class="table-wrapper">
+
+        <form
+          id="formularioHistorial"
+          th:action="@{/historial-titularidad/registrar}"
+          th:object="${historialForm}"
+          method="post"
+          novalidate
+        >
+          <div class="grupo-campos">
+            <div class="fila-campos">
+              <div class="campo">
+                <label for="departamentoId">ID Departamento</label>
+                <input
+                  id="departamentoId"
+                  type="number"
+                  th:field="*{departamentoId}"
+                  placeholder="Ej: 101"
+                  min="1"
+                  required
+                />
+                <small
+                  class="error-campo"
+                  th:if="${#fields.hasErrors('departamentoId')}"
+                  th:errors="*{departamentoId}"
+                ></small>
+              </div>
+              <div class="campo">
+                <label for="propietarioAnterior">Dueño Anterior</label>
+                <input
+                  id="propietarioAnterior"
+                  type="text"
+                  th:field="*{propietarioAnterior}"
+                  placeholder="Nombre completo"
+                  minlength="3"
+                  maxlength="70"
+                  required
+                />
+                <small
+                  class="error-campo"
+                  th:if="${#fields.hasErrors('propietarioAnterior')}"
+                  th:errors="*{propietarioAnterior}"
+                ></small>
+              </div>
+              <div class="campo">
+                <label for="nuevoPropietario">Dueño Actual</label>
+                <input
+                  id="nuevoPropietario"
+                  type="text"
+                  th:field="*{nuevoPropietario}"
+                  placeholder="Nombre completo"
+                  minlength="3"
+                  maxlength="70"
+                  required
+                />
+                <small
+                  class="error-campo"
+                  th:if="${#fields.hasErrors('nuevoPropietario')}"
+                  th:errors="*{nuevoPropietario}"
+                ></small>
+              </div>
+            </div>
+          </div>
+
+          <div class="acciones-panel">
+            <button type="submit" class="boton-principal">Registrar Movimiento</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-cabecera">
+          <h2>Historial de Cambios Registrados</h2>
+          <span
+            class="etiqueta"
+            th:text="${#lists.size(listaHistorial)} + ' movimientos'"
+          >0 movimientos</span>
+        </div>
+        <div class="tabla-contenedor">
           <table>
             <thead>
               <tr>
@@ -65,11 +129,11 @@
                 <th>Fecha de Registro</th>
               </tr>
             </thead>
-            <tbody>
-              <tr th:if="${#lists.isEmpty(listaHistorial)}">
-                <td colspan="4" class="empty">No se han registrado cambios de titularidad aún.</td>
+            <tbody id="cuerpoTabla">
+              <tr th:if="${#lists.isEmpty(listaHistorial)}" class="fila-vacia">
+                <td colspan="4">No se han registrado cambios de titularidad aún.</td>
               </tr>
-              <tr th:each="historial : ${listaHistorial}">
+              <tr th:each="historial : ${listaHistorial}" class="fila-dato">
                 <td th:text="${historial.departamentoId}"></td>
                 <td th:text="${historial.propietarioAnterior}"></td>
                 <td th:text="${historial.nuevoPropietario}"></td>
@@ -81,22 +145,8 @@
       </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="pie-pagina">
       <p>Todos los derechos reservados - Historial de Titularidad</p>
     </footer>
-
-    <script th:src="@{/js/historial-titularidad.js}"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.style.transition = "opacity 0.5s ease";
-                    alert.style.opacity = "0";
-                    setTimeout(() => alert.remove(), 500);
-                }, 3000);
-            });
-        });
-    </script>
   </body>
 </html>

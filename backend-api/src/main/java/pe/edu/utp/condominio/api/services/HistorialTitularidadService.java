@@ -13,7 +13,7 @@ public class HistorialTitularidadService {
     private final List<HistorialTitularidad> historiales = new ArrayList<>();
     private long secuenciaId = 1L;
 
-    public void registrarCambioTitularidad(HistorialForm form) {
+    public synchronized void registrarCambioTitularidad(HistorialForm form) {
         validarFormulario(form);
 
         String anterior = form.getPropietarioAnterior().trim();
@@ -33,7 +33,7 @@ public class HistorialTitularidadService {
         historiales.add(registro);
     }
 
-    public List<HistorialTitularidad> obtenerTodoElHistorial() {
+    public synchronized List<HistorialTitularidad> obtenerTodoElHistorial() {
         return new ArrayList<>(historiales);
     }
 

@@ -1,59 +1,71 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("formHistorial");
-    const inputDepto = document.getElementById("departamentoId");
-    const containerMsj = document.getElementById("container-msj");
+  var formulario = document.getElementById("formularioHistorial");
+  var departamentoId = document.getElementById("departamentoId");
+  var propietarioAnterior = document.getElementById("propietarioAnterior");
+  var nuevoPropietario = document.getElementById("nuevoPropietario");
+  var alertas = document.querySelectorAll(".alerta-exito");
 
-    if (inputDepto) {
-        inputDepto.addEventListener("focus", function () {
-            if (this.value === "0") this.value = "";
-        });
+  for (var i = 0; i < alertas.length; i++) {
+    setTimeout(function (elemento) {
+      elemento.style.display = "none";
+    }, 5000, alertas[i]);
+  }
 
-        inputDepto.addEventListener("input", function () {
-            let valor = this.value ? this.value.trim() : "";
-            if (/^0+\d+$/.test(valor)) this.value = String(Number(valor));
-        });
+  if (!formulario) {
+    return;
+  }
+
+  var cuerpo = document.getElementById("cuerpoTabla");
+
+  if (cuerpo) {
+    var filasReales = cuerpo.querySelectorAll("tr.fila-dato");
+
+    for (var k = 0; k < filasReales.length; k++) {
+      filasReales[k].addEventListener("click", function () {
+        for (var m = 0; m < filasReales.length; m++) {
+          filasReales[m].style.background = "";
+        }
+        this.style.background = "#e8e6df";
+      });
     }
+  }
 
-    function mostrarErrorTemporal(mensaje) {
-        const p = document.createElement("p");
-        p.className = "alert error";
-        p.textContent = mensaje;
-        containerMsj.appendChild(p);
-        setTimeout(() => {
-            p.style.transition = "opacity 0.5s ease";
-            p.style.opacity = "0";
-            setTimeout(() => p.remove(), 500);
-        }, 3000);
+  departamentoId.addEventListener("focus", function () {
+    if (this.value === "0") {
+      this.value = "";
     }
+  });
 
-    form.addEventListener("submit", function (event) {
-        const anterior = document.getElementById("propietarioAnterior").value.trim();
-        const nuevo = document.getElementById("nuevoPropietario").value.trim();
-        const depto = inputDepto.value;
-        const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/;
+  departamentoId.addEventListener("input", function () {
+    this.value = this.value.replace(/[^\d]/g, "");
+    limpiarError(this);
+  });
 
-        if (!depto || depto <= 0) {
-            mostrarErrorTemporal("Por favor, ingrese un número de departamento válido.");
-            event.preventDefault();
-            return;
-        }
+  propietarioAnterior.addEventListener("blur", function () {
+    if (propietarioAnterior.value !== "") {
+      validarTexto(propietarioAnterior);
+    }
+  });
 
-        if (anterior === "" || nuevo === "") {
-            mostrarErrorTemporal("Ambos nombres de propietarios son obligatorios.");
-            event.preventDefault();
-            return;
-        }
+  nuevoPropietario.addEventListener("blur", function () {
+    if (nuevoPropietario.value !== "") {
+      validarTexto(nuevoPropietario);
+    }
+  });
 
-        if (!soloLetras.test(anterior) || !soloLetras.test(nuevo)) {
-            mostrarErrorTemporal("Los nombres solo pueden contener letras y espacios.");
-            event.preventDefault();
-            return;
-        }
+  formulario.addEventListener("submit", function (evento) {
+    var deptoValido = validarNumero(departamentoId);
+    if (!deptoValido) { evento.preventDefault(); return; }
 
-        if (anterior.toLowerCase() === nuevo.toLowerCase()) {
-            mostrarErrorTemporal("El nuevo dueño no puede ser la misma persona que el anterior.");
-            event.preventDefault();
-            return;
-        }
-    });
+    var anteriorValido = validarTexto(propietarioAnterior);
+    if (!anteriorValido) { evento.preventDefault(); return; }
+
+    var nuevoValido = validarTexto(nuevoPropietario);
+    if (!nuevoValido) { evento.preventDefault(); return; }
+
+    if (propietarioAnterior.value.trim().toLowerCase() === nuevoPropietario.value.trim().toLowerCase()) {
+      mostrarError(nuevoPropietario, "El nuevo dueño no puede ser la misma persona que el anterior.");
+      evento.preventDefault();
+    }
+  });
 });
