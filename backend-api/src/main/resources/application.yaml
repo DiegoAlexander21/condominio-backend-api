@@ -6,6 +6,17 @@ spring:
     name: backend-api
   thymeleaf:
     cache: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "${GMAIL_USUARIO:}"
+    password: "${GMAIL_APP_PASSWORD:}"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
     url: jdbc:postgresql://localhost:5432/condominio_db
     username: postgres
@@ -13,18 +24,21 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
         "[format_sql]": true
     open-in-view: false
-  autoconfigure:
-    exclude:
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration
-      - org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration
+  ai:
+    openai:
+      api-key: "${OPENAI_API_KEY:}"
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.4
+
+seguridad:
+  jwt:
+    secreto: "${JWT_SECRETO:eq73qfrTPO0cRtZrBjMzPWsSV41Z8DyoRpvixW9QG6Bea4NKYYQSj19c2FZgqJD6ETuN9SVIA31JV98VFwFZcd}"
+    expiracion-minutos: 120
