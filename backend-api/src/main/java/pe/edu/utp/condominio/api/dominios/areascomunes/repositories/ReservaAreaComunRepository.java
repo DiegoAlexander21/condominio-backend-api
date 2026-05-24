@@ -12,5 +12,8 @@ public interface ReservaAreaComunRepository extends JpaRepository<ReservaAreaCom
     @Query("select r from ReservaAreaComun r where r.areaComun.id = :areaComunId and r.fechaReserva = :fecha order by r.horaInicio")
     List<ReservaAreaComun> listarPorAreaYFecha(@Param("areaComunId") Long areaComunId,
             @Param("fecha") LocalDate fecha);
+
+    @Query("select r from ReservaAreaComun r where r.areaComun.id = :areaComunId order by r.fechaReserva desc, r.horaInicio asc")
+    List<ReservaAreaComun> listarPorArea(@Param("areaComunId") Long areaComunId);
 }
 

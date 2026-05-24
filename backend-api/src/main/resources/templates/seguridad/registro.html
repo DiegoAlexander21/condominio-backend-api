@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragmentos/head :: comun('Registro de Usuario')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/dominios/seguridad/auth.css}">
+</head>
+<body class="auth-body">
+    <div class="tarjeta tarjeta-estatica auth-tarjeta auth-tarjeta-ancha">
+        <div class="auth-cabecera">
+            <h1 class="titulo-pagina auth-titulo">Crear Cuenta</h1>
+            <p class="auth-subtitulo">Completa tus datos para registrarte</p>
+        </div>
+
+        <section th:if="${errorMessage != null}">
+            <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+        </section>
+
+        <form id="formularioRegistro" th:action="@{/auth/registro}" th:object="${registroRequest}" method="post" novalidate>
+            <div class="auth-fila">
+                <div class="formulario-grupo auth-grupo">
+                    <label class="formulario-etiqueta" for="nombres">Nombres</label>
+                    <input class="formulario-entrada" id="nombres" type="text" th:field="*{nombres}" required />
+                    <small class="auth-error-texto" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></small>
+                </div>
+                <div class="formulario-grupo auth-grupo">
+                    <label class="formulario-etiqueta" for="apellidos">Apellidos</label>
+                    <input class="formulario-entrada" id="apellidos" type="text" th:field="*{apellidos}" required />
+                    <small class="auth-error-texto" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></small>
+                </div>
+            </div>
+
+            <div class="auth-fila">
+                <div class="formulario-grupo auth-grupo">
+                    <label class="formulario-etiqueta" for="tipoDocumento">Tipo Documento</label>
+                    <select class="formulario-entrada" id="tipoDocumento" th:field="*{tipoDocumento}" required>
+                        <option value="DNI">DNI</option>
+                        <option value="CE">Carnet de Extranjería</option>
+                    </select>
+                </div>
+                <div class="formulario-grupo auth-grupo">
+                    <label class="formulario-etiqueta" for="numeroDocumento">Número de documento</label>
+                    <input class="formulario-entrada" id="numeroDocumento" type="text" th:field="*{numeroDocumento}" maxlength="9" required />
+                    <small class="auth-error-texto" th:if="${#fields.hasErrors('numeroDocumento')}" th:errors="*{numeroDocumento}"></small>
+                </div>
+            </div>
+
+            <div class="auth-fila">
+                <div class="formulario-grupo auth-grupo">
+                    <label class="formulario-etiqueta" for="correo">Correo</label>
+                    <input class="formulario-entrada" id="correo" type="email" th:field="*{correo}" required />
+                    <small class="auth-error-texto" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></small>
+                </div>
+                <div class="formulario-grupo auth-grupo">
+                    <label class="formulario-etiqueta" for="telefono">Teléfono</label>
+                    <input class="formulario-entrada" id="telefono" type="text" th:field="*{telefono}" maxlength="9" required />
+                    <small class="auth-error-texto" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></small>
+                </div>
+            </div>
+
+            <div class="auth-fila">
+                <div class="formulario-grupo auth-grupo">
+                    <label class="formulario-etiqueta" for="contrasena">Contraseña</label>
+                    <input class="formulario-entrada" id="contrasena" type="password" th:field="*{contrasena}" required />
+                    <small class="auth-error-texto" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></small>
+                </div>
+                <div class="formulario-grupo auth-grupo">
+                    <label class="formulario-etiqueta" for="rol">Rol (Simulación)</label>
+                    <select class="formulario-entrada" id="rol" th:field="*{rol}" required>
+                        <option value="PROPIETARIO">Propietario</option>
+                        <option value="ADMINISTRADOR">Administrador</option>
+                        <option value="RESIDENTE">Residente</option>
+                        <option value="RECEPCIONISTA">Recepcionista</option>
+                        <option value="MANTENIMIENTO">Mantenimiento</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="auth-boton-contenedor">
+                <button type="submit" class="boton-primario auth-boton-full">Registrarse</button>
+            </div>
+
+            <div class="auth-enlace-secundario">
+                <p>¿Ya tienes cuenta? <a th:href="@{/auth/login}" class="auth-enlace">Inicia sesión</a></p>
+            </div>
+        </form>
+    </div>
+    
+    <script th:src="@{/js/dominios/seguridad/registro.js}"></script>
+</body>
+</html>

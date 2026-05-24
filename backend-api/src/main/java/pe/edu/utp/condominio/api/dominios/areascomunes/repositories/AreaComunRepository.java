@@ -13,5 +13,8 @@ public interface AreaComunRepository extends JpaRepository<AreaComun, Long> {
 
     @Query("select a from AreaComun a where a.condominio.id = :condominioId and lower(a.nombre) = lower(:nombre)")
     AreaComun buscarPorNombre(@Param("condominioId") Long condominioId, @Param("nombre") String nombre);
+
+    @Query("select a from AreaComun a join fetch a.condominio order by lower(a.condominio.nombre), lower(a.nombre)")
+    List<AreaComun> listarTodosConCondominio();
 }
 

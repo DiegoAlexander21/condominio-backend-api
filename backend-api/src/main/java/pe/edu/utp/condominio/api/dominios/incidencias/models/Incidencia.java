@@ -9,37 +9,27 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import pe.edu.utp.condominio.api.dominios.areascomunes.models.AreaComun;
 import pe.edu.utp.condominio.api.dominios.incidencias.enums.CausaIncidencia;
 import pe.edu.utp.condominio.api.dominios.incidencias.enums.EstadoIncidencia;
 import pe.edu.utp.condominio.api.dominios.incidencias.enums.GravedadIncidencia;
-import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 
 @Entity
 @Table(name = "incidencias")
-public class Incidencia {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Incidencia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "area_comun_id")
-    private AreaComun areaComun;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unidad_id")
-    private Unidad unidad;
 
     @Column(nullable = false, length = 1000)
     private String descripcion;
@@ -89,22 +79,6 @@ public class Incidencia {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public AreaComun getAreaComun() {
-        return areaComun;
-    }
-
-    public void setAreaComun(AreaComun areaComun) {
-        this.areaComun = areaComun;
-    }
-
-    public Unidad getUnidad() {
-        return unidad;
-    }
-
-    public void setUnidad(Unidad unidad) {
-        this.unidad = unidad;
     }
 
     public String getDescripcion() {

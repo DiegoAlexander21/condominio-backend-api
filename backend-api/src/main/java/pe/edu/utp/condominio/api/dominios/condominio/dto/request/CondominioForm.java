@@ -1,25 +1,32 @@
 package pe.edu.utp.condominio.api.dominios.condominio.dto.request;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class CondominioForm {
 
+    private Long id;
+
     @NotBlank(message = "El nombre del condominio es obligatorio.")
     @Size(min = 2, max = 80, message = "El nombre debe tener entre 2 y 80 caracteres.")
     private String nombre;
 
     @Min(value = 1, message = "El numero de torres debe ser mayor a cero.")
-    @Max(value = 100, message = "El numero de torres no puede ser mayor a 100.")
     private Integer torres;
 
     @Min(value = 1, message = "El numero de pisos por torre debe ser mayor a cero.")
-    @Max(value = 200, message = "El numero de pisos por torre no puede ser mayor a 200.")
     private Integer pisosPorTorre;
 
     public CondominioForm() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNombre() {

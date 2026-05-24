@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="sidebar">
+    <aside class="menu-lateral">
+        <div class="logo-contenedor">
+            <h2>Condominios</h2>
+        </div>
+        <nav class="navegacion-lateral">
+            <a th:href="@{/gestion-condominio}" class="enlace-menu">Condominios</a>
+            <a th:href="@{/gestion-unidades}" class="enlace-menu">Unidades</a>
+            <a th:href="@{/areas-comunes}" class="enlace-menu">Áreas Comunes</a>
+            <a th:href="@{/reservas}" class="enlace-menu">Reservas</a>
+            <a th:href="@{/historial-titularidad}" class="enlace-menu">Historial Titularidad</a>
+            <a th:href="@{/incidencias}" class="enlace-menu">Incidencias</a>
+            <a th:href="@{/auth/logout}" class="boton-secundario boton-salir" style="text-align: center;">Cerrar Sesión</a>
+        </nav>
+    </aside>
+</body>
+</html>

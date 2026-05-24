@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: comun(${esEdicion} ? 'Editar Condominio' : 'Registro de Condominio')}"></head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina" th:text="${esEdicion} ? 'Editar Condominio' : 'Registro de Condominio'">Registro de Condominio</h1>
+                    <p>Ingresa los datos base para crear o actualizar un condominio.</p>
+                </div>
+                <nav>
+                    <a class="boton-secundario" th:href="@{/gestion-condominio}">&larr; Volver</a>
+                </nav>
+            </header>
+
+            <section th:if="${successMessage != null or errorMessage != null}">
+                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica">
+                    <h2 th:text="${esEdicion} ? 'Editar condominio' : 'Datos del condominio'">Datos del condominio</h2>
+                    
+                    <form id="formularioCondominio" th:action="@{/gestion-condominio/condominio}" th:object="${condominioForm}" method="post" novalidate class="form-contenedor-margen">
+                        <input type="hidden" th:field="*{id}" />
+                        <div class="formulario-grupo">
+                            <label class="formulario-etiqueta" for="nombreCondominio">Nombre del condominio</label>
+                            <input class="formulario-entrada" id="nombreCondominio" type="text" th:field="*{nombre}" placeholder="Ejemplo: Condominio Mirador" minlength="2" maxlength="80" required />
+                            <small class="error-texto" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
+                        </div>
+
+                        <div class="fila-formulario">
+                            <div class="formulario-grupo grupo-flexible">
+                                <label class="formulario-etiqueta" for="torres">Número de torres</label>
+                                <input class="formulario-entrada" id="torres" type="number" th:field="*{torres}" min="1" required />
+                                <small class="error-texto" th:if="${#fields.hasErrors('torres')}" th:errors="*{torres}"></small>
+                            </div>
+                            <div class="formulario-grupo grupo-flexible">
+                                <label class="formulario-etiqueta" for="pisosPorTorre">Pisos por torre</label>
+                                <input class="formulario-entrada" id="pisosPorTorre" type="number" th:field="*{pisosPorTorre}" min="1" required />
+                                <small class="error-texto" th:if="${#fields.hasErrors('pisosPorTorre')}" th:errors="*{pisosPorTorre}"></small>
+                            </div>
+                        </div>
+
+                        <div class="contenedor-acciones">
+                            <button type="submit" class="boton-primario" th:text="${esEdicion} ? 'Actualizar Condominio' : 'Guardar Condominio'">Guardar Condominio</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script th:src="@{/js/dominios/condominios/registro-condominio.js}"></script>
+</body>
+</html>

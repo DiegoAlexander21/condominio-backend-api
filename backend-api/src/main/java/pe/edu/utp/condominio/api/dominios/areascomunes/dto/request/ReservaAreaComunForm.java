@@ -8,6 +8,9 @@ import jakarta.validation.constraints.Size;
 
 public class ReservaAreaComunForm {
 
+    @NotNull(message = "Debe seleccionar un condominio.")
+    private Long condominioId;
+
     @NotNull(message = "Debe seleccionar un area comun.")
     private Long areaComunId;
 
@@ -28,6 +31,14 @@ public class ReservaAreaComunForm {
     private String responsableNombre;
 
     public ReservaAreaComunForm() {
+    }
+
+    public Long getCondominioId() {
+        return condominioId;
+    }
+
+    public void setCondominioId(Long condominioId) {
+        this.condominioId = condominioId;
     }
 
     public Long getAreaComunId() {

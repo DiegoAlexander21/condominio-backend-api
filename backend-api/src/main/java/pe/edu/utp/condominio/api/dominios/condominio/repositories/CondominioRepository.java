@@ -12,6 +12,12 @@ public interface CondominioRepository extends JpaRepository<Condominio, Long> {
     @Query("select c from Condominio c where lower(c.nombre) = lower(:nombre)")
     Optional<Condominio> buscarPorNombre(@Param("nombre") String nombre);
 
+    @Query("select count(c) > 0 from Condominio c where lower(replace(c.nombre, ' ', '')) = lower(replace(:nombre, ' ', ''))")
+    boolean existePorNombreEstricto(@Param("nombre") String nombre);
+
+    @Query("select count(c) > 0 from Condominio c where lower(replace(c.nombre, ' ', '')) = lower(replace(:nombre, ' ', '')) and c.id != :id")
+    boolean existePorNombreEstrictoYIdDiferente(@Param("nombre") String nombre, @Param("id") Long id);
+
     @Query("select c from Condominio c order by lower(c.nombre)")
     List<Condominio> listarTodosOrdenado();
 }

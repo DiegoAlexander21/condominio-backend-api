@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -24,9 +25,10 @@ import pe.edu.utp.condominio.api.dominios.finanzas.models.DetalleGastoUnidad;
 import pe.edu.utp.condominio.api.dominios.finanzas.models.EstadoCuenta;
 import pe.edu.utp.condominio.api.dominios.finanzas.models.Pago;
 import pe.edu.utp.condominio.api.dominios.historial.models.HistorialTitularidad;
-import pe.edu.utp.condominio.api.dominios.incidencias.models.Incidencia;
+import pe.edu.utp.condominio.api.dominios.incidencias.models.IncidenciaUnidad;
 import pe.edu.utp.condominio.api.dominios.paqueteria.models.Paquete;
 import pe.edu.utp.condominio.api.dominios.visitas.models.Visita;
+import pe.edu.utp.condominio.api.dominios.areascomunes.models.ReservaAreaComun;
 
 @Entity
 @Table(name = "unidades")
@@ -40,8 +42,6 @@ public class Unidad {
     @JoinColumn(name = "condominio_id", nullable = false)
     private Condominio condominio;
 
-
-
     @Column(nullable = false, length = 30)
     private String numeroUnidad;
 
@@ -54,32 +54,11 @@ public class Unidad {
     @Column(nullable = false)
     private double area;
 
-    @Column(nullable = false, length = 150)
-    private String nombrePropietario;
+    @OneToOne(mappedBy = "unidad", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Propietario propietario;
 
-    @Column(nullable = false, length = 20)
-    private String dniPropietario;
-
-    @Column(length = 150)
-    private String emailPropietario;
-
-    @Column(length = 20)
-    private String telefonoPropietario;
-
-    @Column(length = 150)
-    private String nombreResidente;
-
-    @Column(length = 150)
-    private String emailResidente;
-
-    @Column(length = 20)
-    private String dniResidente;
-
-    @Column(length = 80)
-    private String parentesco;
-
-    @Column(nullable = false)
-    private boolean residenteActivo;
+    @OneToOne(mappedBy = "unidad", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Residente residente;
 
     @Column(nullable = false)
     private LocalDateTime fechaRegistro;
@@ -91,7 +70,7 @@ public class Unidad {
     private List<HistorialTitularidad> historialTitularidad = new ArrayList<>();
 
     @OneToMany(mappedBy = "unidad", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Incidencia> incidencias = new ArrayList<>();
+    private List<IncidenciaUnidad> incidencias = new ArrayList<>();
 
     @OneToMany(mappedBy = "unidad", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleGastoUnidad> detallesGasto = new ArrayList<>();
@@ -113,6 +92,9 @@ public class Unidad {
 
     @OneToMany(mappedBy = "unidad", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CalificacionArea> calificacionesAreas = new ArrayList<>();
+
+    @OneToMany(mappedBy = "unidad", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReservaAreaComun> reservasAreasComunes = new ArrayList<>();
 
     public Unidad() {
     }
@@ -144,7 +126,6 @@ public class Unidad {
     public void setCondominio(Condominio condominio) {
         this.condominio = condominio;
     }
-
 
     public String getNumeroUnidad() {
         return numeroUnidad;
@@ -178,78 +159,6 @@ public class Unidad {
         this.area = area;
     }
 
-    public String getNombrePropietario() {
-        return nombrePropietario;
-    }
-
-    public void setNombrePropietario(String nombrePropietario) {
-        this.nombrePropietario = nombrePropietario;
-    }
-
-    public String getDniPropietario() {
-        return dniPropietario;
-    }
-
-    public void setDniPropietario(String dniPropietario) {
-        this.dniPropietario = dniPropietario;
-    }
-
-    public String getEmailPropietario() {
-        return emailPropietario;
-    }
-
-    public void setEmailPropietario(String emailPropietario) {
-        this.emailPropietario = emailPropietario;
-    }
-
-    public String getTelefonoPropietario() {
-        return telefonoPropietario;
-    }
-
-    public void setTelefonoPropietario(String telefonoPropietario) {
-        this.telefonoPropietario = telefonoPropietario;
-    }
-
-    public String getNombreResidente() {
-        return nombreResidente;
-    }
-
-    public void setNombreResidente(String nombreResidente) {
-        this.nombreResidente = nombreResidente;
-    }
-
-    public String getEmailResidente() {
-        return emailResidente;
-    }
-
-    public void setEmailResidente(String emailResidente) {
-        this.emailResidente = emailResidente;
-    }
-
-    public String getDniResidente() {
-        return dniResidente;
-    }
-
-    public void setDniResidente(String dniResidente) {
-        this.dniResidente = dniResidente;
-    }
-
-    public String getParentesco() {
-        return parentesco;
-    }
-
-    public void setParentesco(String parentesco) {
-        this.parentesco = parentesco;
-    }
-
-    public boolean isResidenteActivo() {
-        return residenteActivo;
-    }
-
-    public void setResidenteActivo(boolean residenteActivo) {
-        this.residenteActivo = residenteActivo;
-    }
-
     public LocalDateTime getFechaRegistro() {
         return fechaRegistro;
     }
@@ -274,12 +183,28 @@ public class Unidad {
         this.historialTitularidad = historialTitularidad;
     }
 
-    public List<Incidencia> getIncidencias() {
+    public List<IncidenciaUnidad> getIncidencias() {
         return incidencias;
     }
 
-    public void setIncidencias(List<Incidencia> incidencias) {
+    public void setIncidencias(List<IncidenciaUnidad> incidencias) {
         this.incidencias = incidencias;
+    }
+
+    public Propietario getPropietario() {
+        return propietario;
+    }
+
+    public void setPropietario(Propietario propietario) {
+        this.propietario = propietario;
+    }
+
+    public Residente getResidente() {
+        return residente;
+    }
+
+    public void setResidente(Residente residente) {
+        this.residente = residente;
     }
 
     public List<DetalleGastoUnidad> getDetallesGasto() {
@@ -336,5 +261,13 @@ public class Unidad {
 
     public void setCalificacionesAreas(List<CalificacionArea> calificacionesAreas) {
         this.calificacionesAreas = calificacionesAreas;
+    }
+
+    public List<ReservaAreaComun> getReservasAreasComunes() {
+        return reservasAreasComunes;
+    }
+
+    public void setReservasAreasComunes(List<ReservaAreaComun> reservasAreasComunes) {
+        this.reservasAreasComunes = reservasAreasComunes;
     }
 }

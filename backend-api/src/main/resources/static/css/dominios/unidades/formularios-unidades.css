@@ -1,0 +1,61 @@
+.seccion-titulo {
+    margin: 1.5rem 0 1rem;
+    color: var(--primario);
+}
+
+.fila-formulario {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.grupo-flexible {
+    flex: 1;
+}
+
+.contenedor-acciones {
+    margin-top: 2rem;
+}
+
+.nota-informativa {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #e6f7ff;
+    border-left: 4px solid #1890ff;
+    border-radius: 4px;
+}
+
+.nota-texto {
+    margin: 0;
+    color: #0050b3;
+    font-size: 0.9rem;
+}
+
+.contenedor-botones {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.boton-peligro {
+    border-color: var(--error);
+    color: var(--error);
+    background-color: rgba(198, 40, 40, 0.05);
+}
+
+.boton-peligro:hover {
+    background-color: var(--error);
+    color: white;
+}
+
+.boton-advertencia {
+    border-color: #d97706;
+    color: #d97706;
+    background-color: rgba(217, 119, 6, 0.05);
+}
+
+.boton-advertencia:hover {
+    background-color: #d97706;
+    color: white;
+}

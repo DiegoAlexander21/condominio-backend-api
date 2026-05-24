@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: comun('Gestión de Áreas Comunes')}"></head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina">Gestión de Áreas Comunes</h1>
+                    <p>Consulta y administra las áreas comunes disponibles por condominio.</p>
+                </div>
+                <nav>
+                    <a class="boton-primario" th:href="@{/areas-comunes/nuevo}">+ Registrar Área</a>
+                </nav>
+            </header>
+
+            <section th:if="${successMessage != null or errorMessage != null}">
+                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="panel panel-separado">
+                <div class="tarjeta tarjeta-estatica">
+                    <h2>Áreas Comunes Registradas</h2>
+                    <form th:action="@{/areas-comunes}" method="get" class="fila-formulario" style="align-items: flex-end; margin-top: 1rem;">
+                        <div class="formulario-grupo grupo-flexible" style="margin-bottom: 0;">
+                            <label class="formulario-etiqueta" for="condominioId">Condominio</label>
+                            <select class="formulario-entrada" id="condominioId" name="condominioId" required>
+                                <option value="">Seleccione un condominio...</option>
+                                <option th:each="condominio : ${condominios}" 
+                                        th:value="${condominio.id}" 
+                                        th:text="${condominio.nombre}"
+                                        th:selected="${condominioIdSeleccionado != null and condominioIdSeleccionado == condominio.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="boton-primario">Consultar</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="panel" th:if="${condominioIdSeleccionado != null}">
+                <div class="tarjeta tarjeta-estatica">
+                    <div class="encabezado-tarjeta">
+                        <h2>Lista de Áreas Comunes</h2>
+                        <span class="etiqueta" th:text="${areas != null ? #lists.size(areas) : 0} + ' áreas'">0 áreas</span>
+                    </div>
+                    
+                    <table class="tabla-datos">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Capacidad</th>
+                                <th>Horario</th>
+                                <th>Normas de Uso</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${areas == null or #lists.isEmpty(areas)}">
+                                <td colspan="4" class="celda-vacia">No hay áreas comunes registradas para este condominio.</td>
+                            </tr>
+                            <tr th:each="area : ${areas}">
+                                <td th:text="${area.nombre}"></td>
+                                <td th:text="${area.capacidad} + ' personas'"></td>
+                                <td th:text="${area.horaInicio} + ' - ' + ${area.horaFin}"></td>
+                                <td th:text="${area.normasUso}"></td>
+                                <td>
+                                    <a th:href="@{/areas-comunes/editar-area(id=${area.id})}" class="boton-secundario btn-tabla">Editar</a>
+                                    <a th:href="@{/areas-comunes/eliminar-area(id=${area.id})}" class="boton-secundario btn-tabla btn-eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar esta área común? Se eliminarán también todas sus reservas asociadas.');">Eliminar</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

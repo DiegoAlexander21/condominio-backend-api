@@ -1,0 +1,26 @@
+.form-contenedor-margen {
+    margin-top: 1.5rem;
+}
+
+.fila-formulario {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.grupo-flexible {
+    flex: 1;
+}
+
+.grupo-flexible-doble {
+    flex: 2;
+}
+
+.contenedor-acciones {
+    margin-top: 2rem;
+}
+
+.error-texto {
+    color: var(--error);
+    font-size: 0.875rem;
+}

@@ -14,6 +14,8 @@ import pe.edu.utp.condominio.api.dominios.incidencias.dto.response.IncidenciaRes
 import pe.edu.utp.condominio.api.dominios.incidencias.enums.EstadoIncidencia;
 import pe.edu.utp.condominio.api.dominios.incidencias.models.EvidenciaIncidencia;
 import pe.edu.utp.condominio.api.dominios.incidencias.models.Incidencia;
+import pe.edu.utp.condominio.api.dominios.incidencias.models.IncidenciaAreaComun;
+import pe.edu.utp.condominio.api.dominios.incidencias.models.IncidenciaUnidad;
 import pe.edu.utp.condominio.api.dominios.incidencias.repositories.EvidenciaIncidenciaRepository;
 import pe.edu.utp.condominio.api.dominios.incidencias.repositories.IncidenciaRepository;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
@@ -41,23 +43,29 @@ public class GestionIncidenciasService {
     public synchronized IncidenciaResponse registrarIncidencia(IncidenciaForm form) {
         validarIncidencia(form);
 
-        Incidencia incidencia = new Incidencia();
-        incidencia.setDescripcion(form.getDescripcion().trim());
-        incidencia.setGravedad(form.getGravedad());
-        incidencia.setCausa(form.getCausa());
-        incidencia.setEstado(EstadoIncidencia.REGISTRADO);
+        Incidencia incidencia;
 
         if (form.getAreaComunId() != null) {
             AreaComun areaComun = areaComunRepository.findById(form.getAreaComunId())
                     .orElseThrow(() -> new IllegalArgumentException("El area comun no existe."));
-            incidencia.setAreaComun(areaComun);
-        }
-
-        if (form.getUnidadId() != null) {
+            IncidenciaAreaComun incidenciaArea = new IncidenciaAreaComun();
+            incidenciaArea.setAreaComun(areaComun);
+            incidencia = incidenciaArea;
+        } else if (form.getUnidadId() != null) {
             Unidad unidad = unidadRepository.findById(form.getUnidadId())
                     .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
-            incidencia.setUnidad(unidad);
+            IncidenciaUnidad incidenciaUnidad = new IncidenciaUnidad();
+            incidenciaUnidad.setUnidad(unidad);
+            incidencia = incidenciaUnidad;
+        } else {
+            throw new IllegalArgumentException("Debe indicar el area afectada o la unidad.");
         }
+
+        incidencia.setDescripcion(form.getDescripcion().trim());
+        incidencia.setGravedad(form.getGravedad());
+        incidencia.setCausa(form.getCausa());
+        incidencia.setEstado(EstadoIncidencia.REGISTRADO);
+        incidencia.setResponsableAtencion("Sin asignar");
 
         Incidencia guardada = incidenciaRepository.save(incidencia);
         return convertirIncidenciaResponse(guardada);
@@ -77,6 +85,7 @@ public class GestionIncidenciasService {
         return convertirIncidenciaResponse(actualizada);
     }
 
+    @Transactional(readOnly = true)
     public synchronized List<IncidenciaResponse> listarPorEstado(EstadoIncidencia estado) {
         if (estado == null) {
             throw new IllegalArgumentException("Debe seleccionar un estado.");
@@ -101,6 +110,7 @@ public class GestionIncidenciasService {
         return convertirEvidenciaResponse(guardada);
     }
 
+    @Transactional(readOnly = true)
     public synchronized List<EvidenciaIncidenciaResponse> listarEvidencias(Long incidenciaId) {
         if (incidenciaId == null) {
             throw new IllegalArgumentException("Debe seleccionar una incidencia valida.");
@@ -108,6 +118,11 @@ public class GestionIncidenciasService {
         return evidenciaIncidenciaRepository.listarPorIncidencia(incidenciaId).stream()
                 .map(this::convertirEvidenciaResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public synchronized Incidencia obtenerPorId(Long incidenciaId) {
+        return incidenciaRepository.findById(incidenciaId).orElse(null);
     }
 
     private void validarIncidencia(IncidenciaForm form) {
@@ -153,16 +168,29 @@ public class GestionIncidenciasService {
     }
 
     private IncidenciaResponse convertirIncidenciaResponse(Incidencia incidencia) {
+        Long areaComunId = null;
+        Long unidadId = null;
+        String lugarAfectado = null;
+
+        if (incidencia instanceof IncidenciaAreaComun area) {
+            areaComunId = area.getAreaComun() != null ? area.getAreaComun().getId() : null;
+            lugarAfectado = area.getAreaComun() != null ? "Área Común: " + area.getAreaComun().getNombre() : "Área Común";
+        } else if (incidencia instanceof IncidenciaUnidad unidad) {
+            unidadId = unidad.getUnidad() != null ? unidad.getUnidad().getId() : null;
+            lugarAfectado = unidad.getUnidad() != null ? "Unidad: " + unidad.getUnidad().getNumeroUnidad() : "Unidad";
+        }
+
         return new IncidenciaResponse(incidencia.getId(),
-                incidencia.getAreaComun() != null ? incidencia.getAreaComun().getId() : null,
-                incidencia.getUnidad() != null ? incidencia.getUnidad().getId() : null,
+                areaComunId,
+                unidadId,
                 incidencia.getDescripcion(),
                 incidencia.getGravedad(),
                 incidencia.getCausa(),
                 incidencia.getEstado(),
                 incidencia.getResponsableAtencion(),
                 incidencia.getFechaReporte(),
-                incidencia.getFechaActualizacion());
+                incidencia.getFechaActualizacion(),
+                lugarAfectado);
     }
 
     private EvidenciaIncidenciaResponse convertirEvidenciaResponse(EvidenciaIncidencia evidencia) {

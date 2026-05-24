@@ -142,3 +142,5 @@ function validarTelefono(entrada) {
   }
   return true;
 }
+
+

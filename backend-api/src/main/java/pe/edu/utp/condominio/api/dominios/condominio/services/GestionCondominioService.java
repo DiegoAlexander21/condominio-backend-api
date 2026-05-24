@@ -21,17 +21,41 @@ public class GestionCondominioService {
         validarCondominio(form);
 
         String nombreNormalizado = form.getNombre().trim();
-        int torres = form.getTorres();
-        int pisosPorTorre = form.getPisosPorTorre();
+        
+        if (form.getId() != null) {
+            if (condominioRepository.existePorNombreEstrictoYIdDiferente(nombreNormalizado, form.getId())) {
+                throw new IllegalArgumentException("El condominio '" + nombreNormalizado + "' ya se encuentra registrado.");
+            }
+            Condominio condominio = condominioRepository.findById(form.getId()).orElseThrow(() -> new IllegalArgumentException("Condominio no encontrado."));
+            condominio.setNombre(nombreNormalizado);
+            condominio.setTorres(form.getTorres());
+            condominio.setPisosPorTorre(form.getPisosPorTorre());
+            return condominioRepository.save(condominio);
+        } else {
+            if (condominioRepository.existePorNombreEstricto(nombreNormalizado)) {
+                throw new IllegalArgumentException("El condominio '" + nombreNormalizado + "' ya se encuentra registrado.");
+            }
+            Condominio condominio = new Condominio();
+            condominio.setNombre(nombreNormalizado);
+            condominio.setTorres(form.getTorres());
+            condominio.setPisosPorTorre(form.getPisosPorTorre());
+            return condominioRepository.save(condominio);
+        }
+    }
 
-        Condominio condominio = condominioRepository.buscarPorNombre(nombreNormalizado)
-                .orElseGet(Condominio::new);
+    public synchronized void eliminarCondominio(Long id) {
+        condominioRepository.deleteById(id);
+    }
 
-        condominio.setNombre(nombreNormalizado);
-        condominio.setTorres(torres);
-        condominio.setPisosPorTorre(pisosPorTorre);
-
-        return condominioRepository.save(condominio);
+    public synchronized CondominioForm obtenerFormCondominio(Long id) {
+        Condominio condominio = condominioRepository.findById(id).orElse(null);
+        if (condominio == null) return null;
+        CondominioForm form = new CondominioForm();
+        form.setId(condominio.getId());
+        form.setNombre(condominio.getNombre());
+        form.setTorres(condominio.getTorres());
+        form.setPisosPorTorre(condominio.getPisosPorTorre());
+        return form;
     }
 
     public synchronized List<Condominio> obtenerCondominios() {
@@ -73,16 +97,8 @@ public class GestionCondominioService {
             throw new IllegalArgumentException("El numero de torres debe ser mayor a cero.");
         }
 
-        if (form.getTorres() > 100) {
-            throw new IllegalArgumentException("El numero de torres no puede ser mayor a 100.");
-        }
-
         if (form.getPisosPorTorre() == null || form.getPisosPorTorre() <= 0) {
             throw new IllegalArgumentException("El numero de pisos por torre debe ser mayor a cero.");
-        }
-
-        if (form.getPisosPorTorre() > 200) {
-            throw new IllegalArgumentException("El numero de pisos por torre no puede ser mayor a 200.");
         }
     }
 }

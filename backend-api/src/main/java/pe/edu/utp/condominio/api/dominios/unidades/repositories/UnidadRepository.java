@@ -9,12 +9,11 @@ import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 
 public interface UnidadRepository extends JpaRepository<Unidad, Long> {
 
-    @Query("select u from Unidad u where upper(u.torre) = upper(:torre) and u.piso = :piso and upper(u.numeroUnidad) = upper(:numeroUnidad)")
-    Optional<Unidad> buscarPorClave(@Param("numeroUnidad") String numeroUnidad,
+    @Query("select u from Unidad u where u.condominio.id = :condominioId and upper(u.torre) = upper(:torre) and upper(u.numeroUnidad) = upper(:numeroUnidad)")
+    Optional<Unidad> buscarPorCondominioTorreYNumero(@Param("condominioId") Long condominioId,
             @Param("torre") String torre,
-            @Param("piso") int piso);
+            @Param("numeroUnidad") String numeroUnidad);
 
-    @Query("select u from Unidad u order by upper(u.numeroUnidad)")
-    List<Unidad> listarTodosOrdenado();
+    @Query("select u from Unidad u join fetch u.condominio order by upper(u.condominio.nombre), upper(u.torre), upper(u.numeroUnidad)")
+    List<Unidad> listarTodosConCondominioOrdenado();
 }
-

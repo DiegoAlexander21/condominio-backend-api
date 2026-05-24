@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 import pe.edu.utp.condominio.api.dominios.calificaciones.models.CalificacionArea;
 import pe.edu.utp.condominio.api.dominios.calificaciones.models.EstadoArea;
 import pe.edu.utp.condominio.api.dominios.condominio.models.Condominio;
-import pe.edu.utp.condominio.api.dominios.incidencias.models.Incidencia;
+import pe.edu.utp.condominio.api.dominios.incidencias.models.IncidenciaAreaComun;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.models.TareaMantenimiento;
 import pe.edu.utp.condominio.api.dominios.saludambiental.models.ChecklistSaludAmbiente;
 
@@ -64,7 +64,7 @@ public class AreaComun {
     private List<ReservaAreaComun> reservas = new ArrayList<>();
 
     @OneToMany(mappedBy = "areaComun", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Incidencia> incidencias = new ArrayList<>();
+    private List<IncidenciaAreaComun> incidencias = new ArrayList<>();
 
     @OneToMany(mappedBy = "areaComun", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChecklistSaludAmbiente> checklists = new ArrayList<>();
@@ -177,11 +177,11 @@ public class AreaComun {
         this.reservas = reservas;
     }
 
-    public List<Incidencia> getIncidencias() {
+    public List<IncidenciaAreaComun> getIncidencias() {
         return incidencias;
     }
 
-    public void setIncidencias(List<Incidencia> incidencias) {
+    public void setIncidencias(List<IncidenciaAreaComun> incidencias) {
         this.incidencias = incidencias;
     }
 

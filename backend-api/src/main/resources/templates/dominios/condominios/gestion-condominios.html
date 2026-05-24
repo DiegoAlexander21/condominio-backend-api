@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: comun('Gestión de Condominios')}"></head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <h1 class="titulo-pagina">Gestión de Condominios</h1>
+                <a class="boton-primario" th:href="@{/registro-condominio}">+ Nuevo Condominio</a>
+            </header>
+
+            <section th:if="${successMessage != null or errorMessage != null}">
+                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="estadisticas">
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Condominios</h3>
+                    <p class="tarjeta-valor formato-numero" th:text="${#lists.size(condominios)}">0</p>
+                </div>
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Total de Torres</h3>
+                    <p class="tarjeta-valor formato-numero" th:text="${totalTorres}">0</p>
+                </div>
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Pisos Acumulados</h3>
+                    <p class="tarjeta-valor formato-numero" th:text="${totalPisos}">0</p>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica">
+                    <h2>Condominios Registrados</h2>
+                    <table class="tabla-datos">
+                        <thead>
+                            <tr>
+                                <th>Condominio</th>
+                                <th>Torres</th>
+                                <th>Pisos por Torre</th>
+                                <th>Actualizado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTabla">
+                            <tr th:if="${#lists.isEmpty(condominios)}">
+                                <td colspan="4">No hay registros aún.</td>
+                            </tr>
+                            <tr th:each="condominio : ${condominios}">
+                                <td th:text="${condominio.nombre}"></td>
+                                <td th:text="${condominio.torres}" class="formato-numero"></td>
+                                <td th:text="${condominio.pisosPorTorre}" class="formato-numero"></td>
+                                <td th:text="${#temporals.format(condominio.fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                    <a th:href="@{/editar-condominio(id=${condominio.id})}" class="boton-secundario btn-tabla">Editar</a>
+                                    <a th:href="@{/eliminar-condominio(id=${condominio.id})}" onclick="return confirm('¿Seguro que desea eliminar este condominio? Todas las unidades, propietarios y residentes registrados en él serán eliminados (Cascada).');" class="boton-secundario btn-tabla btn-eliminar">Eliminar</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <link rel="stylesheet" th:href="@{/css/dominios/condominios/gestion-condominios.css}">
+    <script th:src="@{/js/dominios/condominios/gestion-condominios.js}"></script>
+</body>
+</html>

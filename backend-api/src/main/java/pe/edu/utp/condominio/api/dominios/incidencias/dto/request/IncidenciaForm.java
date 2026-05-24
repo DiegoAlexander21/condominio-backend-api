@@ -21,6 +21,8 @@ public class IncidenciaForm {
     @NotNull(message = "La causa es obligatoria.")
     private CausaIncidencia causa;
 
+    private String evidenciaUrl;
+
     public IncidenciaForm() {
     }
 
@@ -62,5 +64,13 @@ public class IncidenciaForm {
 
     public void setCausa(CausaIncidencia causa) {
         this.causa = causa;
+    }
+
+    public String getEvidenciaUrl() {
+        return evidenciaUrl;
+    }
+
+    public void setEvidenciaUrl(String evidenciaUrl) {
+        this.evidenciaUrl = evidenciaUrl;
     }
 }

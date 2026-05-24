@@ -14,6 +14,7 @@ import pe.edu.utp.condominio.api.dominios.finanzas.models.EstadoCuenta;
 import pe.edu.utp.condominio.api.dominios.finanzas.repositories.EstadoCuentaRepository;
 import pe.edu.utp.condominio.api.dominios.finanzas.repositories.GastoRepository;
 import pe.edu.utp.condominio.api.dominios.incidencias.models.Incidencia;
+import pe.edu.utp.condominio.api.dominios.incidencias.models.IncidenciaAreaComun;
 import pe.edu.utp.condominio.api.dominios.incidencias.repositories.IncidenciaRepository;
 import pe.edu.utp.condominio.api.dominios.reportes.dto.response.AreaGastoResponse;
 import pe.edu.utp.condominio.api.dominios.reportes.dto.response.IncidenciaFrecuenteResponse;
@@ -54,10 +55,10 @@ public class ReportesDashboardService {
 
         Map<Long, Long> conteo = new HashMap<>();
         for (Incidencia incidencia : incidenciaRepository.findAll()) {
-            if (incidencia.getAreaComun() == null) {
+            if (!(incidencia instanceof IncidenciaAreaComun incidenciaArea)) {
                 continue;
             }
-            Long areaId = incidencia.getAreaComun().getId();
+            Long areaId = incidenciaArea.getAreaComun().getId();
             conteo.put(areaId, conteo.getOrDefault(areaId, 0L) + 1);
         }
 
@@ -81,11 +82,10 @@ public class ReportesDashboardService {
             if (gasto.getIncidencia() == null) {
                 continue;
             }
-            Incidencia incidencia = gasto.getIncidencia();
-            if (incidencia.getAreaComun() == null) {
+            if (!(gasto.getIncidencia() instanceof IncidenciaAreaComun incidenciaArea)) {
                 continue;
             }
-            Long areaId = incidencia.getAreaComun().getId();
+            Long areaId = incidenciaArea.getAreaComun().getId();
             double acumulado = totales.getOrDefault(areaId, 0.0);
             totales.put(areaId, acumulado + gasto.getMontoTotal());
         }

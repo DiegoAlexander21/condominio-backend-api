@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragmentos/head :: comun('Iniciar Sesión')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/dominios/seguridad/auth.css}">
+</head>
+<body class="auth-body">
+    <div class="tarjeta tarjeta-estatica auth-tarjeta">
+        <div class="auth-cabecera">
+            <h1 class="titulo-pagina auth-titulo">Bienvenido</h1>
+            <p class="auth-subtitulo">Ingresa tus credenciales para continuar</p>
+        </div>
+
+        <section th:if="${successMessage != null or errorMessage != null}">
+            <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+            <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+        </section>
+
+        <form id="formularioLogin" th:action="@{/auth/login}" th:object="${loginRequest}" method="post" novalidate>
+            <div class="formulario-grupo">
+                <label class="formulario-etiqueta" for="identificador">DNI, Correo o Teléfono</label>
+                <input class="formulario-entrada" id="identificador" type="text" th:field="*{identificador}" placeholder="Ingresa tu usuario" required />
+                <small class="auth-error-texto" th:if="${#fields.hasErrors('identificador')}" th:errors="*{identificador}"></small>
+            </div>
+            
+            <div class="formulario-grupo">
+                <label class="formulario-etiqueta" for="contrasena">Contraseña</label>
+                <input class="formulario-entrada" id="contrasena" type="password" th:field="*{contrasena}" placeholder="Ingresa tu contraseña" required />
+                <small class="auth-error-texto" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></small>
+            </div>
+
+            <div class="auth-boton-contenedor">
+                <button type="submit" class="boton-primario auth-boton-full">Ingresar</button>
+            </div>
+
+            <div class="auth-enlace-secundario">
+                <p>¿No tienes cuenta? <a th:href="@{/auth/registro}" class="auth-enlace">Regístrate</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

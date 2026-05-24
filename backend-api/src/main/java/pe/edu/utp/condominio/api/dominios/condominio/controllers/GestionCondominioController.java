@@ -23,7 +23,7 @@ public class GestionCondominioController {
     @GetMapping("/gestion-condominio")
     public String mostrarGestionCondominio(Model model) {
         cargarModeloGestion(model);
-        return "gestion-condominio";
+        return "dominios/condominios/gestion-condominios";
     }
 
     @GetMapping("/registro-condominio")
@@ -31,7 +31,31 @@ public class GestionCondominioController {
         if (!model.containsAttribute("condominioForm")) {
             model.addAttribute("condominioForm", new CondominioForm());
         }
-        return "registro-condominio";
+        model.addAttribute("esEdicion", false);
+        return "dominios/condominios/registro-condominio";
+    }
+
+    @GetMapping("/editar-condominio")
+    public String editarCondominio(Long id, Model model, RedirectAttributes redirectAttributes) {
+        CondominioForm form = gestionCondominioService.obtenerFormCondominio(id);
+        if (form == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Condominio no encontrado.");
+            return "redirect:/gestion-condominio";
+        }
+        model.addAttribute("condominioForm", form);
+        model.addAttribute("esEdicion", true);
+        return "dominios/condominios/registro-condominio";
+    }
+
+    @GetMapping("/eliminar-condominio")
+    public String eliminarCondominio(Long id, RedirectAttributes redirectAttributes) {
+        try {
+            gestionCondominioService.eliminarCondominio(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Condominio eliminado correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar el condominio.");
+        }
+        return "redirect:/gestion-condominio";
     }
 
     @PostMapping("/gestion-condominio/condominio")
@@ -42,7 +66,7 @@ public class GestionCondominioController {
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "Revisa los campos del formulario.");
-            return "registro-condominio";
+            return "dominios/condominios/registro-condominio";
         }
 
         try {
@@ -52,7 +76,7 @@ public class GestionCondominioController {
             return "redirect:/gestion-condominio";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
-            return "registro-condominio";
+            return "dominios/condominios/registro-condominio";
         }
     }
 
