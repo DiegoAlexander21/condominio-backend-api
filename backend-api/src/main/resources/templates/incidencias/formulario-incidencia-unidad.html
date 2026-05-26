@@ -37,7 +37,7 @@
 
                             <div class="formulario-grupo grupo-flexible">
                                 <label class="formulario-etiqueta" for="unidadId">Seleccionar Unidad</label>
-                                <select id="unidadId" th:field="*{unidadId}" class="formulario-entrada" required>
+                                <select id="unidadId" th:field="*{unidadId}" class="formulario-entrada" th:disabled="${incidenciaForm.unidadId == null}" required>
                                     <option value="">Seleccione la unidad...</option>
                                     <option th:each="uni : ${unidades}" th:value="${uni.id}" th:data-condominio="${uni.condominio.id}" th:text="${uni.numeroUnidad} + ' - Piso ' + ${uni.piso} + ' - ' + ${uni.torre}"></option>
                                 </select>

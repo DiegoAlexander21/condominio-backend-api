@@ -272,6 +272,7 @@ public class GestionFinanzasController {
     public String listarEstadosCuenta(Model model) {
         model.addAttribute("estados", gestionFinanzasService.listarTodosEstadosCuenta());
         model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
+        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         model.addAttribute("estadoCuentaForm", new EstadoCuentaForm());
         return "finanzas/lista-estados-cuenta";
     }

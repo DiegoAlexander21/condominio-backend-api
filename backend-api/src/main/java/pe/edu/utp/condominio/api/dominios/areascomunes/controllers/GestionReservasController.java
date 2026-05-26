@@ -49,6 +49,7 @@ public class GestionReservasController {
 
         model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         model.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
+        model.addAttribute("unidades", unidadRepository.listarTodosConCondominioOrdenado());
         model.addAttribute("condominioIdSeleccionado", condominioId);
         model.addAttribute("areaComunIdSeleccionada", areaComunId);
 

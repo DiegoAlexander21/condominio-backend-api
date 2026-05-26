@@ -37,7 +37,7 @@
 
                             <div class="formulario-grupo grupo-flexible">
                                 <label class="formulario-etiqueta" for="areaComunId">Seleccionar Área Afectada</label>
-                                <select id="areaComunId" th:field="*{areaComunId}" class="formulario-entrada" required>
+                                <select id="areaComunId" th:field="*{areaComunId}" class="formulario-entrada" th:disabled="${incidenciaForm.areaComunId == null}" required>
                                     <option value="">Seleccione el área...</option>
                                     <option th:each="area : ${areasComunes}" th:value="${area.id}" th:data-condominio="${area.condominioId}" th:text="${area.nombre}"></option>
                                 </select>

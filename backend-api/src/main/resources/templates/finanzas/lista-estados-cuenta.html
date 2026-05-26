@@ -28,10 +28,27 @@
                     <form th:action="@{/finanzas/estados-cuenta/generar}" th:object="${estadoCuentaForm}" method="post" class="form-contenedor-margen">
                         <div class="fila-formulario">
                             <div class="formulario-grupo grupo-flexible">
+                                <label class="formulario-etiqueta" for="condominioGenerarId">Condominio</label>
+                                <select id="condominioGenerarId" class="formulario-entrada">
+                                    <option value="">Seleccione Condominio...</option>
+                                    <option th:each="cond : ${condominios}" th:value="${cond.id}" th:text="${cond.nombre}"></option>
+                                </select>
+                            </div>
+                            <div class="formulario-grupo grupo-flexible">
+                                <label class="formulario-etiqueta" for="torreGenerarId">Torre</label>
+                                <select id="torreGenerarId" class="formulario-entrada" disabled>
+                                    <option value="">Seleccione Torre...</option>
+                                </select>
+                            </div>
+                            <div class="formulario-grupo grupo-flexible">
                                 <label class="formulario-etiqueta" for="unidadId">Unidad</label>
-                                <select id="unidadId" th:field="*{unidadId}" class="formulario-entrada" required>
+                                <select id="unidadId" th:field="*{unidadId}" class="formulario-entrada" required disabled>
                                     <option value="">Seleccione...</option>
-                                    <option th:each="uni : ${unidades}" th:value="${uni.id}" th:text="${uni.condominio.nombre} + ' - ' + ${uni.torre} + ' - Piso ' + ${uni.piso} + ' - Unidad ' + ${uni.numeroUnidad}"></option>
+                                    <option th:each="uni : ${unidades}" 
+                                            th:value="${uni.id}" 
+                                            th:data-condominio="${uni.condominio.id}"
+                                            th:data-torre="${uni.torre}"
+                                            th:text="'Piso ' + ${uni.piso} + ' - Unidad ' + ${uni.numeroUnidad}"></option>
                                 </select>
                             </div>
                             <div class="formulario-grupo grupo-flexible">
@@ -49,18 +66,21 @@
                     <table class="tabla-datos" th:if="${estados != null and !estados.isEmpty()}">
                         <thead>
                             <tr>
+                                <th>Condominio</th>
+                                <th>Torre</th>
                                 <th>Unidad</th>
-                                <th>Periodo</th>
-                                <th>Pagado</th>
-                                <th>Saldo Deudor</th>
-                                <th>Vencimiento</th>
+                                <th>Total Deuda Inicial</th>
+                                <th>Total Pagado</th>
+                                <th>Saldo Pendiente</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="est : ${estados}">
-                                <td>
-                                    <th:block th:each="unidadActual : ${unidades}" th:if="${unidadActual.id == est.unidadId}">
+                                <th:block th:each="unidadActual : ${unidades}" th:if="${unidadActual.id == est.unidadId}">
+                                    <td th:text="${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'}"></td>
+                                    <td th:text="${unidadActual.torre}"></td>
+                                    <td>
                                         <button type="button" class="boton-secundario btn-tabla boton-detalles"
                                                 th:attr="data-condominio=${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'},
                                                          data-unidad=${unidadActual.numeroUnidad},
@@ -76,22 +96,21 @@
                                                          data-tel-res=${unidadActual.residente?.email},
                                                          data-parentesco=${unidadActual.residente?.parentesco},
                                                          data-estado=${(unidadActual.residente != null and unidadActual.residente.activo) ? 'Ocupada' : 'Disponible'}">
-                                            Detalles
+                                            <span th:text="${unidadActual.numeroUnidad}"></span>
                                         </button>
-                                    </th:block>
-                                </td>
-                                <td th:text="${#temporals.format(est.periodo, 'MMMM yyyy')}"></td>
+                                    </td>
+                                </th:block>
+                                <td th:text="${'S/ ' + (est.totalCuotas + est.totalExtraordinarios)}"></td>
                                 <td class="texto-exito">
                                     <a class="enlace-saldo" th:href="@{/finanzas/estados-cuenta/desglose-pagos(id=${est.id})}" title="Ver desglose de pagos">
-                                        <strong th:text="'S/ ' + ${est.totalPagado}"></strong>
+                                        <strong th:text="${'S/ ' + est.totalPagado}"></strong>
                                     </a>
                                 </td>
                                 <td class="texto-alerta">
                                     <a class="enlace-saldo" th:href="@{/finanzas/estados-cuenta/desglose(id=${est.id})}" title="Ver desglose de deuda">
-                                        <strong th:text="'S/ ' + ${est.saldo}"></strong>
+                                        <strong th:text="${'S/ ' + est.saldo}"></strong>
                                     </a>
                                 </td>
-                                <td th:text="${est.fechaVencimiento != null ? #temporals.format(est.fechaVencimiento, 'dd/MM/yyyy') : '-'}"></td>
                                 <td class="celda-acciones">
                                     <a class="boton-primario btn-tabla" th:href="@{/finanzas/pagos/nuevo(unidadId=${est.unidadId}, estadoCuentaId=${est.id}, saldo=${est.saldo})}">Registrar Pago</a>
                                     <form th:action="@{/finanzas/estados-cuenta/eliminar}" method="post" class="form-eliminar-estado" onsubmit="return confirm('¿Está seguro de eliminar este estado de cuenta?');">
@@ -102,7 +121,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <p th:if="${estados == null or estados.isEmpty()}">No hay estados de cuenta registrados.</p>
+                    <p th:if="${estados == null or estados.isEmpty()}">No hay deudas registradas.</p>
                 </div>
             </section>
             

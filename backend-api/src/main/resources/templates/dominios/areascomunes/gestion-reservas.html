@@ -38,7 +38,7 @@
                         </div>
                         <div class="formulario-grupo grupo-flexible" style="margin-bottom: 0;">
                             <label class="formulario-etiqueta" for="areaComunId">Área Común</label>
-                            <select class="formulario-entrada" id="areaComunId" name="areaComunId" required>
+                            <select class="formulario-entrada" id="areaComunId" name="areaComunId" th:disabled="${condominioIdSeleccionado == null}" required>
                                 <option value="">Seleccione el área...</option>
                                 <option th:each="area : ${areasComunes}" 
                                         th:value="${area.id}" 
@@ -66,7 +66,7 @@
                                 <th>Fecha</th>
                                 <th>Horario</th>
                                 <th>Responsable</th>
-                                <th>ID Unidad</th>
+                                <th>Unidad</th>
                                 <th>Fecha de Registro</th>
                             </tr>
                         </thead>
@@ -78,15 +78,75 @@
                                 <td th:text="${#temporals.format(reserva.fechaReserva, 'dd/MM/yyyy')}"></td>
                                 <td th:text="${reserva.horaInicio} + ' - ' + ${reserva.horaFin}"></td>
                                 <td th:text="${reserva.responsableNombre}"></td>
-                                <td th:text="${reserva.unidadId}"></td>
+                                <td>
+                                    <th:block th:each="unidadActual : ${unidades}" th:if="${unidadActual.id == reserva.unidadId}">
+                                        <button type="button" class="boton-secundario btn-tabla boton-detalles"
+                                                th:attr="data-condominio=${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'},
+                                                         data-unidad=${unidadActual.numeroUnidad},
+                                                         data-torre=${unidadActual.torre},
+                                                         data-piso=${unidadActual.piso},
+                                                         data-area=${unidadActual.area},
+                                                         data-propietario=${unidadActual.propietario?.nombre},
+                                                         data-dni-prop=${unidadActual.propietario?.dni},
+                                                         data-tel-prop=${unidadActual.propietario?.telefono},
+                                                         data-email-prop=${unidadActual.propietario?.email},
+                                                         data-residente=${unidadActual.residente?.nombre},
+                                                         data-dni-res=${unidadActual.residente?.dni},
+                                                         data-tel-res=${unidadActual.residente?.email},
+                                                         data-parentesco=${unidadActual.residente?.parentesco},
+                                                         data-estado=${(unidadActual.residente != null and unidadActual.residente.activo) ? 'Ocupada' : 'Disponible'}">
+                                            <span th:text="${reserva.unidadNumero != null ? reserva.unidadNumero : 'Ver detalles'}"></span>
+                                        </button>
+                                    </th:block>
+                                </td>
                                 <td th:text="${#temporals.format(reserva.fechaRegistro, 'dd/MM/yyyy HH:mm')}"></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </section>
+
+            <div id="modalDetalles" class="modal-overlay">
+                <div class="modal-contenido tarjeta tarjeta-estatica">
+                    <span class="cerrar-modal">&times;</span>
+                    <h2 class="modal-titulo">Detalles de la Unidad</h2>
+                    
+                    <div class="modal-grid">
+                        <div>
+                            <h4 class="modal-seccion-titulo">Ubicación</h4>
+                            <p class="modal-parrafo"><strong>Condominio:</strong> <span id="det-condominio"></span></p>
+                            <p class="modal-parrafo"><strong>Unidad:</strong> <span id="det-unidad"></span></p>
+                            <p class="modal-parrafo"><strong>Torre:</strong> <span id="det-torre"></span></p>
+                            <p class="modal-parrafo"><strong>Piso:</strong> <span id="det-piso"></span></p>
+                        </div>
+                        <div>
+                            <h4 class="modal-seccion-titulo">Características</h4>
+                            <p class="modal-parrafo"><strong>Área:</strong> <span id="det-area"></span> m²</p>
+                            <p class="modal-parrafo"><strong>Estado:</strong> <span id="det-estado"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="modal-grid modal-grid-separado">
+                        <div>
+                            <h4 class="modal-seccion-titulo">Propietario</h4>
+                            <p class="modal-parrafo"><strong>Nombre:</strong> <span id="det-propietario"></span></p>
+                            <p class="modal-parrafo"><strong>DNI:</strong> <span id="det-dni-prop"></span></p>
+                            <p class="modal-parrafo"><strong>Teléfono:</strong> <span id="det-tel-prop"></span></p>
+                            <p class="modal-parrafo"><strong>Email:</strong> <span id="det-email-prop"></span></p>
+                        </div>
+                        <div>
+                            <h4 class="modal-seccion-titulo">Residente Actual</h4>
+                            <p class="modal-parrafo"><strong>Nombre:</strong> <span id="det-residente"></span></p>
+                            <p class="modal-parrafo"><strong>DNI:</strong> <span id="det-dni-res"></span></p>
+                            <p class="modal-parrafo"><strong>Email:</strong> <span id="det-tel-res"></span></p>
+                            <p class="modal-parrafo"><strong>Parentesco:</strong> <span id="det-parentesco"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
+    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/finanzas.css(v=8)}">
     <script th:src="@{/js/dominios/areascomunes/gestion-reservas.js}"></script>
 </body>
 </html>

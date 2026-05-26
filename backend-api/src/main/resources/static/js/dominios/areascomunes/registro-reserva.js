@@ -20,8 +20,11 @@ document.addEventListener("DOMContentLoaded", function () {
       let previousAreaValue = areaComun.getAttribute('data-selected') || areaComun.value;
 
       if (selectedCondominio) {
+          areaComun.disabled = false;
           const filteredAreas = todasAreas.filter(opt => opt.getAttribute("data-condominio") === selectedCondominio);
           filteredAreas.forEach(opt => areaComun.appendChild(opt.cloneNode(true)));
+      } else {
+          areaComun.disabled = true;
       }
 
       if (previousAreaValue) {
@@ -38,8 +41,11 @@ document.addEventListener("DOMContentLoaded", function () {
       let previousUnidadValue = unidad.getAttribute('data-selected') || unidad.value;
 
       if (selectedCondominio) {
+          unidad.disabled = false;
           const filteredUnidades = todasUnidades.filter(opt => opt.getAttribute("data-condominio") === selectedCondominio);
           filteredUnidades.forEach(opt => unidad.appendChild(opt.cloneNode(true)));
+      } else {
+          unidad.disabled = true;
       }
 
       if (previousUnidadValue) {

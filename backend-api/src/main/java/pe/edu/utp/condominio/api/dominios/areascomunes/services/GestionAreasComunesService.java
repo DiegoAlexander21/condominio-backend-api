@@ -123,6 +123,7 @@ public class GestionAreasComunesService {
         return convertirReservaResponse(guardada);
     }
 
+    @Transactional(readOnly = true)
     public synchronized List<ReservaAreaComunResponse> listarReservas(Long areaComunId, LocalDate fecha) {
         if (areaComunId == null) {
             throw new IllegalArgumentException("Debe seleccionar un area comun valida.");
@@ -177,7 +178,7 @@ public class GestionAreasComunesService {
     }
 
     private ReservaAreaComunResponse convertirReservaResponse(ReservaAreaComun reserva) {
-        return new ReservaAreaComunResponse(reserva.getId(),
+        ReservaAreaComunResponse response = new ReservaAreaComunResponse(reserva.getId(),
                 reserva.getAreaComun() != null ? reserva.getAreaComun().getId() : null,
                 reserva.getUnidad() != null ? reserva.getUnidad().getId() : null,
                 reserva.getFechaReserva(),
@@ -185,6 +186,10 @@ public class GestionAreasComunesService {
                 reserva.getHoraFin(),
                 reserva.getResponsableNombre(),
                 reserva.getFechaRegistro());
+        if (reserva.getUnidad() != null) {
+            response.setUnidadNumero(reserva.getUnidad().getNumeroUnidad());
+        }
+        return response;
     }
 
     private String normalizarTexto(String texto) {

@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var opcionSeleccionada = condominio.options[condominio.selectedIndex];
     
     if (opcionSeleccionada && opcionSeleccionada.value !== "") {
+      torre.disabled = false;
       var numTorres = parseInt(opcionSeleccionada.getAttribute("data-torres"), 10);
       for (var i = 1; i <= numTorres; i++) {
         var opt = document.createElement("option");
@@ -33,6 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         torre.appendChild(opt);
       }
+    } else {
+      torre.disabled = true;
     }
   }
 

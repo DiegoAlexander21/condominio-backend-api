@@ -11,10 +11,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectorArea = document.getElementById('areaComunId');
 
     if (selectorCondominio) {
-        selectorCondominio.addEventListener('change', function() {
-            const idCondominio = this.value;
+        function actualizarSeleccionadores() {
+            const idCondominio = selectorCondominio.value;
             
             if (selectorUnidad) {
+                if (idCondominio) {
+                    selectorUnidad.disabled = false;
+                } else {
+                    selectorUnidad.disabled = true;
+                }
                 Array.from(selectorUnidad.options).forEach(opcion => {
                     if (opcion.value === "") return;
                     if (opcion.dataset.condominio === idCondominio || idCondominio === "") {
@@ -27,6 +32,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (selectorArea) {
+                if (idCondominio) {
+                    selectorArea.disabled = false;
+                } else {
+                    selectorArea.disabled = true;
+                }
                 Array.from(selectorArea.options).forEach(opcion => {
                     if (opcion.value === "") return;
                     if (opcion.dataset.condominio === idCondominio || idCondominio === "") {
@@ -37,7 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 selectorArea.value = "";
             }
-        });
+        }
+
+        selectorCondominio.addEventListener('change', actualizarSeleccionadores);
+        actualizarSeleccionadores();
     }
 
     const btnSeleccionarArchivos = document.getElementById('btnSeleccionarArchivos');

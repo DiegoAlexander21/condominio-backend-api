@@ -9,6 +9,7 @@ public class ReservaAreaComunResponse {
     private Long id;
     private Long areaComunId;
     private Long unidadId;
+    private String unidadNumero;
     private LocalDate fechaReserva;
     private LocalTime horaInicio;
     private LocalTime horaFin;
@@ -93,5 +94,13 @@ public class ReservaAreaComunResponse {
 
     public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public String getUnidadNumero() {
+        return unidadNumero;
+    }
+
+    public void setUnidadNumero(String unidadNumero) {
+        this.unidadNumero = unidadNumero;
     }
 }

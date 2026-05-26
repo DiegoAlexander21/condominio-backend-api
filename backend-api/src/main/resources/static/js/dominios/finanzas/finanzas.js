@@ -331,4 +331,70 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    const condominioGenerar = document.getElementById('condominioGenerarId');
+    const torreGenerar = document.getElementById('torreGenerarId');
+    const unidadGenerar = document.getElementById('unidadId');
+
+    if (condominioGenerar && torreGenerar && unidadGenerar) {
+        const opcionesOriginalesUnidades = Array.from(unidadGenerar.options).filter(opt => opt.value !== "");
+        function actualizarTorresYUnidades() {
+            const condominioSeleccionado = condominioGenerar.value;
+            
+            torreGenerar.innerHTML = '<option value="">Seleccione Torre...</option>';
+            unidadGenerar.innerHTML = '<option value="">Seleccione...</option>';
+
+            if (!condominioSeleccionado) {
+                torreGenerar.disabled = true;
+                unidadGenerar.disabled = true;
+                return;
+            }
+
+            torreGenerar.disabled = false;
+            unidadGenerar.disabled = true;
+            const torresUnicas = new Set();
+            const unidadesFiltradas = opcionesOriginalesUnidades.filter(opt => opt.getAttribute('data-condominio') === condominioSeleccionado);
+
+            unidadesFiltradas.forEach(opt => {
+                const nombreTorre = opt.getAttribute('data-torre');
+                if (nombreTorre) {
+                    torresUnicas.add(nombreTorre);
+                }
+            });
+
+            Array.from(torresUnicas).sort().forEach(nombreTorre => {
+                const opt = document.createElement('option');
+                opt.value = nombreTorre;
+                opt.textContent = nombreTorre;
+                torreGenerar.appendChild(opt);
+            });
+        }
+
+        function filtrarUnidadesPorTorre() {
+            const condominioSeleccionado = condominioGenerar.value;
+            const torreSeleccionada = torreGenerar.value;
+
+            unidadGenerar.innerHTML = '<option value="">Seleccione...</option>';
+
+            if (!torreSeleccionada) {
+                unidadGenerar.disabled = true;
+                return;
+            }
+
+            unidadGenerar.disabled = false;
+            const unidadesFiltradas = opcionesOriginalesUnidades.filter(opt => {
+                const coincideCondominio = opt.getAttribute('data-condominio') === condominioSeleccionado;
+                const coincideTorre = opt.getAttribute('data-torre') === torreSeleccionada;
+                return coincideCondominio && coincideTorre;
+            });
+
+            unidadesFiltradas.forEach(opt => {
+                unidadGenerar.appendChild(opt.cloneNode(true));
+            });
+        }
+        condominioGenerar.addEventListener('change', actualizarTorresYUnidades);
+        torreGenerar.addEventListener('change', filtrarUnidadesPorTorre);
+        
+        actualizarTorresYUnidades();
+    }
 });

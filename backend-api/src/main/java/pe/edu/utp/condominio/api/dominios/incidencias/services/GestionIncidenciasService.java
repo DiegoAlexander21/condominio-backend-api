@@ -188,7 +188,12 @@ public class GestionIncidenciasService {
                             ? area.getAreaComun().getCondominio().getId() : null;
         } else if (incidencia instanceof IncidenciaUnidad unidad) {
             unidadId = unidad.getUnidad() != null ? unidad.getUnidad().getId() : null;
-            lugarAfectado = unidad.getUnidad() != null ? "Unidad: " + unidad.getUnidad().getNumeroUnidad() : "Unidad";
+            if (unidad.getUnidad() != null) {
+                String condNombre = (unidad.getUnidad().getCondominio() != null) ? unidad.getUnidad().getCondominio().getNombre() : "-";
+                lugarAfectado = condNombre + " - " + unidad.getUnidad().getTorre() + " - Piso " + unidad.getUnidad().getPiso() + " - Unidad " + unidad.getUnidad().getNumeroUnidad();
+            } else {
+                lugarAfectado = "Unidad";
+            }
             condominioId = unidad.getUnidad() != null && unidad.getUnidad().getCondominio() != null 
                             ? unidad.getUnidad().getCondominio().getId() : null;
             torre = unidad.getUnidad() != null ? unidad.getUnidad().getTorre() : null;

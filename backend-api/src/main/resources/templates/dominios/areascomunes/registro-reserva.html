@@ -35,7 +35,7 @@
                         <div class="fila-formulario">
                             <div class="formulario-grupo grupo-flexible">
                                 <label class="formulario-etiqueta" for="areaComunId">Área Común</label>
-                                <select class="formulario-entrada" id="areaComunId" th:field="*{areaComunId}" data-selected="" required>
+                                <select class="formulario-entrada" id="areaComunId" th:field="*{areaComunId}" th:disabled="${reservaForm.condominioId == null}" data-selected="" required>
                                     <option value="">Seleccione un área...</option>
                                     <option th:each="area : ${areasComunes}" th:value="${area.id}" 
                                         th:data-condominio="${area.condominio.id}" 
@@ -47,7 +47,7 @@
                             </div>
                             <div class="formulario-grupo grupo-flexible">
                                 <label class="formulario-etiqueta" for="unidadId">Unidad Solicitante</label>
-                                <select class="formulario-entrada" id="unidadId" th:field="*{unidadId}" data-selected="" required>
+                                <select class="formulario-entrada" id="unidadId" th:field="*{unidadId}" th:disabled="${reservaForm.condominioId == null}" data-selected="" required>
                                     <option value="">Seleccione su unidad...</option>
                                     <option th:each="unidad : ${unidades}" th:value="${unidad.id}" th:data-condominio="${unidad.condominio.id}" th:text="'Unidad ' + ${unidad.numeroUnidad} + ' - ' + ${unidad.torre}"></option>
                                 </select>
