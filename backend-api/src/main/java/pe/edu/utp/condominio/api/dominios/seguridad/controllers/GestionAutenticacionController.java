@@ -73,7 +73,7 @@ public class GestionAutenticacionController {
             cookie.setPath("/");
             response.addCookie(cookie);
 
-            return "redirect:/gestion-condominio";
+            return "redirect:/reportes/dashboard";
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Credenciales inválidas.");
             return "seguridad/login";

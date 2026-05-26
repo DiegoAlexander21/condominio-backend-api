@@ -20,6 +20,11 @@ public class GestionCondominioController {
         this.gestionCondominioService = gestionCondominioService;
     }
 
+    @GetMapping("/")
+    public String redireccionarRaiz() {
+        return "redirect:/reportes/dashboard";
+    }
+
     @GetMapping("/gestion-condominio")
     public String mostrarGestionCondominio(Model model) {
         cargarModeloGestion(model);

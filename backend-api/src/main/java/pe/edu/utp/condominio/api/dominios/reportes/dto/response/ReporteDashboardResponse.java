@@ -7,16 +7,19 @@ public class ReporteDashboardResponse {
     private List<IncidenciaFrecuenteResponse> incidenciasFrecuentes;
     private List<AreaGastoResponse> areasConMayorGasto;
     private List<UnidadMorosaResponse> unidadesMorosas;
+    private List<UnidadMorosaResponse> unidadesConMayorDeuda;
 
     public ReporteDashboardResponse() {
     }
 
     public ReporteDashboardResponse(List<IncidenciaFrecuenteResponse> incidenciasFrecuentes,
             List<AreaGastoResponse> areasConMayorGasto,
-            List<UnidadMorosaResponse> unidadesMorosas) {
+            List<UnidadMorosaResponse> unidadesMorosas,
+            List<UnidadMorosaResponse> unidadesConMayorDeuda) {
         this.incidenciasFrecuentes = incidenciasFrecuentes;
         this.areasConMayorGasto = areasConMayorGasto;
         this.unidadesMorosas = unidadesMorosas;
+        this.unidadesConMayorDeuda = unidadesConMayorDeuda;
     }
 
     public List<IncidenciaFrecuenteResponse> getIncidenciasFrecuentes() {
@@ -41,5 +44,13 @@ public class ReporteDashboardResponse {
 
     public void setUnidadesMorosas(List<UnidadMorosaResponse> unidadesMorosas) {
         this.unidadesMorosas = unidadesMorosas;
+    }
+
+    public List<UnidadMorosaResponse> getUnidadesConMayorDeuda() {
+        return unidadesConMayorDeuda;
+    }
+
+    public void setUnidadesConMayorDeuda(List<UnidadMorosaResponse> unidadesConMayorDeuda) {
+        this.unidadesConMayorDeuda = unidadesConMayorDeuda;
     }
 }
