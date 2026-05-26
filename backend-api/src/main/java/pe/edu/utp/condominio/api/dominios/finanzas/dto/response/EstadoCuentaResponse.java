@@ -7,26 +7,30 @@ public class EstadoCuentaResponse {
 
     private Long id;
     private Long unidadId;
+    private String unidadDetalles;
     private LocalDate periodo;
     private double totalCuotas;
     private double totalExtraordinarios;
     private double totalPagado;
     private double saldo;
+    private LocalDate fechaVencimiento;
     private LocalDateTime fechaGeneracion;
 
     public EstadoCuentaResponse() {
     }
 
-    public EstadoCuentaResponse(Long id, Long unidadId, LocalDate periodo, double totalCuotas,
-            double totalExtraordinarios, double totalPagado, double saldo,
+    public EstadoCuentaResponse(Long id, Long unidadId, String unidadDetalles, LocalDate periodo, double totalCuotas,
+            double totalExtraordinarios, double totalPagado, double saldo, LocalDate fechaVencimiento, 
             LocalDateTime fechaGeneracion) {
         this.id = id;
         this.unidadId = unidadId;
+        this.unidadDetalles = unidadDetalles;
         this.periodo = periodo;
         this.totalCuotas = totalCuotas;
         this.totalExtraordinarios = totalExtraordinarios;
         this.totalPagado = totalPagado;
         this.saldo = saldo;
+        this.fechaVencimiento = fechaVencimiento;
         this.fechaGeneracion = fechaGeneracion;
     }
 
@@ -44,6 +48,14 @@ public class EstadoCuentaResponse {
 
     public void setUnidadId(Long unidadId) {
         this.unidadId = unidadId;
+    }
+
+    public String getUnidadDetalles() {
+        return unidadDetalles;
+    }
+
+    public void setUnidadDetalles(String unidadDetalles) {
+        this.unidadDetalles = unidadDetalles;
     }
 
     public LocalDate getPeriodo() {
@@ -84,6 +96,14 @@ public class EstadoCuentaResponse {
 
     public void setSaldo(double saldo) {
         this.saldo = saldo;
+    }
+
+    public LocalDate getFechaVencimiento() {
+        return fechaVencimiento;
+    }
+
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
     }
 
     public LocalDateTime getFechaGeneracion() {

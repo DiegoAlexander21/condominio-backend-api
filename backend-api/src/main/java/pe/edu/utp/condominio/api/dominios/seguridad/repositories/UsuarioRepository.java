@@ -25,5 +25,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("select u from Usuario u where u.numeroDocumento = :identificador or u.telefono = :identificador or u.correo = :identificador")
     Optional<Usuario> buscarPorIdentificador(@Param("identificador") String identificador);
+
+    @Query("select count(u) > 0 from Usuario u where lower(trim(u.nombres)) = lower(trim(:nombres)) and lower(trim(u.apellidos)) = lower(trim(:apellidos))")
+    boolean existsByNombresAndApellidos(@Param("nombres") String nombres, @Param("apellidos") String apellidos);
 }
 

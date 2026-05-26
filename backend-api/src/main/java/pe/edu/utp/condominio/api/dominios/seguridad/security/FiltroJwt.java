@@ -28,11 +28,22 @@ public class FiltroJwt extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
+        String token = null;
         String encabezado = request.getHeader("Authorization");
 
         if (encabezado != null && encabezado.startsWith("Bearer ")) {
-            String token = encabezado.substring(7);
-            if (tokenService.esTokenValido(token)) {
+            token = encabezado.substring(7);
+        } else if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                if ("tokenAcceso".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (token != null && tokenService.esTokenValido(token)) {
+            try {
                 Long usuarioId = tokenService.obtenerIdUsuario(token);
                 var userDetails = usuarioService.loadUserById(usuarioId);
 
@@ -41,6 +52,8 @@ public class FiltroJwt extends OncePerRequestFilter {
                 autenticacion.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(autenticacion);
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
             }
         }
 

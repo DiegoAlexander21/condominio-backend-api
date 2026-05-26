@@ -31,22 +31,6 @@ public class UnidadForm {
     @DecimalMin(value = "1.0", message = "El area debe ser mayor a cero.")
     private Double area;
 
-    @NotBlank(message = "El nombre del propietario es obligatorio.")
-    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres.")
-    private String nombrePropietario;
-
-    @NotBlank(message = "El DNI del propietario es obligatorio.")
-    @Size(min = 8, max = 8, message = "El DNI debe tener exactamente 8 digitos.")
-    private String dniPropietario;
-
-    private String emailPropietario;
-    private String telefonoPropietario;
-    private String nombreResidente;
-    private String emailResidente;
-    private String dniResidente;
-    private String parentesco;
-    private boolean residenteActivo;
-
     public UnidadForm() {
     }
 
@@ -96,77 +80,5 @@ public class UnidadForm {
 
     public void setArea(Double area) {
         this.area = area;
-    }
-
-    public String getNombrePropietario() {
-        return nombrePropietario;
-    }
-
-    public void setNombrePropietario(String nombrePropietario) {
-        this.nombrePropietario = nombrePropietario;
-    }
-
-    public String getDniPropietario() {
-        return dniPropietario;
-    }
-
-    public void setDniPropietario(String dniPropietario) {
-        this.dniPropietario = dniPropietario;
-    }
-
-    public String getEmailPropietario() {
-        return emailPropietario;
-    }
-
-    public void setEmailPropietario(String emailPropietario) {
-        this.emailPropietario = emailPropietario;
-    }
-
-    public String getTelefonoPropietario() {
-        return telefonoPropietario;
-    }
-
-    public void setTelefonoPropietario(String telefonoPropietario) {
-        this.telefonoPropietario = telefonoPropietario;
-    }
-
-    public String getNombreResidente() {
-        return nombreResidente;
-    }
-
-    public void setNombreResidente(String nombreResidente) {
-        this.nombreResidente = nombreResidente;
-    }
-
-    public String getEmailResidente() {
-        return emailResidente;
-    }
-
-    public void setEmailResidente(String emailResidente) {
-        this.emailResidente = emailResidente;
-    }
-
-    public String getDniResidente() {
-        return dniResidente;
-    }
-
-    public void setDniResidente(String dniResidente) {
-        this.dniResidente = dniResidente;
-    }
-
-    public String getParentesco() {
-        return parentesco;
-    }
-
-    public void setParentesco(String parentesco) {
-        this.parentesco = parentesco;
-    }
-
-    public boolean isResidenteActivo() {
-        return residenteActivo;
-    }
-
-    public void setResidenteActivo(boolean residenteActivo) {
-        this.residenteActivo = residenteActivo;
     }
 }

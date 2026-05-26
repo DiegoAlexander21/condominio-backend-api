@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: comun('Actualizar Incidencia')}"></head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina">Actualizar Estado de Incidencia</h1>
+                    <p>Modifica el estado de atención de la incidencia</p>
+                </div>
+                <nav>
+                    <a class="boton-secundario" th:href="@{/incidencias}">&larr; Volver</a>
+                </nav>
+            </header>
+
+            <section th:if="${errorMessage != null}">
+                <p class="alerta-error" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica">
+                    <form th:action="@{/incidencias/actualizar}" th:object="${actualizacionForm}" method="post" class="form-contenedor-margen">
+                        
+                        <input type="hidden" th:field="*{incidenciaId}">
+
+                        <div class="fila-formulario">
+                            <div class="formulario-grupo grupo-flexible">
+                                <label class="formulario-etiqueta" for="estado">Nuevo Estado</label>
+                                <select id="estado" th:field="*{estado}" class="formulario-entrada" required>
+                                    <option value="REGISTRADO">Registrado</option>
+                                    <option value="EN_REVISION">En Revisión</option>
+                                    <option value="EN_ATENCION">En Atención</option>
+                                    <option value="RESUELTO">Resuelto (Finalizado)</option>
+                                </select>
+                                <small class="error-texto" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></small>
+                            </div>
+
+                            <div class="formulario-grupo grupo-flexible">
+                                <label class="formulario-etiqueta" for="responsableAtencion">Responsable de Atención (Opcional)</label>
+                                <input type="text" id="responsableAtencion" th:field="*{responsableAtencion}" class="formulario-entrada" placeholder="Ej. Consorcio S.A.">
+                                <small class="error-texto" th:if="${#fields.hasErrors('responsableAtencion')}" th:errors="*{responsableAtencion}"></small>
+                            </div>
+                        </div>
+
+                        <div class="contenedor-acciones">
+                            <button type="submit" class="boton-primario">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

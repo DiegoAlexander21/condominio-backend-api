@@ -17,6 +17,9 @@ public class PagoForm {
     @Size(max = 300, message = "La observacion no puede superar 300 caracteres.")
     private String observacion;
 
+    @Size(max = 500, message = "La URL del comprobante no puede superar 500 caracteres.")
+    private String evidenciaUrl;
+
     public PagoForm() {
     }
 
@@ -50,5 +53,13 @@ public class PagoForm {
 
     public void setObservacion(String observacion) {
         this.observacion = observacion;
+    }
+
+    public String getEvidenciaUrl() {
+        return evidenciaUrl;
+    }
+
+    public void setEvidenciaUrl(String evidenciaUrl) {
+        this.evidenciaUrl = evidenciaUrl;
     }
 }

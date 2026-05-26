@@ -1,0 +1,85 @@
+.menu-lateral {
+    width: 250px;
+    height: 100vh;
+    background-color: var(--primario);
+    color: var(--blanco);
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.menu-lateral::-webkit-scrollbar {
+    width: 6px;
+}
+.menu-lateral::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.logo-contenedor {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.navegacion-lateral {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.enlace-menu {
+    color: var(--blanco);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radio-borde);
+    transition: var(--transicion-suave);
+}
+
+.enlace-menu:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.boton-salir {
+    margin-top: auto;
+    width: 100%;
+}
+
+
+
+.menu-desplegable {
+    width: 100%;
+}
+
+.menu-desplegable summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-desplegable summary::-webkit-details-marker {
+    display: none;
+}
+
+.menu-desplegable .icono-flecha {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.menu-desplegable[open] .icono-flecha {
+    transform: rotate(180deg);
+}
+
+.menu-subitems {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-left: 1rem;
+    margin-top: 0.5rem;
+}

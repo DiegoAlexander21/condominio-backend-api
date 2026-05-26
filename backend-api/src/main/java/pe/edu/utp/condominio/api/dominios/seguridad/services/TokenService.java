@@ -9,6 +9,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.condominio.api.dominios.seguridad.config.JwtProperties;
 import pe.edu.utp.condominio.api.dominios.seguridad.models.Usuario;
@@ -16,12 +17,18 @@ import pe.edu.utp.condominio.api.dominios.seguridad.models.Usuario;
 @Service
 public class TokenService {
 
-    private final Key clave;
-    private final long expiracionMillis;
+    private final JwtProperties jwtProperties;
+    private Key clave;
+    private long expiracionMillis;
 
-    public TokenService(JwtProperties propiedades) {
-        this.clave = Keys.hmacShaKeyFor(propiedades.getSecreto().getBytes(StandardCharsets.UTF_8));
-        this.expiracionMillis = propiedades.getExpiracionMinutos() * 60 * 1000;
+    public TokenService(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.clave = Keys.hmacShaKeyFor(jwtProperties.getSecreto().getBytes(StandardCharsets.UTF_8));
+        this.expiracionMillis = jwtProperties.getExpiracionMinutos() * 60 * 1000;
     }
 
     public String generarToken(Usuario usuario) {

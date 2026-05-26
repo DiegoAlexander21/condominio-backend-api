@@ -10,5 +10,8 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
 
     @Query("select p from Pago p where p.unidad.id = :unidadId order by p.fechaPago desc")
     List<Pago> listarPorUnidad(@Param("unidadId") Long unidadId);
+
+    @Query("select p from Pago p where p.estadoCuenta.id = :estadoCuentaId order by p.fechaPago desc")
+    List<Pago> listarPorEstadoCuenta(@Param("estadoCuentaId") Long estadoCuentaId);
 }
 

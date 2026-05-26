@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragmentos/head :: comun('Estados de Cuenta')}"></th:block>
+</head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina">Estados de Cuenta</h1>
+                    <p>Gestiona la morosidad y genera deudas mensuales globales.</p>
+                </div>
+            </header>
+
+            <section th:if="${successMessage != null}">
+                <p class="alerta-exito" th:text="${successMessage}"></p>
+            </section>
+            <section th:if="${errorMessage != null}">
+                <p class="alerta-error" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica tarjeta-margen-inferior">
+                    <h2>Generar Nuevo Estado de Cuenta</h2>
+                    <form th:action="@{/finanzas/estados-cuenta/generar}" th:object="${estadoCuentaForm}" method="post" class="form-contenedor-margen">
+                        <div class="fila-formulario">
+                            <div class="formulario-grupo grupo-flexible">
+                                <label class="formulario-etiqueta" for="unidadId">Unidad</label>
+                                <select id="unidadId" th:field="*{unidadId}" class="formulario-entrada" required>
+                                    <option value="">Seleccione...</option>
+                                    <option th:each="uni : ${unidades}" th:value="${uni.id}" th:text="${uni.condominio.nombre} + ' - ' + ${uni.torre} + ' - Piso ' + ${uni.piso} + ' - Unidad ' + ${uni.numeroUnidad}"></option>
+                                </select>
+                            </div>
+                            <div class="formulario-grupo grupo-flexible">
+                                <label class="formulario-etiqueta" for="periodo">Mes (Periodo)</label>
+                                <input type="month" id="periodo" th:field="*{periodo}" class="formulario-entrada" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="boton-primario">Generar</button>
+                    </form>
+                </div>
+
+                <div class="tarjeta tarjeta-estatica">
+                    <h2>Deudas Registradas</h2>
+                    <p class="mensaje-informativo">Si deseas ver el desglose total de deudas, da clic en el valor del Saldo Deudor de la unidad correspondiente.</p>
+                    <table class="tabla-datos" th:if="${estados != null and !estados.isEmpty()}">
+                        <thead>
+                            <tr>
+                                <th>Unidad</th>
+                                <th>Periodo</th>
+                                <th>Pagado</th>
+                                <th>Saldo Deudor</th>
+                                <th>Vencimiento</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="est : ${estados}">
+                                <td>
+                                    <th:block th:each="unidadActual : ${unidades}" th:if="${unidadActual.id == est.unidadId}">
+                                        <button type="button" class="boton-secundario btn-tabla boton-detalles"
+                                                th:attr="data-condominio=${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'},
+                                                         data-unidad=${unidadActual.numeroUnidad},
+                                                         data-torre=${unidadActual.torre},
+                                                         data-piso=${unidadActual.piso},
+                                                         data-area=${unidadActual.area},
+                                                         data-propietario=${unidadActual.propietario?.nombre},
+                                                         data-dni-prop=${unidadActual.propietario?.dni},
+                                                         data-tel-prop=${unidadActual.propietario?.telefono},
+                                                         data-email-prop=${unidadActual.propietario?.email},
+                                                         data-residente=${unidadActual.residente?.nombre},
+                                                         data-dni-res=${unidadActual.residente?.dni},
+                                                         data-tel-res=${unidadActual.residente?.email},
+                                                         data-parentesco=${unidadActual.residente?.parentesco},
+                                                         data-estado=${(unidadActual.residente != null and unidadActual.residente.activo) ? 'Ocupada' : 'Disponible'}">
+                                            Detalles
+                                        </button>
+                                    </th:block>
+                                </td>
+                                <td th:text="${#temporals.format(est.periodo, 'MMMM yyyy')}"></td>
+                                <td class="texto-exito">
+                                    <a class="enlace-saldo" th:href="@{/finanzas/estados-cuenta/desglose-pagos(id=${est.id})}" title="Ver desglose de pagos">
+                                        <strong th:text="'S/ ' + ${est.totalPagado}"></strong>
+                                    </a>
+                                </td>
+                                <td class="texto-alerta">
+                                    <a class="enlace-saldo" th:href="@{/finanzas/estados-cuenta/desglose(id=${est.id})}" title="Ver desglose de deuda">
+                                        <strong th:text="'S/ ' + ${est.saldo}"></strong>
+                                    </a>
+                                </td>
+                                <td th:text="${est.fechaVencimiento != null ? #temporals.format(est.fechaVencimiento, 'dd/MM/yyyy') : '-'}"></td>
+                                <td class="celda-acciones">
+                                    <a class="boton-primario btn-tabla" th:href="@{/finanzas/pagos/nuevo(unidadId=${est.unidadId}, estadoCuentaId=${est.id}, saldo=${est.saldo})}">Registrar Pago</a>
+                                    <form th:action="@{/finanzas/estados-cuenta/eliminar}" method="post" class="form-eliminar-estado" onsubmit="return confirm('¿Está seguro de eliminar este estado de cuenta?');">
+                                        <input type="hidden" name="id" th:value="${est.id}" />
+                                        <button type="submit" class="boton-secundario btn-tabla btn-eliminar boton-eliminar-estado">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p th:if="${estados == null or estados.isEmpty()}">No hay estados de cuenta registrados.</p>
+                </div>
+            </section>
+            
+            <div id="modalDetalles" class="modal-overlay">
+                <div class="modal-contenido tarjeta tarjeta-estatica">
+                    <span class="cerrar-modal">&times;</span>
+                    <h2 class="modal-titulo">Detalles de la Unidad</h2>
+                    
+                    <div class="modal-grid">
+                        <div>
+                            <h4 class="modal-seccion-titulo">Ubicación</h4>
+                            <p class="modal-parrafo"><strong>Condominio:</strong> <span id="det-condominio"></span></p>
+                            <p class="modal-parrafo"><strong>Unidad:</strong> <span id="det-unidad"></span></p>
+                            <p class="modal-parrafo"><strong>Torre:</strong> <span id="det-torre"></span></p>
+                            <p class="modal-parrafo"><strong>Piso:</strong> <span id="det-piso"></span></p>
+                        </div>
+                        <div>
+                            <h4 class="modal-seccion-titulo">Características</h4>
+                            <p class="modal-parrafo"><strong>Área:</strong> <span id="det-area"></span> m²</p>
+                            <p class="modal-parrafo"><strong>Estado:</strong> <span id="det-estado"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="modal-grid modal-grid-separado">
+                        <div>
+                            <h4 class="modal-seccion-titulo">Propietario</h4>
+                            <p class="modal-parrafo"><strong>Nombre:</strong> <span id="det-propietario"></span></p>
+                            <p class="modal-parrafo"><strong>DNI:</strong> <span id="det-dni-prop"></span></p>
+                            <p class="modal-parrafo"><strong>Teléfono:</strong> <span id="det-tel-prop"></span></p>
+                            <p class="modal-parrafo"><strong>Email:</strong> <span id="det-email-prop"></span></p>
+                        </div>
+                        <div>
+                            <h4 class="modal-seccion-titulo">Residente Actual</h4>
+                            <p class="modal-parrafo"><strong>Nombre:</strong> <span id="det-residente"></span></p>
+                            <p class="modal-parrafo"><strong>DNI:</strong> <span id="det-dni-res"></span></p>
+                            <p class="modal-parrafo"><strong>Email:</strong> <span id="det-tel-res"></span></p>
+                            <p class="modal-parrafo"><strong>Parentesco:</strong> <span id="det-parentesco"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </main>
+    </div>
+    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/finanzas.css(v=6)}">
+    <script th:src="@{/js/dominios/finanzas/finanzas.js(v=6)}" defer></script>
+</body>
+</html>

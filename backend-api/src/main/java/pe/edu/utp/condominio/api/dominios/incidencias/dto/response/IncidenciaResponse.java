@@ -17,13 +17,17 @@ public class IncidenciaResponse {
     private String responsableAtencion;
     private LocalDateTime fechaReporte;
     private LocalDateTime fechaActualizacion;
+    private String lugarAfectado;
+    private Long condominioId;
+    private String torre;
 
     public IncidenciaResponse() {
     }
 
     public IncidenciaResponse(Long id, Long areaComunId, Long unidadId, String descripcion,
             GravedadIncidencia gravedad, CausaIncidencia causa, EstadoIncidencia estado,
-            String responsableAtencion, LocalDateTime fechaReporte, LocalDateTime fechaActualizacion) {
+            String responsableAtencion, LocalDateTime fechaReporte, LocalDateTime fechaActualizacion,
+            String lugarAfectado, Long condominioId, String torre) {
         this.id = id;
         this.areaComunId = areaComunId;
         this.unidadId = unidadId;
@@ -34,6 +38,9 @@ public class IncidenciaResponse {
         this.responsableAtencion = responsableAtencion;
         this.fechaReporte = fechaReporte;
         this.fechaActualizacion = fechaActualizacion;
+        this.lugarAfectado = lugarAfectado;
+        this.condominioId = condominioId;
+        this.torre = torre;
     }
 
     public Long getId() {
@@ -114,5 +121,49 @@ public class IncidenciaResponse {
 
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public String getLugarAfectado() {
+        return lugarAfectado;
+    }
+
+    public void setLugarAfectado(String lugarAfectado) {
+        this.lugarAfectado = lugarAfectado;
+    }
+
+    public Long getCondominioId() {
+        return condominioId;
+    }
+
+    public void setCondominioId(Long condominioId) {
+        this.condominioId = condominioId;
+    }
+
+    public String getTorre() {
+        return torre;
+    }
+
+    public void setTorre(String torre) {
+        this.torre = torre;
+    }
+
+    public String getGravedadFormateada() {
+        return gravedad != null ? formatearEnum(gravedad.name()) : "";
+    }
+
+    public String getCausaFormateada() {
+        return causa != null ? formatearEnum(causa.name()) : "";
+    }
+
+    public String getEstadoFormateado() {
+        return estado != null ? formatearEnum(estado.name()) : "";
+    }
+
+    private String formatearEnum(String valor) {
+        if (valor == null || valor.isEmpty()) return "";
+        String[] palabras = valor.toLowerCase().split("_");
+        if (palabras.length == 0) return "";
+        palabras[0] = palabras[0].substring(0, 1).toUpperCase() + palabras[0].substring(1);
+        return String.join(" ", palabras);
     }
 }

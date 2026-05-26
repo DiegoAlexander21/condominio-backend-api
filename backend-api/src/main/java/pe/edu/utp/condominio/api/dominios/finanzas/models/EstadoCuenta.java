@@ -45,6 +45,9 @@ public class EstadoCuenta {
     @Column(nullable = false)
     private double saldo;
 
+    @Column
+    private LocalDate fechaVencimiento;
+
     @Column(nullable = false)
     private LocalDateTime fechaGeneracion;
 
@@ -110,6 +113,14 @@ public class EstadoCuenta {
 
     public void setSaldo(double saldo) {
         this.saldo = saldo;
+    }
+
+    public LocalDate getFechaVencimiento() {
+        return fechaVencimiento;
+    }
+
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
     }
 
     public LocalDateTime getFechaGeneracion() {

@@ -60,6 +60,24 @@ public class AutenticacionService {
         if (usuarioRepository.existsByCorreo(request.getCorreo().trim().toLowerCase())) {
             throw new IllegalArgumentException("El correo ya esta registrado.");
         }
+
+        if (usuarioRepository.existsByNombresAndApellidos(request.getNombres(), request.getApellidos())) {
+            throw new IllegalArgumentException("Ya existe un usuario registrado con ese nombre y apellido.");
+        }
+
+        if (!request.getTelefono().trim().matches("\\d{9}")) {
+            throw new IllegalArgumentException("El teléfono debe tener 9 dígitos numéricos.");
+        }
+
+        if (request.getTipoDocumento() == pe.edu.utp.condominio.api.dominios.seguridad.enums.TipoDocumento.DNI) {
+            if (!request.getNumeroDocumento().trim().matches("\\d{8}")) {
+                throw new IllegalArgumentException("El DNI debe tener exactamente 8 dígitos numéricos.");
+            }
+        } else if (request.getTipoDocumento() == pe.edu.utp.condominio.api.dominios.seguridad.enums.TipoDocumento.CE) {
+            if (request.getNumeroDocumento().trim().length() < 9) {
+                throw new IllegalArgumentException("El Carné de Extranjería (CE) debe tener al menos 9 caracteres.");
+            }
+        }
     }
 }
 

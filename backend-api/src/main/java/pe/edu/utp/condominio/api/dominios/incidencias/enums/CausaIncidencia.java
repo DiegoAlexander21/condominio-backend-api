@@ -4,5 +4,6 @@ public enum CausaIncidencia {
     DESGASTE,
     MAL_USO,
     CLIMA,
-    VANDALISMO
+    VANDALISMO,
+    OTRO
 }

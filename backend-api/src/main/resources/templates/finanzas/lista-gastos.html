@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragmentos/head :: comun('Gestión de Gastos')}"></th:block>
+</head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina">Gestión de Gastos</h1>
+                    <p>Visualiza y distribuye los gastos del condominio.</p>
+                </div>
+                <nav class="pestanas-filtro">
+                    <a th:class="'pestana-filtro ' + (${param.tipo == null or param.tipo[0] == 'FIJO'} ? 'activo' : '')" th:href="@{/finanzas/gastos(tipo='FIJO')}">Gastos Fijos</a>
+                    <a th:class="'pestana-filtro ' + (${param.tipo != null and param.tipo[0] == 'EXTRAORDINARIO'} ? 'activo' : '')" th:href="@{/finanzas/gastos(tipo='EXTRAORDINARIO')}">Gastos Extraordinarios</a>
+                    <a class="boton-primario boton-alinear-derecha" th:href="@{/finanzas/gastos/nuevo}">Registrar Gasto</a>
+                </nav>
+            </header>
+
+            <section th:if="${successMessage != null}">
+                <p class="alerta-exito" th:text="${successMessage}"></p>
+            </section>
+            <section th:if="${errorMessage != null}">
+                <p class="alerta-error" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica" th:if="${gastos == null or gastos.isEmpty()}">
+                    <p>No hay gastos registrados para esta categoría.</p>
+                </div>
+
+                <div class="grid-finanzas" th:if="${gastos != null and !gastos.isEmpty()}">
+                    <div th:each="gasto : ${gastos}" class="tarjeta tarjeta-estatica">
+                        <div class="tarjeta-header">
+                            <h3 th:text="${gasto.descripcion}"></h3>
+                        </div>
+                        <p><strong>Condominio:</strong> <span th:text="${gasto.condominioNombre}"></span></p>
+                        <p th:if="${gasto.torre != null and !gasto.torre.isEmpty()}"><strong>Torre:</strong> <span th:text="${gasto.torre}"></span></p>
+                        <p><strong>Monto:</strong> S/ <span th:text="${gasto.montoTotal}"></span></p>
+                        <p><strong>Distribución:</strong> <span th:text="${gasto.metodoDistribucionFormateado}"></span></p>
+                        <p><strong>Fecha de Registro:</strong> <span th:text="${#temporals.format(gasto.fechaRegistro, 'dd/MM/yyyy')}"></span></p>
+                        <p th:if="${gasto.fechaLimite != null}"><strong>Vencimiento:</strong> <span class="texto-alerta" th:text="${#temporals.format(gasto.fechaLimite, 'dd/MM/yyyy')}"></span></p>
+                        
+                        <div class="acciones-tarjeta">
+                            <button th:if="${!gasto.distribuido}" type="button" class="boton-secundario boton-distribuir boton-no-wrap" 
+                                    th:attr="data-id=${gasto.id}, data-desc=${gasto.descripcion}, data-monto=${gasto.montoTotal}, data-metodo=${gasto.metodoDistribucionFormateado}, data-metodo-raw=${gasto.metodoDistribucion}, data-unidad=${gasto.unidadIdCausante}, data-tipo=${gasto.tipoGasto}">
+                                Distribuir Gasto
+                            </button>
+                            <button th:if="${gasto.distribuido}" type="button" class="boton-secundario boton-deshabilitado-exito" disabled>
+                                Ya Distribuido
+                            </button>
+                            <a th:href="@{/finanzas/gastos/{id}/editar(id=${gasto.id})}" class="boton-secundario boton-editar-centrado">Editar</a>
+                            <form th:action="@{/finanzas/gastos/eliminar}" method="post" class="form-eliminar" onsubmit="return confirm('¿Está seguro de eliminar este gasto y toda su distribución?');">
+                                <input type="hidden" name="id" th:value="${gasto.id}" />
+                                <input type="hidden" name="tipoGasto" th:value="${gasto.tipoGasto}" />
+                                <button type="submit" class="boton-secundario boton-eliminar-ancho">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="modalDistribucion" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar-modal">&times;</span>
+            <h2>Distribuir Gasto</h2>
+            <p id="descGastoModal"></p>
+            <form th:action="@{/finanzas/gastos/distribuir}" method="post" class="modal-formulario">
+                <input type="hidden" id="gastoId" name="gastoId">
+                <input type="hidden" id="tipoGastoRedirect" name="tipoGastoRedirect">
+                <div class="formulario-grupo oculto" id="grupoUnidad">
+                    <label class="formulario-etiqueta" for="unidadId">Seleccionar Unidad (Cobro Directo)</label>
+                    <select id="unidadId" name="unidadId" class="formulario-entrada">
+                        <option value="">-- Seleccione la unidad responsable --</option>
+                        <option th:each="unidad : ${unidades}" 
+                                th:value="${unidad.id}" 
+                                th:text="${unidad.condominio.nombre} + ' - ' + ${unidad.torre} + ' - Piso ' + ${unidad.piso} + ' - Unidad ' + ${unidad.numeroUnidad}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="boton-primario">Confirmar Distribución</button>
+            </form>
+        </div>
+    </div>
+
+    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/finanzas.css}">
+    <script th:src="@{/js/dominios/finanzas/finanzas.js}" defer></script>
+</body>
+</html>

@@ -1,27 +1,33 @@
 package pe.edu.utp.condominio.api.dominios.finanzas.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PagoResponse {
 
     private Long id;
     private Long unidadId;
+    private String unidadDetalles;
     private Long estadoCuentaId;
-    private double monto;
+    private Double monto;
     private LocalDateTime fechaPago;
     private String observacion;
+    private List<EvidenciaPagoResponse> evidencias = new ArrayList<>();
 
     public PagoResponse() {
     }
 
-    public PagoResponse(Long id, Long unidadId, Long estadoCuentaId, double monto,
-            LocalDateTime fechaPago, String observacion) {
+    public PagoResponse(Long id, Long unidadId, String unidadDetalles, Long estadoCuentaId, Double monto,
+            LocalDateTime fechaPago, String observacion, List<EvidenciaPagoResponse> evidencias) {
         this.id = id;
         this.unidadId = unidadId;
+        this.unidadDetalles = unidadDetalles;
         this.estadoCuentaId = estadoCuentaId;
         this.monto = monto;
         this.fechaPago = fechaPago;
         this.observacion = observacion;
+        this.evidencias = evidencias;
     }
 
     public Long getId() {
@@ -40,6 +46,14 @@ public class PagoResponse {
         this.unidadId = unidadId;
     }
 
+    public String getUnidadDetalles() {
+        return unidadDetalles;
+    }
+
+    public void setUnidadDetalles(String unidadDetalles) {
+        this.unidadDetalles = unidadDetalles;
+    }
+
     public Long getEstadoCuentaId() {
         return estadoCuentaId;
     }
@@ -48,11 +62,11 @@ public class PagoResponse {
         this.estadoCuentaId = estadoCuentaId;
     }
 
-    public double getMonto() {
+    public Double getMonto() {
         return monto;
     }
 
-    public void setMonto(double monto) {
+    public void setMonto(Double monto) {
         this.monto = monto;
     }
 
@@ -70,5 +84,13 @@ public class PagoResponse {
 
     public void setObservacion(String observacion) {
         this.observacion = observacion;
+    }
+
+    public List<EvidenciaPagoResponse> getEvidencias() {
+        return evidencias;
+    }
+
+    public void setEvidencias(List<EvidenciaPagoResponse> evidencias) {
+        this.evidencias = evidencias;
     }
 }

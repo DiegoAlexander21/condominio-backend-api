@@ -44,6 +44,11 @@ public class GestionAreasComunesService {
         Condominio condominio = condominioRepository.findById(form.getCondominioId())
                 .orElseThrow(() -> new IllegalArgumentException("Condominio no encontrado."));
 
+        AreaComun existente = areaComunRepository.buscarPorNombre(condominio.getId(), form.getNombre().trim());
+        if (existente != null && !existente.getId().equals(form.getId())) {
+            throw new IllegalArgumentException("Ya existe un área común con el nombre '" + form.getNombre() + "' en este condominio.");
+        }
+
         AreaComun areaComun = obtenerAreaParaRegistro(form, condominio.getId());
         areaComun.setCondominio(condominio);
         areaComun.setNombre(form.getNombre().trim());
@@ -63,6 +68,35 @@ public class GestionAreasComunesService {
         return areaComunRepository.listarPorCondominio(condominioId).stream()
                 .map(this::convertirAreaResponse)
                 .collect(Collectors.toList());
+    }
+
+    public synchronized List<AreaComunResponse> obtenerTodasLasAreasComunes() {
+        return areaComunRepository.listarTodosConCondominio().stream()
+                .map(this::convertirAreaResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public synchronized void eliminarArea(Long id) {
+        if (!areaComunRepository.existsById(id)) {
+            throw new IllegalArgumentException("El área común no existe.");
+        }
+        areaComunRepository.deleteById(id);
+    }
+
+    public synchronized AreaComunForm obtenerFormularioArea(Long id) {
+        AreaComun area = areaComunRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("El área común no existe."));
+        
+        AreaComunForm form = new AreaComunForm();
+        form.setId(area.getId());
+        form.setCondominioId(area.getCondominio().getId());
+        form.setNombre(area.getNombre());
+        form.setCapacidad(area.getCapacidad());
+        form.setHoraInicio(area.getHoraInicio());
+        form.setHoraFin(area.getHoraFin());
+        form.setNormasUso(area.getNormasUso());
+        return form;
     }
 
     @Transactional
@@ -94,7 +128,9 @@ public class GestionAreasComunesService {
             throw new IllegalArgumentException("Debe seleccionar un area comun valida.");
         }
         if (fecha == null) {
-            throw new IllegalArgumentException("Debe indicar la fecha de reserva.");
+            return reservaAreaComunRepository.listarPorArea(areaComunId).stream()
+                    .map(this::convertirReservaResponse)
+                    .collect(Collectors.toList());
         }
         return reservaAreaComunRepository.listarPorAreaYFecha(areaComunId, fecha).stream()
                 .map(this::convertirReservaResponse)
@@ -104,11 +140,9 @@ public class GestionAreasComunesService {
     private AreaComun obtenerAreaParaRegistro(AreaComunForm form, Long condominioId) {
         if (form.getId() != null) {
             return areaComunRepository.findById(form.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("El area comun no existe."));
+                    .orElseThrow(() -> new IllegalArgumentException("El área común no existe."));
         }
-
-        AreaComun existente = areaComunRepository.buscarPorNombre(condominioId, form.getNombre().trim());
-        return existente != null ? existente : new AreaComun();
+        return new AreaComun();
     }
 
     private void validarHorarioDisponible(AreaComun areaComun, LocalDate fecha, LocalTime horaInicio,

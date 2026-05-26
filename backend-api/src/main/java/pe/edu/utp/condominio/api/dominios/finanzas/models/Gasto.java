@@ -1,5 +1,8 @@
 package pe.edu.utp.condominio.api.dominios.finanzas.models;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,10 +16,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import java.util.List;
+import java.util.ArrayList;
 import pe.edu.utp.condominio.api.dominios.finanzas.enums.MetodoDistribucion;
 import pe.edu.utp.condominio.api.dominios.finanzas.enums.TipoGasto;
 import pe.edu.utp.condominio.api.dominios.incidencias.models.Incidencia;
+import pe.edu.utp.condominio.api.dominios.condominio.models.Condominio;
 
 @Entity
 @Table(name = "gastos")
@@ -38,8 +46,21 @@ public class Gasto {
     private MetodoDistribucion metodoDistribucion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "incidencia_id")
+    @JoinTable(
+        name = "gastos_incidencias",
+        joinColumns = @JoinColumn(name = "gasto_id"),
+        inverseJoinColumns = @JoinColumn(name = "incidencia_id")
+    )
     private Incidencia incidencia;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "condominio_id", nullable = true)
+    private Condominio condominio;
+
+    @ElementCollection
+    @CollectionTable(name = "gastos_torres", joinColumns = @JoinColumn(name = "gasto_id"))
+    @Column(name = "torre")
+    private List<String> torres = new ArrayList<>();
 
     @Column(nullable = false)
     private double montoTotal;
@@ -49,6 +70,9 @@ public class Gasto {
 
     @Column(nullable = false)
     private LocalDateTime fechaActualizacion;
+
+    @Column
+    private LocalDate fechaLimite;
 
     public Gasto() {
     }
@@ -127,5 +151,29 @@ public class Gasto {
 
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public LocalDate getFechaLimite() {
+        return fechaLimite;
+    }
+
+    public void setFechaLimite(LocalDate fechaLimite) {
+        this.fechaLimite = fechaLimite;
+    }
+
+    public Condominio getCondominio() {
+        return condominio;
+    }
+
+    public void setCondominio(Condominio condominio) {
+        this.condominio = condominio;
+    }
+
+    public List<String> getTorres() {
+        return torres;
+    }
+
+    public void setTorres(List<String> torres) {
+        this.torres = torres;
     }
 }

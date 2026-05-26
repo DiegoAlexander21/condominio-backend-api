@@ -37,11 +37,13 @@ public class NotificacionPaqueteriaService {
     }
 
     private String obtenerCorreoDestino(Unidad unidad) {
-        if (unidad.getEmailResidente() != null && !unidad.getEmailResidente().isBlank()) {
-            return unidad.getEmailResidente();
+        if (unidad.getResidente() != null && unidad.getResidente().getEmail() != null
+                && !unidad.getResidente().getEmail().isBlank()) {
+            return unidad.getResidente().getEmail();
         }
-        if (unidad.getEmailPropietario() != null && !unidad.getEmailPropietario().isBlank()) {
-            return unidad.getEmailPropietario();
+        if (unidad.getPropietario() != null && unidad.getPropietario().getEmail() != null
+                && !unidad.getPropietario().getEmail().isBlank()) {
+            return unidad.getPropietario().getEmail();
         }
         return null;
     }

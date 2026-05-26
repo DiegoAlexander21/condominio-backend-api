@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: comun('Gestión de Unidades')}"></head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina">Gestión de Unidades</h1>
+                    <p>Registro y administración de departamentos con propietarios y residentes.</p>
+                </div>
+                <nav>
+                    <a class="boton-primario" th:href="@{/registro-unidad}">+ Nueva Unidad</a>
+                </nav>
+            </header>
+
+            <section th:if="${successMessage != null or errorMessage != null}">
+                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="estadisticas">
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Unidades</h3>
+                    <p class="tarjeta-valor formato-numero" th:text="${#lists.size(unidades)}">0</p>
+                </div>
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Propietarios</h3>
+                    <p class="tarjeta-valor formato-numero" th:text="${totalPropietarios}">0</p>
+                </div>
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Residentes Activos</h3>
+                    <p class="tarjeta-valor formato-numero" th:text="${totalResidentes}">0</p>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica">
+                    <h2>Unidades Registradas</h2>
+                    <table class="tabla-datos">
+                        <thead>
+                            <tr>
+                                <th>Condominio</th>
+                                <th>Unidad</th>
+                                <th>Torre</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTabla">
+                            <tr th:if="${#lists.isEmpty(unidades)}">
+                                <td colspan="5">No hay registros aún.</td>
+                            </tr>
+                            <tr th:each="unidad : ${unidades}" class="fila-dato">
+                                <td th:text="${unidad.condominio != null ? unidad.condominio.nombre : '-'}"></td>
+                                <td th:text="${unidad.numeroUnidad}"></td>
+                                <td th:text="${unidad.torre}"></td>
+                                <td>
+                                     <span th:text="${unidad.residente != null and unidad.residente.activo} ? 'Ocupada' : 'Disponible'" th:class="${unidad.residente != null and unidad.residente.activo} ? 'estado-ocupada' : 'estado-disponible'"></span>
+                                 </td>
+                                 <td>
+                                     <button type="button" class="boton-secundario boton-detalles btn-tabla"
+                                             th:attr="data-condominio=${unidad.condominio != null ? unidad.condominio.nombre : '-'},
+                                                      data-unidad=${unidad.numeroUnidad},
+                                                      data-torre=${unidad.torre},
+                                                      data-piso=${unidad.piso},
+                                                      data-area=${unidad.area},
+                                                      data-propietario=${unidad.propietario?.nombre},
+                                                      data-dni-prop=${unidad.propietario?.dni},
+                                                      data-tel-prop=${unidad.propietario?.telefono},
+                                                      data-email-prop=${unidad.propietario?.email},
+                                                      data-residente=${unidad.residente?.nombre},
+                                                      data-dni-res=${unidad.residente?.dni},
+                                                      data-tel-res=${unidad.residente?.email},
+                                                      data-parentesco=${unidad.residente?.parentesco},
+                                                      data-estado=${(unidad.residente != null and unidad.residente.activo) ? 'Ocupada' : 'Disponible'}">
+                                        Detalles
+                                    </button>
+                                    <a th:href="@{/asignar-ocupantes(id=${unidad.id})}" class="boton-secundario btn-tabla btn-habitantes">Habitantes</a>
+                                    <a th:href="@{/editar-unidad(id=${unidad.id})}" class="boton-secundario btn-tabla">Editar</a>
+                                    <a th:href="@{/eliminar-unidad(id=${unidad.id})}" onclick="return confirm('¿Seguro que desea eliminar esta unidad? Todo su historial será eliminado (Cascada).');" class="boton-secundario btn-tabla btn-eliminar">Eliminar</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div id="modalDetalles" class="modal-overlay">
+                <div class="modal-contenido tarjeta tarjeta-estatica">
+                    <span class="cerrar-modal">&times;</span>
+                    <h2 class="modal-titulo">Detalles de la Unidad</h2>
+                    
+                    <div class="modal-grid">
+                        <div>
+                            <h4 class="modal-seccion-titulo">Ubicación</h4>
+                            <p class="modal-parrafo"><strong>Condominio:</strong> <span id="det-condominio"></span></p>
+                            <p class="modal-parrafo"><strong>Unidad:</strong> <span id="det-unidad"></span></p>
+                            <p class="modal-parrafo"><strong>Torre:</strong> <span id="det-torre"></span></p>
+                            <p class="modal-parrafo"><strong>Piso:</strong> <span id="det-piso"></span></p>
+                        </div>
+                        <div>
+                            <h4 class="modal-seccion-titulo">Características</h4>
+                            <p class="modal-parrafo"><strong>Área:</strong> <span id="det-area"></span> m²</p>
+                            <p class="modal-parrafo"><strong>Estado:</strong> <span id="det-estado"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="modal-grid modal-grid-separado">
+                        <div>
+                            <h4 class="modal-seccion-titulo">Propietario</h4>
+                            <p class="modal-parrafo"><strong>Nombre:</strong> <span id="det-propietario"></span></p>
+                            <p class="modal-parrafo"><strong>DNI:</strong> <span id="det-dni-prop"></span></p>
+                            <p class="modal-parrafo"><strong>Teléfono:</strong> <span id="det-tel-prop"></span></p>
+                            <p class="modal-parrafo"><strong>Email:</strong> <span id="det-email-prop"></span></p>
+                        </div>
+                        <div>
+                            <h4 class="modal-seccion-titulo">Residente Actual</h4>
+                            <p class="modal-parrafo"><strong>Nombre:</strong> <span id="det-residente"></span></p>
+                            <p class="modal-parrafo"><strong>DNI:</strong> <span id="det-dni-res"></span></p>
+                            <p class="modal-parrafo"><strong>Email:</strong> <span id="det-tel-res"></span></p>
+                            <p class="modal-parrafo"><strong>Parentesco:</strong> <span id="det-parentesco"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <link rel="stylesheet" th:href="@{/css/dominios/unidades/gestion-unidades.css}">
+    <script th:src="@{/js/dominios/unidades/gestion-unidades.js}"></script>
+</body>
+</html>

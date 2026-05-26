@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: comun('Gestión de Reservas')}"></head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina">Gestión de Reservas</h1>
+                    <p>Consulta las reservas de áreas comunes por fecha.</p>
+                </div>
+                <nav>
+                    <a class="boton-primario" th:href="@{/reservas/nuevo}">+ Nueva Reserva</a>
+                </nav>
+            </header>
+
+            <section th:if="${successMessage != null or errorMessage != null}">
+                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="panel panel-separado">
+                <div class="tarjeta tarjeta-estatica">
+                    <h2>Filtro de Reservas</h2>
+                    <form th:action="@{/reservas}" method="get" class="fila-formulario" style="align-items: flex-end; margin-top: 1rem;">
+                        <div class="formulario-grupo grupo-flexible" style="margin-bottom: 0;">
+                            <label class="formulario-etiqueta" for="condominioId">Condominio</label>
+                            <select class="formulario-entrada" id="condominioId" name="condominioId">
+                                <option value="">Todos los condominios...</option>
+                                <option th:each="condominio : ${condominios}" 
+                                        th:value="${condominio.id}" 
+                                        th:text="${condominio.nombre}"
+                                        th:selected="${condominioIdSeleccionado != null and condominioIdSeleccionado == condominio.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="formulario-grupo grupo-flexible" style="margin-bottom: 0;">
+                            <label class="formulario-etiqueta" for="areaComunId">Área Común</label>
+                            <select class="formulario-entrada" id="areaComunId" name="areaComunId" required>
+                                <option value="">Seleccione el área...</option>
+                                <option th:each="area : ${areasComunes}" 
+                                        th:value="${area.id}" 
+                                        th:data-condominio="${area.condominio.id}"
+                                        th:text="${area.nombre}"
+                                        th:selected="${areaComunIdSeleccionada != null and areaComunIdSeleccionada == area.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="boton-primario">Consultar</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="panel" th:if="${areaComunIdSeleccionada != null}">
+                <div class="tarjeta tarjeta-estatica">
+                    <div class="encabezado-tarjeta">
+                        <h2>Reservas Registradas</h2>
+                        <span class="etiqueta" th:text="${reservas != null ? #lists.size(reservas) : 0} + ' reservas'">0 reservas</span>
+                    </div>
+                    
+                    <table class="tabla-datos">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Horario</th>
+                                <th>Responsable</th>
+                                <th>ID Unidad</th>
+                                <th>Fecha de Registro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${reservas == null or #lists.isEmpty(reservas)}">
+                                <td colspan="5" class="celda-vacia">No hay reservas registradas para el área seleccionada.</td>
+                            </tr>
+                            <tr th:each="reserva : ${reservas}">
+                                <td th:text="${#temporals.format(reserva.fechaReserva, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${reserva.horaInicio} + ' - ' + ${reserva.horaFin}"></td>
+                                <td th:text="${reserva.responsableNombre}"></td>
+                                <td th:text="${reserva.unidadId}"></td>
+                                <td th:text="${#temporals.format(reserva.fechaRegistro, 'dd/MM/yyyy HH:mm')}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script th:src="@{/js/dominios/areascomunes/gestion-reservas.js}"></script>
+</body>
+</html>

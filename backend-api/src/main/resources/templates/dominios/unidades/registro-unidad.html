@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: comun(${esEdicion} ? 'Editar Unidad' : 'Registro de Unidad')}"></head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina" th:text="${esEdicion} ? 'Editar Unidad' : 'Registro de Unidad'">Registro de Unidad</h1>
+                    <p>Ingresa los datos de la unidad, propietario y residente.</p>
+                </div>
+                <nav>
+                    <a class="boton-secundario" th:href="@{/gestion-unidades}">&larr; Volver</a>
+                </nav>
+            </header>
+
+            <section th:if="${successMessage != null or errorMessage != null}">
+                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
+                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+            </section>
+
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica">
+                    <h2 th:text="${esEdicion} ? 'Editar unidad' : 'Datos de la unidad'">Datos de la unidad</h2>
+                    
+                    <form id="formularioUnidad" th:action="@{/gestion-unidades/unidad}" th:object="${unidadForm}" method="post" novalidate>
+                        <input type="hidden" th:field="*{id}" />
+
+                        <div class="grupo-seccion">
+                            <h3 class="seccion-titulo">Datos de la Unidad</h3>
+                            <div class="fila-formulario">
+                                <div class="formulario-grupo grupo-flexible">
+                                    <label class="formulario-etiqueta" for="nombreCondominio">Condominio</label>
+                                    <select class="formulario-entrada" id="nombreCondominio" th:field="*{nombreCondominio}" required>
+                                        <option value="">Seleccione un condominio</option>
+                                        <option th:each="condominio : ${condominios}" th:value="${condominio.nombre}" th:text="${condominio.nombre}" th:data-torres="${condominio.torres}"></option>
+                                    </select>
+                                </div>
+                                <div class="formulario-grupo grupo-flexible">
+                                    <label class="formulario-etiqueta" for="numeroUnidad">Número de unidad</label>
+                                    <input class="formulario-entrada" id="numeroUnidad" type="text" th:field="*{numeroUnidad}" placeholder="Ej: A-101" minlength="2" maxlength="20" required />
+                                </div>
+                            </div>
+                            <div class="fila-formulario">
+                                <div class="formulario-grupo grupo-flexible">
+                                    <label class="formulario-etiqueta" for="torre">Torre / Bloque</label>
+                                    <select class="formulario-entrada" id="torre" th:field="*{torre}" th:data-selected="*{torre}" required>
+                                        <option value="">Seleccione torre</option>
+                                        <option th:if="${esEdicion}" th:value="${unidadForm.torre}" th:text="${unidadForm.torre}" selected></option>
+                                    </select>
+                                </div>
+                                <div class="formulario-grupo grupo-flexible">
+                                    <label class="formulario-etiqueta" for="piso">Piso</label>
+                                    <input class="formulario-entrada" id="piso" type="number" th:field="*{piso}" min="1" max="50" placeholder="Ej: 5" required />
+                                </div>
+                            </div>
+                            <div class="fila-formulario">
+                                <div class="formulario-grupo grupo-flexible">
+                                    <label class="formulario-etiqueta" for="area">Área (m²)</label>
+                                    <input class="formulario-entrada" id="area" type="number" th:field="*{area}" min="10" step="0.01" placeholder="Ej: 85.5" required />
+                                </div>
+                                <div class="formulario-grupo grupo-flexible">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contenedor-acciones">
+                            <button type="submit" class="boton-primario" th:text="${esEdicion} ? 'Actualizar Unidad' : 'Guardar Unidad'">Guardar Unidad</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <link rel="stylesheet" th:href="@{/css/dominios/unidades/formularios-unidades.css}">
+    <script th:src="@{/js/dominios/unidades/registro-unidad.js}"></script>
+</body>
+</html>

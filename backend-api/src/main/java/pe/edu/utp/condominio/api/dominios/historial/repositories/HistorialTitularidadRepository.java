@@ -7,7 +7,7 @@ import pe.edu.utp.condominio.api.dominios.historial.models.HistorialTitularidad;
 
 public interface HistorialTitularidadRepository extends JpaRepository<HistorialTitularidad, Long> {
 
-    @Query("select h from HistorialTitularidad h order by h.fechaCambio desc")
+    @Query("select h from HistorialTitularidad h join fetch h.unidad order by h.fechaCambio desc")
     List<HistorialTitularidad> listarTodoOrdenado();
 }
 
