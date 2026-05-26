@@ -1,6 +1,6 @@
 package pe.edu.utp.condominio.api.dominios.finanzas.dto.request;
 
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class EstadoCuentaForm {
@@ -8,8 +8,8 @@ public class EstadoCuentaForm {
     @NotNull(message = "La unidad es obligatoria.")
     private Long unidadId;
 
-    @NotNull(message = "El periodo es obligatorio.")
-    private LocalDate periodo;
+    @NotBlank(message = "El periodo es obligatorio.")
+    private String periodo;
 
     public EstadoCuentaForm() {
     }
@@ -22,11 +22,11 @@ public class EstadoCuentaForm {
         this.unidadId = unidadId;
     }
 
-    public LocalDate getPeriodo() {
+    public String getPeriodo() {
         return periodo;
     }
 
-    public void setPeriodo(LocalDate periodo) {
+    public void setPeriodo(String periodo) {
         this.periodo = periodo;
     }
 }

@@ -95,6 +95,13 @@ public class GestionIncidenciasService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public synchronized List<IncidenciaResponse> listarTodas() {
+        return incidenciaRepository.findAll().stream()
+                .map(this::convertirIncidenciaResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public synchronized EvidenciaIncidenciaResponse registrarEvidencia(EvidenciaIncidenciaForm form) {
         validarEvidencia(form);
@@ -171,13 +178,20 @@ public class GestionIncidenciasService {
         Long areaComunId = null;
         Long unidadId = null;
         String lugarAfectado = null;
+        Long condominioId = null;
+        String torre = null;
 
         if (incidencia instanceof IncidenciaAreaComun area) {
             areaComunId = area.getAreaComun() != null ? area.getAreaComun().getId() : null;
             lugarAfectado = area.getAreaComun() != null ? "Área Común: " + area.getAreaComun().getNombre() : "Área Común";
+            condominioId = area.getAreaComun() != null && area.getAreaComun().getCondominio() != null 
+                            ? area.getAreaComun().getCondominio().getId() : null;
         } else if (incidencia instanceof IncidenciaUnidad unidad) {
             unidadId = unidad.getUnidad() != null ? unidad.getUnidad().getId() : null;
             lugarAfectado = unidad.getUnidad() != null ? "Unidad: " + unidad.getUnidad().getNumeroUnidad() : "Unidad";
+            condominioId = unidad.getUnidad() != null && unidad.getUnidad().getCondominio() != null 
+                            ? unidad.getUnidad().getCondominio().getId() : null;
+            torre = unidad.getUnidad() != null ? unidad.getUnidad().getTorre() : null;
         }
 
         return new IncidenciaResponse(incidencia.getId(),
@@ -190,7 +204,9 @@ public class GestionIncidenciasService {
                 incidencia.getResponsableAtencion(),
                 incidencia.getFechaReporte(),
                 incidencia.getFechaActualizacion(),
-                lugarAfectado);
+                lugarAfectado,
+                condominioId,
+                torre);
     }
 
     private EvidenciaIncidenciaResponse convertirEvidenciaResponse(EvidenciaIncidencia evidencia) {

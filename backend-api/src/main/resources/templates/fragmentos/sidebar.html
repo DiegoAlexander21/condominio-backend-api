@@ -3,7 +3,7 @@
 <body th:fragment="sidebar">
     <aside class="menu-lateral">
         <div class="logo-contenedor">
-            <h2>Condominios</h2>
+            <h2>AypateCond.</h2>
         </div>
         <nav class="navegacion-lateral">
             <a th:href="@{/gestion-condominio}" class="enlace-menu">Condominios</a>
@@ -12,6 +12,16 @@
             <a th:href="@{/reservas}" class="enlace-menu">Reservas</a>
             <a th:href="@{/historial-titularidad}" class="enlace-menu">Historial Titularidad</a>
             <a th:href="@{/incidencias}" class="enlace-menu">Incidencias</a>
+            
+            <details class="menu-desplegable" id="menu-finanzas">
+                <summary class="enlace-menu">Finanzas <span class="icono-flecha">▼</span></summary>
+                <div class="menu-subitems">
+                    <a sec:authorize="hasRole('ADMINISTRADOR')" th:href="@{/finanzas/gastos?tipo=FIJO}" class="enlace-menu">Gastos</a>
+                    <a sec:authorize="hasRole('ADMINISTRADOR')" th:href="@{/finanzas/estados-cuenta}" class="enlace-menu">Estados de Cuenta</a>
+                    <a sec:authorize="hasRole('RESIDENTE')" th:href="@{/finanzas/mi-estado-cuenta}" class="enlace-menu">Mi Estado de Cuenta</a>
+                </div>
+            </details>
+
             <a th:href="@{/auth/logout}" class="boton-secundario boton-salir" style="text-align: center;">Cerrar Sesión</a>
         </nav>
     </aside>

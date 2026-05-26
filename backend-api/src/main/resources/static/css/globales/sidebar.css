@@ -9,6 +9,15 @@
     padding: 2rem 1rem;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+}
+
+.menu-lateral::-webkit-scrollbar {
+    width: 6px;
+}
+.menu-lateral::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
 }
 
 .logo-contenedor {
@@ -38,4 +47,39 @@
 .boton-salir {
     margin-top: auto;
     width: 100%;
+}
+
+
+
+.menu-desplegable {
+    width: 100%;
+}
+
+.menu-desplegable summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-desplegable summary::-webkit-details-marker {
+    display: none;
+}
+
+.menu-desplegable .icono-flecha {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.menu-desplegable[open] .icono-flecha {
+    transform: rotate(180deg);
+}
+
+.menu-subitems {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-left: 1rem;
+    margin-top: 0.5rem;
 }

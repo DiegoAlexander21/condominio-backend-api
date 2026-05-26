@@ -40,7 +40,7 @@
 
                             <div class="formulario-grupo grupo-flexible">
                                 <label class="formulario-etiqueta" for="responsableAtencion">Responsable de Atención (Opcional)</label>
-                                <input type="text" id="responsableAtencion" th:field="*{responsableAtencion}" class="formulario-entrada" placeholder="Ej. Juan Pérez (Plomero) o Consorcio S.A.">
+                                <input type="text" id="responsableAtencion" th:field="*{responsableAtencion}" class="formulario-entrada" placeholder="Ej. Consorcio S.A.">
                                 <small class="error-texto" th:if="${#fields.hasErrors('responsableAtencion')}" th:errors="*{responsableAtencion}"></small>
                             </div>
                         </div>

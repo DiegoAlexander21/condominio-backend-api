@@ -39,7 +39,7 @@
                                 <label class="formulario-etiqueta" for="unidadId">Seleccionar Unidad</label>
                                 <select id="unidadId" th:field="*{unidadId}" class="formulario-entrada" required>
                                     <option value="">Seleccione la unidad...</option>
-                                    <option th:each="uni : ${unidades}" th:value="${uni.id}" th:data-condominio="${uni.condominio.id}" th:text="${uni.numeroUnidad} + ' - Piso ' + ${uni.piso} + ' - Torre ' + ${uni.torre}"></option>
+                                    <option th:each="uni : ${unidades}" th:value="${uni.id}" th:data-condominio="${uni.condominio.id}" th:text="${uni.numeroUnidad} + ' - Piso ' + ${uni.piso} + ' - ' + ${uni.torre}"></option>
                                 </select>
                                 <small class="error-texto" th:if="${#fields.hasErrors('unidadId')}" th:errors="*{unidadId}"></small>
                             </div>
@@ -55,7 +55,7 @@
                             <div class="formulario-grupo grupo-flexible">
                                 <label class="formulario-etiqueta" for="causa">Posible Causa</label>
                                 <select id="causa" th:field="*{causa}" class="formulario-entrada" required>
-                                    <option value="DESGASTE_NATURAL">Desgaste Natural</option>
+                                    <option value="DESGASTE">Desgaste Natural</option>
                                     <option value="MAL_USO">Mal Uso / Negligencia</option>
                                     <option value="VANDALISMO">Vandalismo</option>
                                     <option value="CLIMA">Daño por Clima</option>

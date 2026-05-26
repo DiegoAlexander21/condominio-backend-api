@@ -59,6 +59,16 @@ public class GestionUnidadesService {
         return unidadRepository.listarTodosConCondominioOrdenado();
     }
 
+    public synchronized List<String> listarTorresPorCondominio(Long condominioId) {
+        if (condominioId == null) return List.of();
+        return unidadRepository.listarTorresPorCondominio(condominioId);
+    }
+
+    public synchronized List<Unidad> buscarUnidadesPorDni(String dni) {
+        if (dni == null || dni.isBlank()) return List.of();
+        return unidadRepository.buscarPorDniOcupante(dni.trim());
+    }
+
     public synchronized int contarPropietarios() {
         return (int) unidadRepository.findAll().stream()
                 .filter(unidad -> unidad.getPropietario() != null)

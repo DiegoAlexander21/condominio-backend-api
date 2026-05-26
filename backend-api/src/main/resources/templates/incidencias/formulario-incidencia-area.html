@@ -39,7 +39,7 @@
                                 <label class="formulario-etiqueta" for="areaComunId">Seleccionar Área Afectada</label>
                                 <select id="areaComunId" th:field="*{areaComunId}" class="formulario-entrada" required>
                                     <option value="">Seleccione el área...</option>
-                                    <option th:each="area : ${areasComunes}" th:value="${area.id}" th:data-condominio="${area.condominio.id}" th:text="${area.nombre}"></option>
+                                    <option th:each="area : ${areasComunes}" th:value="${area.id}" th:data-condominio="${area.condominioId}" th:text="${area.nombre}"></option>
                                 </select>
                                 <small class="error-texto" th:if="${#fields.hasErrors('areaComunId')}" th:errors="*{areaComunId}"></small>
                             </div>
@@ -55,7 +55,7 @@
                             <div class="formulario-grupo grupo-flexible">
                                 <label class="formulario-etiqueta" for="causa">Posible Causa</label>
                                 <select id="causa" th:field="*{causa}" class="formulario-entrada" required>
-                                    <option value="DESGASTE_NATURAL">Desgaste Natural</option>
+                                    <option value="DESGASTE">Desgaste Natural</option>
                                     <option value="MAL_USO">Mal Uso / Negligencia</option>
                                     <option value="VANDALISMO">Vandalismo</option>
                                     <option value="CLIMA">Daño por Clima</option>

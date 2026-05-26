@@ -18,6 +18,8 @@ public class IncidenciaResponse {
     private LocalDateTime fechaReporte;
     private LocalDateTime fechaActualizacion;
     private String lugarAfectado;
+    private Long condominioId;
+    private String torre;
 
     public IncidenciaResponse() {
     }
@@ -25,7 +27,7 @@ public class IncidenciaResponse {
     public IncidenciaResponse(Long id, Long areaComunId, Long unidadId, String descripcion,
             GravedadIncidencia gravedad, CausaIncidencia causa, EstadoIncidencia estado,
             String responsableAtencion, LocalDateTime fechaReporte, LocalDateTime fechaActualizacion,
-            String lugarAfectado) {
+            String lugarAfectado, Long condominioId, String torre) {
         this.id = id;
         this.areaComunId = areaComunId;
         this.unidadId = unidadId;
@@ -37,6 +39,8 @@ public class IncidenciaResponse {
         this.fechaReporte = fechaReporte;
         this.fechaActualizacion = fechaActualizacion;
         this.lugarAfectado = lugarAfectado;
+        this.condominioId = condominioId;
+        this.torre = torre;
     }
 
     public Long getId() {
@@ -125,6 +129,22 @@ public class IncidenciaResponse {
 
     public void setLugarAfectado(String lugarAfectado) {
         this.lugarAfectado = lugarAfectado;
+    }
+
+    public Long getCondominioId() {
+        return condominioId;
+    }
+
+    public void setCondominioId(Long condominioId) {
+        this.condominioId = condominioId;
+    }
+
+    public String getTorre() {
+        return torre;
+    }
+
+    public void setTorre(String torre) {
+        this.torre = torre;
     }
 
     public String getGravedadFormateada() {

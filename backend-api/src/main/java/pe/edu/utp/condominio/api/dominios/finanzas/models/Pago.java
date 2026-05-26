@@ -1,7 +1,10 @@
 package pe.edu.utp.condominio.api.dominios.finanzas.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
@@ -36,8 +40,11 @@ public class Pago {
     @Column(nullable = false)
     private LocalDateTime fechaPago;
 
-    @Column(length = 300)
+    @Column(length = 1000)
     private String observacion;
+
+    @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EvidenciaPago> evidencias = new ArrayList<>();
 
     public Pago() {
     }
@@ -93,5 +100,13 @@ public class Pago {
 
     public void setObservacion(String observacion) {
         this.observacion = observacion;
+    }
+
+    public List<EvidenciaPago> getEvidencias() {
+        return evidencias;
+    }
+
+    public void setEvidencias(List<EvidenciaPago> evidencias) {
+        this.evidencias = evidencias;
     }
 }

@@ -7,17 +7,21 @@ public class DetalleGastoUnidadResponse {
     private Long id;
     private Long gastoId;
     private Long unidadId;
+    private String descripcionGasto;
+    private String tipoGasto;
     private double montoAsignado;
     private LocalDateTime fechaRegistro;
 
     public DetalleGastoUnidadResponse() {
     }
 
-    public DetalleGastoUnidadResponse(Long id, Long gastoId, Long unidadId,
+    public DetalleGastoUnidadResponse(Long id, Long gastoId, Long unidadId, String descripcionGasto, String tipoGasto,
             double montoAsignado, LocalDateTime fechaRegistro) {
         this.id = id;
         this.gastoId = gastoId;
         this.unidadId = unidadId;
+        this.descripcionGasto = descripcionGasto;
+        this.tipoGasto = tipoGasto;
         this.montoAsignado = montoAsignado;
         this.fechaRegistro = fechaRegistro;
     }
@@ -44,6 +48,22 @@ public class DetalleGastoUnidadResponse {
 
     public void setUnidadId(Long unidadId) {
         this.unidadId = unidadId;
+    }
+
+    public String getDescripcionGasto() {
+        return descripcionGasto;
+    }
+
+    public void setDescripcionGasto(String descripcionGasto) {
+        this.descripcionGasto = descripcionGasto;
+    }
+
+    public String getTipoGasto() {
+        return tipoGasto;
+    }
+
+    public void setTipoGasto(String tipoGasto) {
+        this.tipoGasto = tipoGasto;
     }
 
     public double getMontoAsignado() {
