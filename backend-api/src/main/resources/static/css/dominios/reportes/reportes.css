@@ -6,27 +6,17 @@
 }
 
 .tarjeta-kpi {
-    background-color: var(--blanco);
-    border-radius: var(--radio-borde);
-    box-shadow: var(--sombra-tarjeta);
-    padding: 1.75rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    transition: transform var(--transicion-suave), box-shadow var(--transicion-suave);
     border-top: 4px solid var(--primario);
-}
-
-.tarjeta-kpi:hover {
-    box-shadow: var(--sombra-tarjeta) !important;
-    transform: none !important;
 }
 
 .tarjeta-kpi h3 {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #666;
+    color: var(--secundario);
     margin: 0;
 }
 
@@ -39,15 +29,15 @@
 
 .descripcion-kpi {
     font-size: 0.85rem;
-    color: #888;
+    color: var(--secundario);
 }
 
 #tarjetaGastosTotales {
-    border-top-color: #065F46;
+    border-top-color: #0d9488;
 }
 
 #tarjetaGastosTotales .valor-kpi {
-    color: #065F46;
+    color: #0d9488;
 }
 
 #tarjetaUnidadesMorosas {
@@ -65,19 +55,6 @@
     margin-bottom: 2rem;
 }
 
-.tarjeta-grafico {
-    background-color: var(--blanco);
-    border-radius: var(--radio-borde);
-    box-shadow: var(--sombra-tarjeta);
-    padding: 2rem;
-    transition: transform var(--transicion-suave), box-shadow var(--transicion-suave);
-}
-
-.tarjeta-grafico:hover {
-    box-shadow: var(--sombra-tarjeta) !important;
-    transform: none !important;
-}
-
 .tarjeta-grafico h2 {
     font-size: 1.25rem;
     font-weight: 600;
@@ -87,7 +64,7 @@
 
 .tarjeta-descripcion {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--secundario);
     margin: 0 0 1.5rem 0;
 }
 
@@ -98,12 +75,6 @@
 .grafico-contenedor {
     min-height: 350px;
     width: 100%;
-}
-
-.tabla-contenedor-reportes {
-    overflow-x: auto;
-    width: 100%;
-    margin-top: 1rem;
 }
 
 .tabla-estatica tbody tr:hover {

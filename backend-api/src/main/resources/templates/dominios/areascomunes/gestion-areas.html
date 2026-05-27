@@ -24,8 +24,8 @@
             <section class="panel panel-separado">
                 <div class="tarjeta tarjeta-estatica">
                     <h2>Áreas Comunes Registradas</h2>
-                    <form th:action="@{/areas-comunes}" method="get" class="fila-formulario" style="align-items: flex-end; margin-top: 1rem;">
-                        <div class="formulario-grupo grupo-flexible" style="margin-bottom: 0;">
+                    <form th:action="@{/areas-comunes}" method="get" class="fila-formulario filtro-formulario-alineado">
+                        <div class="formulario-grupo grupo-flexible grupo-formulario-sin-margen">
                             <label class="formulario-etiqueta" for="condominioId">Condominio</label>
                             <select class="formulario-entrada" id="condominioId" name="condominioId" required>
                                 <option value="">Seleccione un condominio...</option>
@@ -78,5 +78,6 @@
             </section>
         </main>
     </div>
+    <link rel="stylesheet" th:href="@{/css/dominios/areascomunes/areascomunes.css}">
 </body>
 </html>

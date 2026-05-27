@@ -29,7 +29,8 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/webjars/**", "/error")
+                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**",
+                                "/error")
                         .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(filtroJwt, UsernamePasswordAuthenticationFilter.class);

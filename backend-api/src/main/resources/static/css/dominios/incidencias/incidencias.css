@@ -1,48 +1,6 @@
-.filter-tabs {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--secundario);
-}
-
-.filter-tab {
-    padding: 0.5rem 1.5rem;
-    border-radius: var(--radio-borde);
-    background-color: var(--blanco);
-    color: var(--primario);
-    text-decoration: none;
-    font-weight: 500;
-    transition: var(--transicion-suave);
-    border: 1px solid var(--secundario);
-}
-
-.filter-tab:hover {
-    background-color: var(--secundario);
-}
-
-.filter-tab.active {
-    background-color: var(--primario);
-    color: var(--blanco);
-    border-color: var(--primario);
-}
-
-.incidencias-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
-}
-
 .incidencia-card {
-    background-color: var(--blanco);
-    border-radius: var(--radio-borde);
-    box-shadow: var(--sombra-tarjeta);
-    padding: 1.5rem;
-    transition: var(--transicion-suave);
     border-left: 4px solid var(--secundario);
 }
-
-
 
 .incidencia-card.gravedad-LEVE { border-left-color: var(--secundario); }
 .incidencia-card.gravedad-MODERADO { border-left-color: #F59E0B; }
@@ -71,17 +29,6 @@
     gap: 0.3rem;
 }
 
-.badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radio-borde);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background-color: var(--secundario);
-    color: var(--primario);
-}
-
 .badge-estado-REGISTRADO { background-color: var(--secundario); }
 .badge-estado-EN_REVISION { background-color: #FDE68A; color: #92400E; }
 .badge-estado-EN_ATENCION { background-color: #D1FAE5; color: #065F46; }
@@ -93,122 +40,6 @@
     gap: 0.5rem;
     border-top: 1px solid var(--secundario);
     padding-top: 1rem;
-}
-
-.evidencia-preview {
-    margin-top: 10px;
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.oculto {
-    display: none;
-}
-
-.evidencia-preview img {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: var(--radio-borde);
-    border: 1px solid var(--secundario);
-    cursor: pointer;
-    box-shadow: var(--sombra-suave);
-    transition: var(--transicion-suave);
-}
-
-.evidencia-preview img:hover {
-    transform: scale(1.05);
-    box-shadow: var(--sombra-tarjeta);
-}
-
-.texto-ayuda-evidencia {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #666;
-    font-size: 0.85rem;
-}
-
-.contenedor-imagen-previa {
-    position: relative;
-    display: inline-block;
-}
-
-.boton-eliminar-imagen {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: var(--error);
-    color: var(--blanco);
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--sombra-suave);
-    transition: var(--transicion-suave);
-}
-
-.boton-eliminar-imagen:hover {
-    transform: scale(1.1);
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-}
-
-.modal-contenido {
-    background-color: var(--blanco);
-    margin: 5% auto;
-    padding: 2rem;
-    border-radius: var(--radio-borde);
-    box-shadow: var(--sombra-fuerte);
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: relative;
-    animation: modalAparecer 0.3s ease-out;
-}
-
-@keyframes modalAparecer {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.cerrar-modal {
-    position: absolute;
-    right: 1.5rem;
-    top: 1.5rem;
-    color: var(--primario);
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-    transition: var(--transicion-suave);
-}
-
-.cerrar-modal:hover {
-    color: var(--error);
-}
-
-.modal h2 {
-    color: var(--primario);
-    margin-bottom: 1.5rem;
-    padding-right: 2rem;
 }
 
 .modal-info {

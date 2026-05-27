@@ -1,0 +1,32 @@
+.alerta-exito {
+    background-color: rgba(46, 125, 50, 0.1);
+    color: var(--exito);
+    padding: 1rem;
+    border-radius: var(--radio-borde);
+    margin-bottom: 1rem;
+    border: 1px solid var(--exito);
+}
+
+.alerta-error {
+    background-color: rgba(198, 40, 40, 0.1);
+    color: var(--error);
+    padding: 1rem;
+    border-radius: var(--radio-borde);
+    margin-bottom: 1rem;
+    border: 1px solid var(--error);
+}
+
+.nota-informativa {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #e6f7ff;
+    border-left: 4px solid #1890ff;
+    border-radius: var(--radio-borde);
+    margin-bottom: 1.5rem;
+}
+
+.nota-texto {
+    margin: 0;
+    color: #0050b3;
+    font-size: 0.9rem;
+}

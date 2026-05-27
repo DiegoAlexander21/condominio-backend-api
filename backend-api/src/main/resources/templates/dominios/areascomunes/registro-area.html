@@ -57,7 +57,7 @@
                             </div>
                         </div>
 
-                        <div class="formulario-grupo" style="margin-bottom: 1rem;">
+                        <div class="formulario-grupo">
                             <label class="formulario-etiqueta" for="normasUso">Normas de Uso</label>
                             <textarea class="formulario-entrada" id="normasUso" th:field="*{normasUso}" rows="4" placeholder="Ej: Prohibido ingresar alimentos..." maxlength="1000"></textarea>
                             <small class="error-texto" th:if="${#fields.hasErrors('normasUso')}" th:errors="*{normasUso}"></small>
@@ -72,6 +72,7 @@
         </main>
     </div>
     
+    <link rel="stylesheet" th:href="@{/css/dominios/areascomunes/areascomunes.css}">
     <script th:src="@{/js/dominios/areascomunes/registro-area.js}"></script>
 </body>
 </html>

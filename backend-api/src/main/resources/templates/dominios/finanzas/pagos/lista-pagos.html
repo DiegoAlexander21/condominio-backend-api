@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragmentos/head :: comun('Historial de Pagos')}"></th:block>
+</head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina">Historial de Pagos</h1>
+                    <p>Revisa los pagos registrados para la unidad seleccionada.</p>
+                </div>
+                <nav>
+                    <a class="boton-secundario" th:href="@{/finanzas/estados-cuenta}">&larr; Volver</a>
+                </nav>
+            </header>
+
+            <section th:if="${successMessage != null}">
+                <p class="alerta-exito" th:text="${successMessage}"></p>
+            </section>
+            
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica">
+                    <div class="contenedor-tabla" th:if="${pagos != null and !pagos.isEmpty()}">
+                        <table class="tabla-datos">
+                            <thead>
+                                <tr>
+                                    <th>ID Pago</th>
+                                    <th>Fecha</th>
+                                    <th>Monto Pagado</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="pago : ${pagos}">
+                                    <td th:text="${pago.id}"></td>
+                                    <td th:text="${#temporals.format(pago.fechaPago, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td class="texto-exito" th:text="'S/ ' + ${pago.monto}"></td>
+                                    <td th:text="${pago.observacion != null ? pago.observacion : 'Sin observación'}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p th:if="${pagos == null or pagos.isEmpty()}">Esta unidad aún no tiene pagos registrados.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/pagos.css}">
+    <script th:src="@{/js/dominios/finanzas/pagos.js}" defer></script>
+</body>
+</html>

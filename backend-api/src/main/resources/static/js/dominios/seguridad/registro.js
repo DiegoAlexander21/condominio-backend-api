@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const numeroDocumento = document.getElementById("numeroDocumento");
     const telefono = document.getElementById("telefono");
 
-    function updateDocumentoConstraints() {
+    function actualizarRestriccionesDocumento() {
         if (tipoDocumento.value === "DNI") {
             numeroDocumento.setAttribute("maxlength", "8");
             numeroDocumento.value = numeroDocumento.value.replace(/\D/g, "").slice(0, 8);
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     tipoDocumento.addEventListener("change", function () {
         numeroDocumento.value = ""; 
-        updateDocumentoConstraints();
+        actualizarRestriccionesDocumento();
     });
 
     numeroDocumento.addEventListener("input", function () {
@@ -29,5 +29,5 @@ document.addEventListener("DOMContentLoaded", function () {
         this.value = this.value.replace(/\D/g, "").slice(0, 9);
     });
 
-    updateDocumentoConstraints();
+    actualizarRestriccionesDocumento();
 });

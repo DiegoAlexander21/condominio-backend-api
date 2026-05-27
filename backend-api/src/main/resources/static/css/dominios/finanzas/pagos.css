@@ -1,0 +1,32 @@
+.grupo-monto-pago {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.entrada-monto {
+    flex: 1;
+}
+
+.modal-amplio {
+    max-width: 800px;
+}
+
+.subtitulo-modal {
+    margin-bottom: 20px;
+    color: var(--primario);
+}
+
+.boton-chico {
+    padding: 4px 8px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.contenedor-evidencias {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}

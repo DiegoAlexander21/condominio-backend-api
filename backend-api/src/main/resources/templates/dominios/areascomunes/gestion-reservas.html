@@ -24,8 +24,8 @@
             <section class="panel panel-separado">
                 <div class="tarjeta tarjeta-estatica">
                     <h2>Filtro de Reservas</h2>
-                    <form th:action="@{/reservas}" method="get" class="fila-formulario" style="align-items: flex-end; margin-top: 1rem;">
-                        <div class="formulario-grupo grupo-flexible" style="margin-bottom: 0;">
+                    <form th:action="@{/reservas}" method="get" class="fila-formulario filtro-formulario-alineado">
+                        <div class="formulario-grupo grupo-flexible grupo-formulario-sin-margen">
                             <label class="formulario-etiqueta" for="condominioId">Condominio</label>
                             <select class="formulario-entrada" id="condominioId" name="condominioId">
                                 <option value="">Todos los condominios...</option>
@@ -36,7 +36,7 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="formulario-grupo grupo-flexible" style="margin-bottom: 0;">
+                        <div class="formulario-grupo grupo-flexible grupo-formulario-sin-margen">
                             <label class="formulario-etiqueta" for="areaComunId">Área Común</label>
                             <select class="formulario-entrada" id="areaComunId" name="areaComunId" th:disabled="${condominioIdSeleccionado == null}" required>
                                 <option value="">Seleccione el área...</option>
@@ -146,7 +146,7 @@
             </div>
         </main>
     </div>
-    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/finanzas.css(v=8)}">
+    <link rel="stylesheet" th:href="@{/css/dominios/areascomunes/areascomunes.css}">
     <script th:src="@{/js/dominios/areascomunes/gestion-reservas.js}"></script>
 </body>
 </html>

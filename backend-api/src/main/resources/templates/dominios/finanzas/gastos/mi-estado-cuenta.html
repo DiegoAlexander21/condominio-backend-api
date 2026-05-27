@@ -21,7 +21,7 @@
                     <p>Condominio: <span th:text="${miUnidad.condominio.nombre}"></span></p>
                 </div>
 
-                <div class="grid-finanzas">
+                <div class="grid-tarjetas">
                     <div class="tarjeta tarjeta-estatica">
                         <h3>Deudas Pendientes</h3>
                         <ul class="lista-deudas" th:if="${misEstados != null and !misEstados.isEmpty()}">
@@ -40,22 +40,24 @@
 
                     <div class="tarjeta tarjeta-estatica">
                         <h3>Mis Últimos Pagos</h3>
-                        <table class="tabla-datos" th:if="${misPagos != null and !misPagos.isEmpty()}">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Monto</th>
-                                    <th>Observación</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="pago : ${misPagos}">
-                                    <td th:text="${#temporals.format(pago.fechaPago, 'dd/MM/yyyy')}"></td>
-                                    <td class="texto-exito" th:text="'S/ ' + ${pago.monto}"></td>
-                                    <td th:text="${pago.observacion != null ? pago.observacion : '-'}"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="contenedor-tabla">
+                            <table class="tabla-datos" th:if="${misPagos != null and !misPagos.isEmpty()}">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Monto</th>
+                                        <th>Observación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="pago : ${misPagos}">
+                                        <td th:text="${#temporals.format(pago.fechaPago, 'dd/MM/yyyy')}"></td>
+                                        <td class="texto-exito" th:text="'S/ ' + ${pago.monto}"></td>
+                                        <td th:text="${pago.observacion != null ? pago.observacion : '-'}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <p th:if="${misPagos == null or misPagos.isEmpty()}">No tienes pagos registrados en el sistema aún.</p>
                     </div>
                 </div>
@@ -68,6 +70,6 @@
             </section>
         </main>
     </div>
-    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/finanzas.css}">
+    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/gastos.css}">
 </body>
 </html>

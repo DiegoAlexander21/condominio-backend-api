@@ -1,0 +1,8 @@
+.filtro-formulario-alineado {
+    align-items: flex-end;
+    margin-top: 1rem;
+}
+
+.grupo-formulario-sin-margen {
+    margin-bottom: 0 !important;
+}

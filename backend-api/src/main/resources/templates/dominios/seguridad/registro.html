@@ -7,8 +7,8 @@
 <body class="auth-body">
     <div class="tarjeta tarjeta-estatica auth-tarjeta auth-tarjeta-ancha">
         <div class="auth-cabecera">
-            <h1 class="titulo-pagina auth-titulo">Crear Cuenta</h1>
-            <p class="auth-subtitulo">Completa tus datos para registrarte</p>
+            <h1 class="titulo-pagina">Crear Cuenta</h1>
+            <p>Completa tus datos para registrarte</p>
         </div>
 
         <section th:if="${errorMessage != null}">
@@ -16,54 +16,54 @@
         </section>
 
         <form id="formularioRegistro" th:action="@{/auth/registro}" th:object="${registroRequest}" method="post" novalidate>
-            <div class="auth-fila">
-                <div class="formulario-grupo auth-grupo">
+            <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
                     <label class="formulario-etiqueta" for="nombres">Nombres</label>
                     <input class="formulario-entrada" id="nombres" type="text" th:field="*{nombres}" required />
-                    <small class="auth-error-texto" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></small>
+                    <small class="error-texto" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></small>
                 </div>
-                <div class="formulario-grupo auth-grupo">
+                <div class="formulario-grupo grupo-flexible">
                     <label class="formulario-etiqueta" for="apellidos">Apellidos</label>
                     <input class="formulario-entrada" id="apellidos" type="text" th:field="*{apellidos}" required />
-                    <small class="auth-error-texto" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></small>
+                    <small class="error-texto" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></small>
                 </div>
             </div>
 
-            <div class="auth-fila">
-                <div class="formulario-grupo auth-grupo">
+            <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
                     <label class="formulario-etiqueta" for="tipoDocumento">Tipo Documento</label>
                     <select class="formulario-entrada" id="tipoDocumento" th:field="*{tipoDocumento}" required>
                         <option value="DNI">DNI</option>
                         <option value="CE">Carnet de Extranjería</option>
                     </select>
                 </div>
-                <div class="formulario-grupo auth-grupo">
+                <div class="formulario-grupo grupo-flexible">
                     <label class="formulario-etiqueta" for="numeroDocumento">Número de documento</label>
                     <input class="formulario-entrada" id="numeroDocumento" type="text" th:field="*{numeroDocumento}" maxlength="9" required />
-                    <small class="auth-error-texto" th:if="${#fields.hasErrors('numeroDocumento')}" th:errors="*{numeroDocumento}"></small>
+                    <small class="error-texto" th:if="${#fields.hasErrors('numeroDocumento')}" th:errors="*{numeroDocumento}"></small>
                 </div>
             </div>
 
-            <div class="auth-fila">
-                <div class="formulario-grupo auth-grupo">
+            <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
                     <label class="formulario-etiqueta" for="correo">Correo</label>
                     <input class="formulario-entrada" id="correo" type="email" th:field="*{correo}" required />
-                    <small class="auth-error-texto" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></small>
+                    <small class="error-texto" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></small>
                 </div>
-                <div class="formulario-grupo auth-grupo">
+                <div class="formulario-grupo grupo-flexible">
                     <label class="formulario-etiqueta" for="telefono">Teléfono</label>
                     <input class="formulario-entrada" id="telefono" type="text" th:field="*{telefono}" maxlength="9" required />
-                    <small class="auth-error-texto" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></small>
+                    <small class="error-texto" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></small>
                 </div>
             </div>
 
-            <div class="auth-fila">
-                <div class="formulario-grupo auth-grupo">
+            <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
                     <label class="formulario-etiqueta" for="contrasena">Contraseña</label>
                     <input class="formulario-entrada" id="contrasena" type="password" th:field="*{contrasena}" required />
-                    <small class="auth-error-texto" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></small>
+                    <small class="error-texto" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></small>
                 </div>
-                <div class="formulario-grupo auth-grupo">
+                <div class="formulario-grupo grupo-flexible">
                     <label class="formulario-etiqueta" for="rol">Rol (Simulación)</label>
                     <select class="formulario-entrada" id="rol" th:field="*{rol}" required>
                         <option value="PROPIETARIO">Propietario</option>
@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <div class="auth-boton-contenedor">
+            <div class="contenedor-acciones">
                 <button type="submit" class="boton-primario auth-boton-full">Registrarse</button>
             </div>
 

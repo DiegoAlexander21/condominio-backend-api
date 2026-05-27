@@ -1,24 +1,3 @@
-.estadisticas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.tarjeta-valor {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--primario);
-    margin-top: 0.5rem;
-}
-
-.encabezado {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
 .panel {
     margin-top: 2rem;
 }

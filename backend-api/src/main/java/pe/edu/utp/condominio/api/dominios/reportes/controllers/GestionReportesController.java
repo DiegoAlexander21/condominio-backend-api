@@ -23,6 +23,6 @@ public class GestionReportesController {
             @RequestParam(name = "limite", required = false, defaultValue = "5") int limite,
             Model model) {
         model.addAttribute("dashboard", reportesDashboardService.generarReporte(limite));
-        return "reportes/dashboard";
+        return "dominios/reportes/dashboard";
     }
 }

@@ -32,7 +32,7 @@
                     <p>No hay gastos registrados para esta categoría.</p>
                 </div>
 
-                <div class="grid-finanzas" th:if="${gastos != null and !gastos.isEmpty()}">
+                <div class="grid-tarjetas" th:if="${gastos != null and !gastos.isEmpty()}">
                     <div th:each="gasto : ${gastos}" class="tarjeta tarjeta-estatica">
                         <div class="tarjeta-header">
                             <h3 th:text="${gasto.descripcion}"></h3>
@@ -65,12 +65,12 @@
         </main>
     </div>
 
-    <div id="modalDistribucion" class="modal">
+    <div id="modalDistribucion" class="modal-overlay">
         <div class="modal-contenido">
             <span class="cerrar-modal">&times;</span>
             <h2>Distribuir Gasto</h2>
             <p id="descGastoModal"></p>
-            <form th:action="@{/finanzas/gastos/distribuir}" method="post" class="modal-formulario">
+            <form th:action="@{/finanzas/gastos/distribuir}" method="post" class="form-contenedor-margen">
                 <input type="hidden" id="gastoId" name="gastoId">
                 <input type="hidden" id="tipoGastoRedirect" name="tipoGastoRedirect">
                 <div class="formulario-grupo oculto" id="grupoUnidad">
@@ -87,7 +87,7 @@
         </div>
     </div>
 
-    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/finanzas.css}">
-    <script th:src="@{/js/dominios/finanzas/finanzas.js}" defer></script>
+    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/gastos.css}">
+    <script th:src="@{/js/dominios/finanzas/gastos.js}" defer></script>
 </body>
 </html>

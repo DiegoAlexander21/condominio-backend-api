@@ -62,7 +62,7 @@ public class GestionFinanzasController {
             model.addAttribute("gastos", gestionFinanzasService.listarGastosPorTipo(tipo));
         }
         model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
-        return "finanzas/lista-gastos";
+        return "dominios/finanzas/gastos/lista-gastos";
     }
 
     @GetMapping("/gastos/nuevo")
@@ -78,7 +78,7 @@ public class GestionFinanzasController {
 
         model.addAttribute("condominios", condominios);
         model.addAttribute("torresPorCondominio", torresPorCondominio);
-        return "finanzas/formulario-gasto";
+        return "dominios/finanzas/gastos/formulario-gasto";
     }
 
     @GetMapping("/gastos/{id}/editar")
@@ -97,7 +97,7 @@ public class GestionFinanzasController {
 
             model.addAttribute("condominios", condominios);
             model.addAttribute("torresPorCondominio", torresPorCondominio);
-            return "finanzas/formulario-gasto";
+            return "dominios/finanzas/gastos/formulario-gasto";
         } catch (IllegalArgumentException e) {
             return "redirect:/finanzas/gastos";
         }
@@ -134,7 +134,7 @@ public class GestionFinanzasController {
 
             model.addAttribute("condominios", condominios);
             model.addAttribute("torresPorCondominio", torresPorCondominio);
-            return "finanzas/formulario-gasto";
+            return "dominios/finanzas/gastos/formulario-gasto";
         }
 
         try {
@@ -149,7 +149,7 @@ public class GestionFinanzasController {
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
-            return "finanzas/formulario-gasto";
+            return "dominios/finanzas/gastos/formulario-gasto";
         }
 
         return "redirect:/finanzas/gastos?tipo=" + form.getTipoGasto();
@@ -169,7 +169,7 @@ public class GestionFinanzasController {
     @GetMapping("/pagos")
     public String listarPagos(@RequestParam("unidadId") Long unidadId, Model model) {
         model.addAttribute("pagos", gestionFinanzasService.listarPagosPorUnidad(unidadId));
-        return "finanzas/lista-pagos";
+        return "dominios/finanzas/pagos/lista-pagos";
     }
 
     @GetMapping("/api/pagos/unidad/{unidadId}")
@@ -192,7 +192,7 @@ public class GestionFinanzasController {
         }
         model.addAttribute("pagoForm", form);
         model.addAttribute("saldoPendiente", saldo);
-        return "finanzas/formulario-pago";
+        return "dominios/finanzas/pagos/formulario-pago";
     }
 
     @PostMapping("/pagos")
@@ -212,7 +212,7 @@ public class GestionFinanzasController {
                 }
             }
             model.addAttribute("saldoPendiente", saldo);
-            return "finanzas/formulario-pago";
+            return "dominios/finanzas/pagos/formulario-pago";
         }
 
         try {
@@ -244,7 +244,7 @@ public class GestionFinanzasController {
             }
             model.addAttribute("saldoPendiente", saldo);
             model.addAttribute("errorMessage", e.getMessage());
-            return "finanzas/formulario-pago";
+            return "dominios/finanzas/pagos/formulario-pago";
         }
     }
 
@@ -274,7 +274,7 @@ public class GestionFinanzasController {
         model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
         model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         model.addAttribute("estadoCuentaForm", new EstadoCuentaForm());
-        return "finanzas/lista-estados-cuenta";
+        return "dominios/finanzas/gastos/lista-estados-cuenta";
     }
 
     @GetMapping("/estados-cuenta/desglose")
@@ -282,7 +282,7 @@ public class GestionFinanzasController {
         try {
             model.addAttribute("estadoCuenta", gestionFinanzasService.obtenerEstadoCuentaResponse(id));
             model.addAttribute("desglose", gestionFinanzasService.listarDesgloseEstadoCuenta(id));
-            return "finanzas/desglose-estado-cuenta";
+            return "dominios/finanzas/gastos/desglose-estado-cuenta";
         } catch (IllegalArgumentException e) {
             return "redirect:/finanzas/estados-cuenta";
         }
@@ -293,7 +293,7 @@ public class GestionFinanzasController {
         try {
             model.addAttribute("estadoCuenta", gestionFinanzasService.obtenerEstadoCuentaResponse(id));
             model.addAttribute("pagos", gestionFinanzasService.listarPagosPorEstadoCuenta(id));
-            return "finanzas/desglose-pagos";
+            return "dominios/finanzas/pagos/desglose-pagos";
         } catch (IllegalArgumentException e) {
             return "redirect:/finanzas/estados-cuenta";
         }
@@ -331,6 +331,6 @@ public class GestionFinanzasController {
                 model.addAttribute("misPagos", gestionFinanzasService.listarPagosPorUnidad(miUnidad.getId()));
             }
         }
-        return "finanzas/mi-estado-cuenta";
+        return "dominios/finanzas/gastos/mi-estado-cuenta";
     }
 }

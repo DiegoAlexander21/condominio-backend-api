@@ -62,65 +62,71 @@
 
                 <div class="tarjeta tarjeta-estatica">
                     <h2>Deudas Registradas</h2>
-                    <p class="mensaje-informativo">Si deseas ver el desglose total de deudas, da clic en el valor del Saldo Deudor de la unidad correspondiente.</p>
-                    <table class="tabla-datos" th:if="${estados != null and !estados.isEmpty()}">
-                        <thead>
-                            <tr>
-                                <th>Condominio</th>
-                                <th>Torre</th>
-                                <th>Unidad</th>
-                                <th>Total Deuda Inicial</th>
-                                <th>Total Pagado</th>
-                                <th>Saldo Pendiente</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="est : ${estados}">
-                                <th:block th:each="unidadActual : ${unidades}" th:if="${unidadActual.id == est.unidadId}">
-                                    <td th:text="${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'}"></td>
-                                    <td th:text="${unidadActual.torre}"></td>
-                                    <td>
-                                        <button type="button" class="boton-secundario btn-tabla boton-detalles"
-                                                th:attr="data-condominio=${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'},
-                                                         data-unidad=${unidadActual.numeroUnidad},
-                                                         data-torre=${unidadActual.torre},
-                                                         data-piso=${unidadActual.piso},
-                                                         data-area=${unidadActual.area},
-                                                         data-propietario=${unidadActual.propietario?.nombre},
-                                                         data-dni-prop=${unidadActual.propietario?.dni},
-                                                         data-tel-prop=${unidadActual.propietario?.telefono},
-                                                         data-email-prop=${unidadActual.propietario?.email},
-                                                         data-residente=${unidadActual.residente?.nombre},
-                                                         data-dni-res=${unidadActual.residente?.dni},
-                                                         data-tel-res=${unidadActual.residente?.email},
-                                                         data-parentesco=${unidadActual.residente?.parentesco},
-                                                         data-estado=${(unidadActual.residente != null and unidadActual.residente.activo) ? 'Ocupada' : 'Disponible'}">
-                                            <span th:text="${unidadActual.numeroUnidad}"></span>
-                                        </button>
+                    <div class="nota-informativa">
+                        <p class="nota-texto">
+                            <strong>Nota informativa:</strong> Si deseas ver el desglose total de deudas, da clic en el valor del Saldo Deudor de la unidad correspondiente.
+                        </p>
+                    </div>
+                    <div class="contenedor-tabla">
+                        <table class="tabla-datos" th:if="${estados != null and !estados.isEmpty()}">
+                            <thead>
+                                <tr>
+                                    <th>Condominio</th>
+                                    <th>Torre</th>
+                                    <th>Unidad</th>
+                                    <th>Total Deuda Inicial</th>
+                                    <th>Total Pagado</th>
+                                    <th>Saldo Pendiente</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="est : ${estados}">
+                                    <th:block th:each="unidadActual : ${unidades}" th:if="${unidadActual.id == est.unidadId}">
+                                        <td th:text="${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'}"></td>
+                                        <td th:text="${unidadActual.torre}"></td>
+                                        <td>
+                                            <button type="button" class="boton-secundario btn-tabla boton-detalles"
+                                                    th:attr="data-condominio=${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'},
+                                                             data-unidad=${unidadActual.numeroUnidad},
+                                                             data-torre=${unidadActual.torre},
+                                                             data-piso=${unidadActual.piso},
+                                                             data-area=${unidadActual.area},
+                                                             data-propietario=${unidadActual.propietario?.nombre},
+                                                             data-dni-prop=${unidadActual.propietario?.dni},
+                                                             data-tel-prop=${unidadActual.propietario?.telefono},
+                                                             data-email-prop=${unidadActual.propietario?.email},
+                                                             data-residente=${unidadActual.residente?.nombre},
+                                                             data-dni-res=${unidadActual.residente?.dni},
+                                                             data-tel-res=${unidadActual.residente?.email},
+                                                             data-parentesco=${unidadActual.residente?.parentesco},
+                                                             data-estado=${(unidadActual.residente != null and unidadActual.residente.activo) ? 'Ocupada' : 'Disponible'}">
+                                                <span th:text="${unidadActual.numeroUnidad}"></span>
+                                            </button>
+                                        </td>
+                                    </th:block>
+                                    <td th:text="${'S/ ' + (est.totalCuotas + est.totalExtraordinarios)}"></td>
+                                    <td class="texto-exito">
+                                        <a class="enlace-saldo" th:href="@{/finanzas/estados-cuenta/desglose-pagos(id=${est.id})}" title="Ver desglose de pagos">
+                                            <strong th:text="${'S/ ' + est.totalPagado}"></strong>
+                                        </a>
                                     </td>
-                                </th:block>
-                                <td th:text="${'S/ ' + (est.totalCuotas + est.totalExtraordinarios)}"></td>
-                                <td class="texto-exito">
-                                    <a class="enlace-saldo" th:href="@{/finanzas/estados-cuenta/desglose-pagos(id=${est.id})}" title="Ver desglose de pagos">
-                                        <strong th:text="${'S/ ' + est.totalPagado}"></strong>
-                                    </a>
-                                </td>
-                                <td class="texto-alerta">
-                                    <a class="enlace-saldo" th:href="@{/finanzas/estados-cuenta/desglose(id=${est.id})}" title="Ver desglose de deuda">
-                                        <strong th:text="${'S/ ' + est.saldo}"></strong>
-                                    </a>
-                                </td>
-                                <td class="celda-acciones">
-                                    <a class="boton-primario btn-tabla" th:href="@{/finanzas/pagos/nuevo(unidadId=${est.unidadId}, estadoCuentaId=${est.id}, saldo=${est.saldo})}">Registrar Pago</a>
-                                    <form th:action="@{/finanzas/estados-cuenta/eliminar}" method="post" class="form-eliminar-estado" onsubmit="return confirm('¿Está seguro de eliminar este estado de cuenta?');">
-                                        <input type="hidden" name="id" th:value="${est.id}" />
-                                        <button type="submit" class="boton-secundario btn-tabla btn-eliminar boton-eliminar-estado">Eliminar</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    <td class="texto-alerta">
+                                        <a class="enlace-saldo" th:href="@{/finanzas/estados-cuenta/desglose(id=${est.id})}" title="Ver desglose de deuda">
+                                            <strong th:text="${'S/ ' + est.saldo}"></strong>
+                                        </a>
+                                    </td>
+                                    <td class="celda-acciones">
+                                        <a class="boton-primario btn-tabla" th:href="@{/finanzas/pagos/nuevo(unidadId=${est.unidadId}, estadoCuentaId=${est.id}, saldo=${est.saldo})}">Registrar Pago</a>
+                                        <form th:action="@{/finanzas/estados-cuenta/eliminar}" method="post" class="form-eliminar-estado" onsubmit="return confirm('¿Está seguro de eliminar este estado de cuenta?');">
+                                            <input type="hidden" name="id" th:value="${est.id}" />
+                                            <button type="submit" class="boton-secundario btn-tabla btn-eliminar boton-eliminar-estado">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <p th:if="${estados == null or estados.isEmpty()}">No hay deudas registradas.</p>
                 </div>
             </section>
@@ -144,7 +150,7 @@
                             <p class="modal-parrafo"><strong>Estado:</strong> <span id="det-estado"></span></p>
                         </div>
                     </div>
-
+ 
                     <div class="modal-grid modal-grid-separado">
                         <div>
                             <h4 class="modal-seccion-titulo">Propietario</h4>
@@ -163,11 +169,11 @@
                     </div>
                 </div>
             </div>
-
-
+ 
+ 
         </main>
     </div>
-    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/finanzas.css(v=6)}">
-    <script th:src="@{/js/dominios/finanzas/finanzas.js(v=6)}" defer></script>
+    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/gastos.css(v=6)}">
+    <script th:src="@{/js/dominios/finanzas/gastos.js(v=6)}" defer></script>
 </body>
 </html>

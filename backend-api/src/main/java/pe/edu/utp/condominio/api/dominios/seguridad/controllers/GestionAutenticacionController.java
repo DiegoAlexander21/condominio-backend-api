@@ -45,7 +45,7 @@ public class GestionAutenticacionController {
         if (!model.containsAttribute("loginRequest")) {
             model.addAttribute("loginRequest", new LoginRequest());
         }
-        return "seguridad/login";
+        return "dominios/seguridad/login";
     }
 
     @PostMapping("/login")
@@ -54,9 +54,9 @@ public class GestionAutenticacionController {
             BindingResult bindingResult,
             Model model,
             HttpServletResponse response) {
-        
+
         if (bindingResult.hasErrors()) {
-            return "seguridad/login";
+            return "dominios/seguridad/login";
         }
 
         try {
@@ -66,7 +66,7 @@ public class GestionAutenticacionController {
 
             Usuario usuario = usuarioRepository.buscarPorIdentificador(request.getIdentificador())
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-            
+
             String token = tokenService.generarToken(usuario);
             Cookie cookie = new Cookie("tokenAcceso", token);
             cookie.setHttpOnly(true);
@@ -76,7 +76,7 @@ public class GestionAutenticacionController {
             return "redirect:/reportes/dashboard";
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Credenciales inválidas.");
-            return "seguridad/login";
+            return "dominios/seguridad/login";
         }
     }
 
@@ -93,7 +93,7 @@ public class GestionAutenticacionController {
     @GetMapping("/registro")
     public String mostrarRegistro(Model model) {
         model.addAttribute("registroRequest", new RegistroUsuarioRequest());
-        return "seguridad/registro";
+        return "dominios/seguridad/registro";
     }
 
     @PostMapping("/registro")
@@ -102,18 +102,19 @@ public class GestionAutenticacionController {
             BindingResult bindingResult,
             Model model,
             RedirectAttributes redirectAttributes) {
-        
+
         if (bindingResult.hasErrors()) {
-            return "seguridad/registro";
+            return "dominios/seguridad/registro";
         }
 
         try {
             autenticacionService.registrar(request);
-            redirectAttributes.addFlashAttribute("successMessage", "Usuario registrado correctamente. Ahora puedes iniciar sesión.");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Usuario registrado correctamente. Ahora puedes iniciar sesión.");
             return "redirect:/auth/login";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
-            return "seguridad/registro";
+            return "dominios/seguridad/registro";
         }
     }
 }
