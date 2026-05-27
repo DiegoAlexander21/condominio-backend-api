@@ -14,7 +14,7 @@
           <nav>
             <a
               class="boton-secundario"
-              th:href="${reservaForm.condominioId != null} ? @{/reservas(condominioId=${reservaForm.condominioId})} : @{/reservas}"
+              th:href="${formularioReserva.condominioId != null} ? @{/reservas(condominioId=${formularioReserva.condominioId})} : @{/reservas}"
               >&larr; Volver a reservas</a
             >
           </nav>
@@ -23,8 +23,8 @@
         <section class="panel">
           <p
             class="alerta-error"
-            th:if="${errorMessage != null}"
-            th:text="${errorMessage}"
+            th:if="${mensajeError != null}"
+            th:text="${mensajeError}"
           ></p>
           <div class="tarjeta tarjeta-estatica">
             <h2>Datos de la Reserva</h2>
@@ -32,7 +32,7 @@
             <form
               id="formularioReserva"
               th:action="@{/reservas}"
-              th:object="${reservaForm}"
+              th:object="${formularioReserva}"
               method="post"
               novalidate
               class="form-contenedor-margen"
@@ -70,7 +70,7 @@
                     class="formulario-entrada"
                     id="areaComunId"
                     th:field="*{areaComunId}"
-                    th:disabled="${reservaForm.condominioId == null}"
+                    th:disabled="${formularioReserva.condominioId == null}"
                     data-selected=""
                     required
                   >
@@ -98,7 +98,7 @@
                     class="formulario-entrada"
                     id="unidadId"
                     th:field="*{unidadId}"
-                    th:disabled="${reservaForm.condominioId == null}"
+                    th:disabled="${formularioReserva.condominioId == null}"
                     data-selected=""
                     required
                   >

@@ -18,16 +18,16 @@
           </nav>
         </header>
 
-        <section th:if="${successMessage != null or errorMessage != null}">
+        <section th:if="${mensajeExito != null or mensajeError != null}">
           <p
             class="alerta-exito"
-            th:if="${successMessage != null}"
-            th:text="${successMessage}"
+            th:if="${mensajeExito != null}"
+            th:text="${mensajeExito}"
           ></p>
           <p
             class="alerta-error"
-            th:if="${errorMessage != null}"
-            th:text="${errorMessage}"
+            th:if="${mensajeError != null}"
+            th:text="${mensajeError}"
           ></p>
         </section>
 

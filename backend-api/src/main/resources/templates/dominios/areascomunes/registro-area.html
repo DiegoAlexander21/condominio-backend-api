@@ -1,78 +1,194 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragmentos/head :: comun('Registro de Área Común')}"></head>
-<body>
+  <head
+    th:replace="~{fragmentos/head :: comun('Registro de Área Común')}"
+  ></head>
+  <body>
     <div class="contenedor-principal">
-        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
-        
-        <main class="contenido-principal">
-            <header class="encabezado">
-                <div>
-                    <h1 class="titulo-pagina" th:text="${esEdicion != null and esEdicion} ? 'Editar Área Común' : 'Registro de Área Común'">Registro de Área Común</h1>
-                    <p>Ingresa los detalles para crear o modificar un área común en el condominio.</p>
+      <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+
+      <main class="contenido-principal">
+        <header class="encabezado">
+          <div>
+            <h1
+              class="titulo-pagina"
+              th:text="${esEdicion != null and esEdicion} ? 'Editar Área Común' : 'Registro de Área Común'"
+            >
+              Registro de Área Común
+            </h1>
+            <p>
+              Ingresa los detalles para crear o modificar un área común en el
+              condominio.
+            </p>
+          </div>
+          <nav>
+            <a
+              class="boton-secundario"
+              th:href="${formularioArea.condominioId != null} ? @{/areas-comunes(condominioId=${formularioArea.condominioId})} : @{/areas-comunes}"
+              >&larr; Volver</a
+            >
+          </nav>
+        </header>
+
+        <section class="panel">
+          <div class="tarjeta tarjeta-estatica">
+            <h2
+              th:text="${esEdicion != null and esEdicion} ? 'Editar Área Común' : 'Datos del Área Común'"
+            >
+              Datos del Área Común
+            </h2>
+
+            <form
+              id="formularioArea"
+              th:action="@{/areas-comunes}"
+              th:object="${formularioArea}"
+              method="post"
+              novalidate
+              class="form-contenedor-margen"
+            >
+              <input type="hidden" th:field="*{id}" />
+
+              <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="condominioId"
+                    >Condominio</label
+                  >
+                  <select
+                    class="formulario-entrada"
+                    id="condominioId"
+                    th:field="*{condominioId}"
+                    required
+                  >
+                    <option value="">Seleccione un condominio...</option>
+                    <option
+                      th:each="condominio : ${condominios}"
+                      th:value="${condominio.id}"
+                      th:text="${condominio.nombre}"
+                    ></option>
+                  </select>
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('condominioId')}"
+                    th:errors="*{condominioId}"
+                  ></small>
                 </div>
-                <nav>
-                    <a class="boton-secundario" th:href="${areaForm.condominioId != null} ? @{/areas-comunes(condominioId=${areaForm.condominioId})} : @{/areas-comunes}">&larr; Volver</a>
-                </nav>
-            </header>
-
-            <section class="panel">
-                <div class="tarjeta tarjeta-estatica">
-                    <h2 th:text="${esEdicion != null and esEdicion} ? 'Editar Área Común' : 'Datos del Área Común'">Datos del Área Común</h2>
-                    
-                    <form id="formularioArea" th:action="@{/areas-comunes}" th:object="${areaForm}" method="post" novalidate class="form-contenedor-margen">
-                        <input type="hidden" th:field="*{id}" />
-
-                        <div class="fila-formulario">
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="condominioId">Condominio</label>
-                                <select class="formulario-entrada" id="condominioId" th:field="*{condominioId}" required>
-                                    <option value="">Seleccione un condominio...</option>
-                                    <option th:each="condominio : ${condominios}" th:value="${condominio.id}" th:text="${condominio.nombre}"></option>
-                                </select>
-                                <small class="error-texto" th:if="${#fields.hasErrors('condominioId')}" th:errors="*{condominioId}"></small>
-                            </div>
-                            <div class="formulario-grupo grupo-flexible-doble">
-                                <label class="formulario-etiqueta" for="nombre">Nombre del Área</label>
-                                <input class="formulario-entrada" id="nombre" type="text" th:field="*{nombre}" placeholder="Ej: Piscina Temperada" minlength="2" maxlength="150" required />
-                                <small class="error-texto" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
-                            </div>
-                        </div>
-
-                        <div class="fila-formulario">
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="capacidad">Capacidad Máxima</label>
-                                <input class="formulario-entrada" id="capacidad" type="number" th:field="*{capacidad}" min="1" max="1000" placeholder="Ej: 50" required />
-                                <small class="error-texto" th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}"></small>
-                            </div>
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="horaInicio">Hora de Inicio Permitida</label>
-                                <input class="formulario-entrada" id="horaInicio" type="time" th:field="*{horaInicio}" required />
-                                <small class="error-texto" th:if="${#fields.hasErrors('horaInicio')}" th:errors="*{horaInicio}"></small>
-                            </div>
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="horaFin">Hora de Fin Permitida</label>
-                                <input class="formulario-entrada" id="horaFin" type="time" th:field="*{horaFin}" required />
-                                <small class="error-texto" th:if="${#fields.hasErrors('horaFin')}" th:errors="*{horaFin}"></small>
-                            </div>
-                        </div>
-
-                        <div class="formulario-grupo">
-                            <label class="formulario-etiqueta" for="normasUso">Normas de Uso</label>
-                            <textarea class="formulario-entrada" id="normasUso" th:field="*{normasUso}" rows="4" placeholder="Ej: Prohibido ingresar alimentos..." maxlength="1000"></textarea>
-                            <small class="error-texto" th:if="${#fields.hasErrors('normasUso')}" th:errors="*{normasUso}"></small>
-                        </div>
-
-                        <div class="contenedor-acciones">
-                            <button type="submit" class="boton-primario" th:text="${esEdicion != null and esEdicion} ? 'Guardar Cambios' : 'Registrar Área'">Registrar Área</button>
-                        </div>
-                    </form>
+                <div class="formulario-grupo grupo-flexible-doble">
+                  <label class="formulario-etiqueta" for="nombre"
+                    >Nombre del Área</label
+                  >
+                  <input
+                    class="formulario-entrada"
+                    id="nombre"
+                    type="text"
+                    th:field="*{nombre}"
+                    placeholder="Ej: Piscina Temperada"
+                    minlength="2"
+                    maxlength="150"
+                    required
+                  />
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('nombre')}"
+                    th:errors="*{nombre}"
+                  ></small>
                 </div>
-            </section>
-        </main>
+              </div>
+
+              <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="capacidad"
+                    >Capacidad Máxima</label
+                  >
+                  <input
+                    class="formulario-entrada"
+                    id="capacidad"
+                    type="number"
+                    th:field="*{capacidad}"
+                    min="1"
+                    max="1000"
+                    placeholder="Ej: 50"
+                    required
+                  />
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('capacidad')}"
+                    th:errors="*{capacidad}"
+                  ></small>
+                </div>
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="horaInicio"
+                    >Hora de Inicio Permitida</label
+                  >
+                  <input
+                    class="formulario-entrada"
+                    id="horaInicio"
+                    type="time"
+                    th:field="*{horaInicio}"
+                    required
+                  />
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('horaInicio')}"
+                    th:errors="*{horaInicio}"
+                  ></small>
+                </div>
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="horaFin"
+                    >Hora de Fin Permitida</label
+                  >
+                  <input
+                    class="formulario-entrada"
+                    id="horaFin"
+                    type="time"
+                    th:field="*{horaFin}"
+                    required
+                  />
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('horaFin')}"
+                    th:errors="*{horaFin}"
+                  ></small>
+                </div>
+              </div>
+
+              <div class="formulario-grupo">
+                <label class="formulario-etiqueta" for="normasUso"
+                  >Normas de Uso</label
+                >
+                <textarea
+                  class="formulario-entrada"
+                  id="normasUso"
+                  th:field="*{normasUso}"
+                  rows="4"
+                  placeholder="Ej: Prohibido ingresar alimentos..."
+                  maxlength="1000"
+                ></textarea>
+                <small
+                  class="error-texto"
+                  th:if="${#fields.hasErrors('normasUso')}"
+                  th:errors="*{normasUso}"
+                ></small>
+              </div>
+
+              <div class="contenedor-acciones">
+                <button
+                  type="submit"
+                  class="boton-primario"
+                  th:text="${esEdicion != null and esEdicion} ? 'Guardar Cambios' : 'Registrar Área'"
+                >
+                  Registrar Área
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
     </div>
-    
-    <link rel="stylesheet" th:href="@{/css/dominios/areascomunes/areascomunes.css}">
+
+    <link
+      rel="stylesheet"
+      th:href="@{/css/dominios/areascomunes/areascomunes.css}"
+    />
     <script th:src="@{/js/dominios/areascomunes/registro-area.js}"></script>
-</body>
+  </body>
 </html>

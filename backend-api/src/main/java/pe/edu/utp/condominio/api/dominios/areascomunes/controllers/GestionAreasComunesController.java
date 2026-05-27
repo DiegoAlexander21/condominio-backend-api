@@ -29,60 +29,62 @@ public class GestionAreasComunesController {
     }
 
     @GetMapping
-    public String listarAreas(@RequestParam(value = "condominioId", required = false) Long condominioId, Model model) {
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-        model.addAttribute("condominioIdSeleccionado", condominioId);
+    public String listarAreas(@RequestParam(value = "condominioId", required = false) Long condominioId, Model modelo) {
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("condominioIdSeleccionado", condominioId);
         if (condominioId != null) {
-            model.addAttribute("areas", gestionAreasComunesService.listarPorCondominio(condominioId));
+            modelo.addAttribute("areas", gestionAreasComunesService.listarPorCondominio(condominioId));
         }
         return "dominios/areascomunes/gestion-areas";
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormularioRegistro(Model model) {
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-        model.addAttribute("areaForm", new AreaComunForm());
+    public String mostrarFormularioRegistro(Model modelo) {
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("formularioArea", new AreaComunForm());
         return "dominios/areascomunes/registro-area";
     }
 
     @PostMapping
     public String registrarArea(
-            @Valid @ModelAttribute("areaForm") AreaComunForm form,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("formularioArea") AreaComunForm formulario,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-            if (form.getId() != null) model.addAttribute("esEdicion", true);
+        if (resultadoValidacion.hasErrors()) {
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            if (formulario.getId() != null)
+                modelo.addAttribute("esEdicion", true);
             return "dominios/areascomunes/registro-area";
         }
 
         try {
-            gestionAreasComunesService.registrarOActualizarArea(form);
-            redirectAttributes.addFlashAttribute("successMessage", "Área común guardada correctamente.");
-            return "redirect:/areas-comunes?condominioId=" + form.getCondominioId();
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-            if (form.getId() != null) model.addAttribute("esEdicion", true);
-            model.addAttribute("errorMessage", e.getMessage());
+            gestionAreasComunesService.registrarOActualizarArea(formulario);
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Área común guardada correctamente.");
+            return "redirect:/areas-comunes?condominioId=" + formulario.getCondominioId();
+        } catch (IllegalArgumentException excepcion) {
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            if (formulario.getId() != null)
+                modelo.addAttribute("esEdicion", true);
+            modelo.addAttribute("mensajeError", excepcion.getMessage());
             return "dominios/areascomunes/registro-area";
         }
     }
 
     @GetMapping("/editar-area")
-    public String mostrarFormularioEdicion(@RequestParam("id") Long id, Model model) {
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-        model.addAttribute("areaForm", gestionAreasComunesService.obtenerFormularioArea(id));
-        model.addAttribute("esEdicion", true);
+    public String mostrarFormularioEdicion(@RequestParam("id") Long id, Model modelo) {
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("formularioArea", gestionAreasComunesService.obtenerFormularioArea(id));
+        modelo.addAttribute("esEdicion", true);
         return "dominios/areascomunes/registro-area";
     }
 
     @GetMapping("/eliminar-area")
-    public String eliminarArea(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarArea(@RequestParam("id") Long id, RedirectAttributes atributosRedireccion) {
         Long condominioId = gestionAreasComunesService.obtenerFormularioArea(id).getCondominioId();
         gestionAreasComunesService.eliminarArea(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Área común eliminada correctamente.");
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Área común eliminada correctamente.");
         return "redirect:/areas-comunes?condominioId=" + condominioId;
     }
 }
