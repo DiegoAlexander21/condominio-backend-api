@@ -1,106 +1,220 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <th:block th:replace="~{fragmentos/head :: comun('Reportar Incidencia - Área Común')}"></th:block>
-</head>
-<body>
+  <head>
+    <th:block
+      th:replace="~{fragmentos/head :: comun('Reportar Incidencia - Área Común')}"
+    ></th:block>
+  </head>
+  <body>
     <div class="contenedor-principal">
-        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
-        
-        <main class="contenido-principal">
-            <header class="encabezado">
-                <div>
-                    <h1 class="titulo-pagina">Reportar Daño en Área Común</h1>
-                    <p>Registra un desperfecto o daño en las áreas comunes del condominio</p>
+      <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+
+      <main class="contenido-principal">
+        <header class="encabezado">
+          <div>
+            <h1 class="titulo-pagina">Reportar Daño en Área Común</h1>
+            <p>
+              Registra un desperfecto o daño en las áreas comunes del condominio
+            </p>
+          </div>
+          <nav>
+            <a class="boton-secundario" th:href="@{/incidencias}"
+              >&larr; Volver</a
+            >
+          </nav>
+        </header>
+
+        <section th:if="${errorMessage != null}">
+          <p class="alerta-error" th:text="${errorMessage}"></p>
+        </section>
+
+        <section class="panel">
+          <div class="tarjeta tarjeta-estatica">
+            <form
+              th:action="@{/incidencias/area}"
+              th:object="${incidenciaForm}"
+              method="post"
+              class="form-contenedor-margen"
+            >
+              <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="condominioId"
+                    >Seleccionar Condominio</label
+                  >
+                  <select id="condominioId" class="formulario-entrada" required>
+                    <option value="">Seleccione un condominio...</option>
+                    <option
+                      th:each="cond : ${condominios}"
+                      th:value="${cond.id}"
+                      th:text="${cond.nombre}"
+                    ></option>
+                  </select>
                 </div>
-                <nav>
-                    <a class="boton-secundario" th:href="@{/incidencias}">&larr; Volver</a>
-                </nav>
-            </header>
 
-            <section th:if="${errorMessage != null}">
-                <p class="alerta-error" th:text="${errorMessage}"></p>
-            </section>
-
-            <section class="panel">
-                <div class="tarjeta tarjeta-estatica">
-                    <form th:action="@{/incidencias/area}" th:object="${incidenciaForm}" method="post" class="form-contenedor-margen">
-                        
-                        <div class="fila-formulario">
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="condominioId">Seleccionar Condominio</label>
-                                <select id="condominioId" class="formulario-entrada" required>
-                                    <option value="">Seleccione un condominio...</option>
-                                    <option th:each="cond : ${condominios}" th:value="${cond.id}" th:text="${cond.nombre}"></option>
-                                </select>
-                            </div>
-
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="areaComunId">Seleccionar Área Afectada</label>
-                                <select id="areaComunId" th:field="*{areaComunId}" class="formulario-entrada" th:disabled="${incidenciaForm.areaComunId == null}" required>
-                                    <option value="">Seleccione el área...</option>
-                                    <option th:each="area : ${areasComunes}" th:value="${area.id}" th:data-condominio="${area.condominioId}" th:text="${area.nombre}"></option>
-                                </select>
-                                <small class="error-texto" th:if="${#fields.hasErrors('areaComunId')}" th:errors="*{areaComunId}"></small>
-                            </div>
-                        </div>
-
-                        <div class="formulario-grupo">
-                            <label class="formulario-etiqueta" for="descripcion">Descripción del Problema</label>
-                            <textarea id="descripcion" th:field="*{descripcion}" class="formulario-entrada" rows="3" placeholder="Ej: La manija de la puerta del SUM está rota..." required></textarea>
-                            <small class="error-texto" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></small>
-                        </div>
-
-                        <div class="fila-formulario">
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="causa">Posible Causa</label>
-                                <select id="causa" th:field="*{causa}" class="formulario-entrada" required>
-                                    <option value="DESGASTE">Desgaste Natural</option>
-                                    <option value="MAL_USO">Mal Uso / Negligencia</option>
-                                    <option value="VANDALISMO">Vandalismo</option>
-                                    <option value="CLIMA">Daño por Clima</option>
-                                    <option value="OTRO">Otro</option>
-                                </select>
-                                <small class="error-texto" th:if="${#fields.hasErrors('causa')}" th:errors="*{causa}"></small>
-                            </div>
-
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="gravedad">Gravedad</label>
-                                <select id="gravedad" th:field="*{gravedad}" class="formulario-entrada" required>
-                                    <option value="LEVE">Leve (No impide el uso)</option>
-                                    <option value="MODERADO">Moderado (Afecta parcialmente)</option>
-                                    <option value="GRAVE">Grave (Peligro o impide el uso)</option>
-                                    <option value="CRITICO">Crítico (Emergencia inmediata)</option>
-                                </select>
-                                <small class="error-texto" th:if="${#fields.hasErrors('gravedad')}" th:errors="*{gravedad}"></small>
-                            </div>
-                        </div>
-
-                        <div class="formulario-grupo">
-                            <label class="formulario-etiqueta">Evidencia Fotográfica (Opcional)</label>
-                            <small class="texto-ayuda-evidencia">Máximo 5 imágenes de hasta 10MB (JPG, PNG, WEBP).</small>
-                            <input type="file" id="evidenciaArchivos" class="oculto" multiple accept="image/png, image/jpeg, image/webp">
-                            <button type="button" id="btnSeleccionarArchivos" class="boton-secundario boton-ancho-completo" data-cloud-name="dxciesoqh" data-upload-preset="condominio_preset">
-                                Seleccionar Fotos de Evidencia
-                            </button>
-                            
-                            <div id="evidenciaPreview" class="evidencia-preview">
-                            </div>
-                            
-                            <input type="hidden" id="urlEvidencia" th:field="*{evidenciaUrl}">
-                        </div>
-
-                        <div class="contenedor-acciones">
-                            <button type="submit" class="boton-primario">Enviar Reporte</button>
-                        </div>
-                    </form>
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="areaComunId"
+                    >Seleccionar Área Afectada</label
+                  >
+                  <select
+                    id="areaComunId"
+                    th:field="*{areaComunId}"
+                    class="formulario-entrada"
+                    th:disabled="${incidenciaForm.areaComunId == null}"
+                    required
+                  >
+                    <option value="">Seleccione el área...</option>
+                    <option
+                      th:each="area : ${areasComunes}"
+                      th:value="${area.id}"
+                      th:data-condominio="${area.condominioId}"
+                      th:text="${area.nombre}"
+                    ></option>
+                  </select>
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('areaComunId')}"
+                    th:errors="*{areaComunId}"
+                  ></small>
                 </div>
-            </section>
-        </main>
+              </div>
+
+              <div class="formulario-grupo">
+                <label class="formulario-etiqueta" for="descripcion"
+                  >Descripción del Problema</label
+                >
+                <textarea
+                  id="descripcion"
+                  th:field="*{descripcion}"
+                  class="formulario-entrada"
+                  rows="3"
+                  placeholder="Ej: La manija de la puerta del SUM está rota..."
+                  required
+                ></textarea>
+                <small
+                  class="error-texto"
+                  th:if="${#fields.hasErrors('descripcion')}"
+                  th:errors="*{descripcion}"
+                ></small>
+              </div>
+
+              <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="causa"
+                    >Posible Causa</label
+                  >
+                  <select
+                    id="causa"
+                    th:field="*{causa}"
+                    class="formulario-entrada"
+                    required
+                  >
+                    <option value="DESGASTE">Desgaste Natural</option>
+                    <option value="MAL_USO">Mal Uso / Negligencia</option>
+                    <option value="VANDALISMO">Vandalismo</option>
+                    <option value="CLIMA">Daño por Clima</option>
+                    <option value="OTRO">Otro</option>
+                  </select>
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('causa')}"
+                    th:errors="*{causa}"
+                  ></small>
+                </div>
+
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="gravedad"
+                    >Gravedad</label
+                  >
+                  <select
+                    id="gravedad"
+                    th:field="*{gravedad}"
+                    class="formulario-entrada"
+                    required
+                  >
+                    <option value="LEVE">Leve (No impide el uso)</option>
+                    <option value="MODERADO">
+                      Moderado (Afecta parcialmente)
+                    </option>
+                    <option value="GRAVE">
+                      Grave (Peligro o impide el uso)
+                    </option>
+                    <option value="CRITICO">
+                      Crítico (Emergencia inmediata)
+                    </option>
+                  </select>
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('gravedad')}"
+                    th:errors="*{gravedad}"
+                  ></small>
+                </div>
+              </div>
+
+              <div class="formulario-grupo">
+                <label class="formulario-etiqueta"
+                  >Evidencia Fotográfica (Opcional)</label
+                >
+                <small class="texto-ayuda-evidencia"
+                  >Máximo 5 imágenes de hasta 10MB (JPG, PNG, WEBP).</small
+                >
+                <input
+                  type="file"
+                  id="evidenciaArchivos"
+                  class="oculto"
+                  multiple
+                  accept="image/png, image/jpeg, image/webp"
+                />
+                <button
+                  type="button"
+                  id="btnSeleccionarArchivos"
+                  class="boton-secundario boton-ancho-completo"
+                  data-cloud-name="dxciesoqh"
+                  data-upload-preset="condominio_preset"
+                >
+                  Seleccionar Fotos de Evidencia
+                </button>
+
+                <div id="evidenciaPreview" class="evidencia-preview"></div>
+
+                <input
+                  type="hidden"
+                  id="urlEvidencia"
+                  th:field="*{evidenciaUrl}"
+                />
+              </div>
+
+              <div class="contenedor-acciones">
+                <button type="submit" class="boton-primario">
+                  Enviar Reporte
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
     </div>
-    
-    <link rel="stylesheet" th:href="@{/css/dominios/incidencias/incidencias.css}">
 
+    <link
+      rel="stylesheet"
+      th:href="@{/css/dominios/incidencias/incidencias.css}"
+    />
+
+    <script
+      th:src="@{/js/dominios/incidencias/incidencias-selectores.js}"
+      defer
+    ></script>
+    <script
+      th:src="@{/js/dominios/incidencias/incidencias-evidencias-seleccion.js}"
+      defer
+    ></script>
+    <script
+      th:src="@{/js/dominios/incidencias/incidencias-evidencias-subida.js}"
+      defer
+    ></script>
+    <script
+      th:src="@{/js/dominios/incidencias/incidencias-modal.js}"
+      defer
+    ></script>
     <script th:src="@{/js/dominios/incidencias/incidencias.js}" defer></script>
-</body>
+  </body>
 </html>

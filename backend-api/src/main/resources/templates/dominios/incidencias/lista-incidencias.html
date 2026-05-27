@@ -1,88 +1,173 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragmentos/head :: comun('Gestión de Incidencias')}"></head>
-<body>
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head
+    th:replace="~{fragmentos/head :: comun('Gestión de Incidencias')}"
+  ></head>
+  <body>
     <div class="contenedor-principal">
-        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
-        
-        <main class="contenido-principal">
-            <header class="encabezado">
-                <div>
-                    <h1 class="titulo-pagina">Gestión de Incidencias</h1>
-                    <p>Reporta y gestiona daños en el condominio</p>
-                </div>
-                <nav class="acciones-encabezado">
-                    <a class="boton-primario" th:href="@{/incidencias/nuevo/area}">+ Reportar Área</a>
-                    <a class="boton-primario" th:href="@{/incidencias/nuevo/unidad}">+ Reportar Unidad</a>
-                </nav>
-            </header>
+      <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
 
-            <section th:if="${successMessage != null or errorMessage != null}">
-                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
-                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
-            </section>
+      <main class="contenido-principal">
+        <header class="encabezado">
+          <div>
+            <h1 class="titulo-pagina">Gestión de Incidencias</h1>
+            <p>Reporta y gestiona daños en el condominio</p>
+          </div>
+          <nav class="acciones-encabezado">
+            <a class="boton-primario" th:href="@{/incidencias/nuevo/area}"
+              >+ Reportar Área</a
+            >
+            <a class="boton-primario" th:href="@{/incidencias/nuevo/unidad}"
+              >+ Reportar Unidad</a
+            >
+          </nav>
+        </header>
 
-            <div class="pestanas-filtro">
-                <a th:href="@{/incidencias(estado='REGISTRADO')}" th:classappend="${param.estado != null and param.estado[0] == 'REGISTRADO'} ? 'activo' : ''" class="pestana-filtro">Registradas</a>
-                <a th:href="@{/incidencias(estado='EN_REVISION')}" th:classappend="${param.estado != null and param.estado[0] == 'EN_REVISION'} ? 'activo' : ''" class="pestana-filtro">En Revisión</a>
-                <a th:href="@{/incidencias(estado='EN_ATENCION')}" th:classappend="${param.estado != null and param.estado[0] == 'EN_ATENCION'} ? 'activo' : ''" class="pestana-filtro">En Atención</a>
-                <a th:href="@{/incidencias(estado='RESUELTO')}" th:classappend="${param.estado != null and param.estado[0] == 'RESUELTO'} ? 'activo' : ''" class="pestana-filtro">Resueltas</a>
+        <section th:if="${successMessage != null or errorMessage != null}">
+          <p
+            class="alerta-exito"
+            th:if="${successMessage != null}"
+            th:text="${successMessage}"
+          ></p>
+          <p
+            class="alerta-error"
+            th:if="${errorMessage != null}"
+            th:text="${errorMessage}"
+          ></p>
+        </section>
+
+        <div class="pestanas-filtro">
+          <a
+            th:href="@{/incidencias(estado='REGISTRADO')}"
+            th:classappend="${param.estado != null and param.estado[0] == 'REGISTRADO'} ? 'activo' : ''"
+            class="pestana-filtro"
+            >Registradas</a
+          >
+          <a
+            th:href="@{/incidencias(estado='EN_REVISION')}"
+            th:classappend="${param.estado != null and param.estado[0] == 'EN_REVISION'} ? 'activo' : ''"
+            class="pestana-filtro"
+            >En Revisión</a
+          >
+          <a
+            th:href="@{/incidencias(estado='EN_ATENCION')}"
+            th:classappend="${param.estado != null and param.estado[0] == 'EN_ATENCION'} ? 'activo' : ''"
+            class="pestana-filtro"
+            >En Atención</a
+          >
+          <a
+            th:href="@{/incidencias(estado='RESUELTO')}"
+            th:classappend="${param.estado != null and param.estado[0] == 'RESUELTO'} ? 'activo' : ''"
+            class="pestana-filtro"
+            >Resueltas</a
+          >
+        </div>
+
+        <section class="panel">
+          <div
+            class="grid-tarjetas"
+            th:if="${incidencias != null and !incidencias.isEmpty()}"
+          >
+            <div
+              th:each="inc : ${incidencias}"
+              class="incidencia-card tarjeta tarjeta-estatica"
+              th:classappend="'gravedad-' + ${inc.gravedad}"
+            >
+              <div class="incidencia-header">
+                <h3
+                  class="incidencia-title"
+                  th:text="'Causa: ' + ${inc.causaFormateada}"
+                ></h3>
+              </div>
+              <div class="incidencia-meta">
+                <span th:if="${inc.lugarAfectado != null}"
+                  ><strong th:text="${inc.lugarAfectado}"></strong
+                ></span>
+                <span
+                  >Fecha:
+                  <strong
+                    th:text="${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy')}"
+                  ></strong
+                ></span>
+                <span
+                  >Hora:
+                  <strong
+                    th:text="${#temporals.format(inc.fechaReporte, 'HH:mm')}"
+                  ></strong
+                ></span>
+              </div>
+              <div class="incidencia-actions">
+                <button
+                  type="button"
+                  class="boton-secundario btn-tabla boton-detalles"
+                  th:attr="data-id=${inc.id}, data-causa=${inc.causaFormateada}, data-estado=${inc.estadoFormateado}, data-desc=${inc.descripcion}, data-gravedad=${inc.gravedadFormateada}, data-fecha=${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy HH:mm')}, data-responsable=${inc.responsableAtencion}, data-lugar=${inc.lugarAfectado}"
+                >
+                  Ver Detalles
+                </button>
+                <a
+                  sec:authorize="hasRole('ADMINISTRADOR')"
+                  th:href="@{/incidencias/actualizar(incidenciaId=${inc.id})}"
+                  class="boton-secundario btn-tabla"
+                  >Actualizar Estado</a
+                >
+              </div>
             </div>
+          </div>
 
-            <section class="panel">
-                <div class="grid-tarjetas" th:if="${incidencias != null and !incidencias.isEmpty()}">
-                    <div th:each="inc : ${incidencias}" class="incidencia-card tarjeta tarjeta-estatica" th:classappend="'gravedad-' + ${inc.gravedad}">
-                        <div class="incidencia-header">
-                            <h3 class="incidencia-title" th:text="'Causa: ' + ${inc.causaFormateada}"></h3>
-                        </div>
-                        <div class="incidencia-meta">
-                            <span th:if="${inc.lugarAfectado != null}"><strong th:text="${inc.lugarAfectado}"></strong></span>
-                            <span>Fecha: <strong th:text="${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy')}"></strong></span>
-                            <span>Hora: <strong th:text="${#temporals.format(inc.fechaReporte, 'HH:mm')}"></strong></span>
-                        </div>
-                        <div class="incidencia-actions">
-                            <button type="button" class="boton-secundario btn-tabla boton-detalles" 
-                                    th:attr="data-id=${inc.id}, data-causa=${inc.causaFormateada}, data-estado=${inc.estadoFormateado}, data-desc=${inc.descripcion}, data-gravedad=${inc.gravedadFormateada}, data-fecha=${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy HH:mm')}, data-responsable=${inc.responsableAtencion}, data-lugar=${inc.lugarAfectado}">
-                                Ver Detalles
-                            </button>
-                            <a sec:authorize="hasRole('ADMINISTRADOR')" th:href="@{/incidencias/actualizar(incidenciaId=${inc.id})}" class="boton-secundario btn-tabla">Actualizar Estado</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div th:if="${incidencias == null or incidencias.isEmpty()}" class="celda-vacia">
-                    <h3>No hay incidencias</h3>
-                    <p>No se encontraron incidencias con el filtro actual.</p>
-                </div>
-            </section>
-        </main>
+          <div
+            th:if="${incidencias == null or incidencias.isEmpty()}"
+            class="celda-vacia"
+          >
+            <h3>No hay incidencias</h3>
+            <p>No se encontraron incidencias con el filtro actual.</p>
+          </div>
+        </section>
+      </main>
     </div>
     <div id="modalIncidencia" class="modal-overlay">
-        <div class="modal-contenido">
-            <span class="cerrar-modal">&times;</span>
-            <h2 id="modalCausa">Detalles de Incidencia</h2>
-            <div class="modal-info">
-                <p><strong id="modalLugar"></strong></p>
-                <p><strong>Estado:</strong> <span id="modalEstado"></span></p>
-                <p><strong>Gravedad:</strong> <span id="modalGravedad"></span></p>
-                <p><strong>Fecha Reporte:</strong> <span id="modalFecha"></span></p>
-                <p><strong>Responsable Atención:</strong> <span id="modalResponsable"></span></p>
-            </div>
-            
-            <div class="modal-seccion">
-                <h3>Descripción</h3>
-                <p id="modalDesc"></p>
-            </div>
-            
-            <div class="modal-seccion">
-                <h3>Evidencias Fotográficas</h3>
-                <div id="modalEvidencias" class="vista-previa-evidencias">
-                </div>
-            </div>
+      <div class="modal-contenido">
+        <span class="cerrar-modal">&times;</span>
+        <h2 id="modalCausa">Detalles de Incidencia</h2>
+        <div class="modal-info">
+          <p><strong id="modalLugar"></strong></p>
+          <p><strong>Estado:</strong> <span id="modalEstado"></span></p>
+          <p><strong>Gravedad:</strong> <span id="modalGravedad"></span></p>
+          <p><strong>Fecha Reporte:</strong> <span id="modalFecha"></span></p>
+          <p>
+            <strong>Responsable Atención:</strong>
+            <span id="modalResponsable"></span>
+          </p>
         </div>
+
+        <div class="modal-seccion">
+          <h3>Descripción</h3>
+          <p id="modalDesc"></p>
+        </div>
+
+        <div class="modal-seccion">
+          <h3>Evidencias Fotográficas</h3>
+          <div id="modalEvidencias" class="vista-previa-evidencias"></div>
+        </div>
+      </div>
     </div>
-    
-    <link rel="stylesheet" th:href="@{/css/dominios/incidencias/incidencias.css}">
+
+    <link
+      rel="stylesheet"
+      th:href="@{/css/dominios/incidencias/incidencias.css}"
+    />
+    <script
+      th:src="@{/js/dominios/incidencias/incidencias-selectores.js}"
+    ></script>
+    <script
+      th:src="@{/js/dominios/incidencias/incidencias-evidencias-seleccion.js}"
+    ></script>
+    <script
+      th:src="@{/js/dominios/incidencias/incidencias-evidencias-subida.js}"
+    ></script>
+    <script th:src="@{/js/dominios/incidencias/incidencias-modal.js}"></script>
     <script th:src="@{/js/dominios/incidencias/incidencias.js}"></script>
-</body>
+  </body>
 </html>

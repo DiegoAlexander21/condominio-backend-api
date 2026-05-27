@@ -1,28 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="comun(titulo)">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${titulo} + ' | Sistema de Condominios'">Sistema de Condominios</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" th:href="@{/css/globales/globales.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/sidebar.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/formularios.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/tarjetas.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/pestanas.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/evidencias.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/distintivos.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/utilidades-texto.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/alertas.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/botones.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/tablas.css}">
-    <link rel="stylesheet" th:href="@{/css/globales/modales.css}">
-    
+  <head th:fragment="comun(titulo)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${titulo} + ' | Sistema de Condominios'">
+      Sistema de Condominios
+    </title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" th:href="@{/css/globales/globales.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/formularios.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/tarjetas.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/pestanas.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/evidencias.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/distintivos.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/utilidades-texto.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/alertas.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/botones.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/tablas.css}" />
+    <link rel="stylesheet" th:href="@{/css/globales/modales.css}" />
+
     <script defer th:src="@{/js/globales/api.js}"></script>
+    <script defer th:src="@{/js/globales/validaciones-base.js}"></script>
     <script defer th:src="@{/js/globales/validaciones.js}"></script>
     <script defer th:src="@{/js/globales/formato-numeros.js}"></script>
     <script defer th:src="@{/js/globales/sidebar.js}"></script>
-</head>
+  </head>
 </html>

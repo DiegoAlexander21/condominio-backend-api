@@ -1,113 +1,240 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragmentos/head :: comun('Asignar Ocupantes')}"></head>
-<body>
+  <head th:replace="~{fragmentos/head :: comun('Asignar Ocupantes')}"></head>
+  <body>
     <div class="contenedor-principal">
-        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
-        
-        <main class="contenido-principal">
-            <header class="encabezado">
-                <div>
-                    <h1 class="titulo-pagina">Asignar Ocupantes</h1>
-                    <p>Registra o actualiza el propietario y el residente de la unidad.</p>
+      <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+
+      <main class="contenido-principal">
+        <header class="encabezado">
+          <div>
+            <h1 class="titulo-pagina">Asignar Ocupantes</h1>
+            <p>
+              Registra o actualiza el propietario y el residente de la unidad.
+            </p>
+          </div>
+          <nav>
+            <a class="boton-secundario" th:href="@{/gestion-unidades}"
+              >&larr; Volver</a
+            >
+          </nav>
+        </header>
+
+        <section th:if="${successMessage != null or errorMessage != null}">
+          <p
+            class="alerta-exito"
+            th:if="${successMessage != null}"
+            th:text="${successMessage}"
+          ></p>
+          <p
+            class="alerta-error"
+            th:if="${errorMessage != null}"
+            th:text="${errorMessage}"
+          ></p>
+        </section>
+
+        <section class="panel">
+          <div class="tarjeta tarjeta-estatica">
+            <h2>Datos de los Habitantes</h2>
+
+            <form
+              id="formularioOcupantes"
+              th:action="@{/gestion-unidades/ocupantes}"
+              th:object="${ocupantesForm}"
+              method="post"
+              novalidate
+            >
+              <input type="hidden" th:field="*{id}" />
+
+              <div class="grupo-seccion">
+                <h3 class="seccion-titulo">Datos del Propietario</h3>
+                <div class="fila-formulario">
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="nombrePropietario"
+                      >Nombre completo</label
+                    >
+                    <input
+                      class="formulario-entrada"
+                      id="nombrePropietario"
+                      type="text"
+                      th:field="*{nombrePropietario}"
+                      placeholder="Ej: Tony Stark"
+                      minlength="5"
+                      maxlength="100"
+                      required
+                    />
+                  </div>
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="dniPropietario"
+                      >DNI</label
+                    >
+                    <input
+                      class="formulario-entrada"
+                      id="dniPropietario"
+                      type="text"
+                      th:field="*{dniPropietario}"
+                      placeholder="Ej: 12345678"
+                      minlength="8"
+                      maxlength="8"
+                      pattern="\d{8}"
+                      required
+                    />
+                  </div>
                 </div>
-                <nav>
-                    <a class="boton-secundario" th:href="@{/gestion-unidades}">&larr; Volver</a>
-                </nav>
-            </header>
-
-            <section th:if="${successMessage != null or errorMessage != null}">
-                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
-                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
-            </section>
-
-            <section class="panel">
-                <div class="tarjeta tarjeta-estatica">
-                    <h2>Datos de los Habitantes</h2>
-                    
-                    <form id="formularioOcupantes" th:action="@{/gestion-unidades/ocupantes}" th:object="${ocupantesForm}" method="post" novalidate>
-                        <input type="hidden" th:field="*{id}" />
-
-                        <div class="grupo-seccion">
-                            <h3 class="seccion-titulo">Datos del Propietario</h3>
-                            <div class="fila-formulario">
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="nombrePropietario">Nombre completo</label>
-                                    <input class="formulario-entrada" id="nombrePropietario" type="text" th:field="*{nombrePropietario}" placeholder="Ej: Tony Stark" minlength="5" maxlength="100" required />
-                                </div>
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="dniPropietario">DNI</label>
-                                    <input class="formulario-entrada" id="dniPropietario" type="text" th:field="*{dniPropietario}" placeholder="Ej: 12345678" minlength="8" maxlength="8" pattern="\d{8}" required />
-                                </div>
-                            </div>
-                            <div class="fila-formulario">
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="emailPropietario">Email</label>
-                                    <input class="formulario-entrada" id="emailPropietario" type="email" th:field="*{emailPropietario}" placeholder="Ej: tony@gmail.com" maxlength="100" />
-                                </div>
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="telefonoPropietario">Teléfono</label>
-                                    <input class="formulario-entrada" id="telefonoPropietario" type="tel" th:field="*{telefonoPropietario}" placeholder="Ej: 987654321" minlength="9" maxlength="9" pattern="\d{9}" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grupo-seccion">
-                            <h3 class="seccion-titulo">Datos del Residente (opcional)</h3>
-                            <div class="fila-formulario">
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="nombreResidente">Nombre completo</label>
-                                    <input class="formulario-entrada" id="nombreResidente" type="text" th:field="*{nombreResidente}" placeholder="Ej: Peter Parker" minlength="3" maxlength="100" />
-                                </div>
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="dniResidente">DNI</label>
-                                    <input class="formulario-entrada" id="dniResidente" type="text" th:field="*{dniResidente}" placeholder="Ej: 87654321" minlength="8" maxlength="8" pattern="\d{8}" />
-                                </div>
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="emailResidente">Email</label>
-                                    <input class="formulario-entrada" id="emailResidente" type="email" th:field="*{emailResidente}" placeholder="Ej: peter@gmail.com" maxlength="150" />
-                                </div>
-                            </div>
-                            <div class="fila-formulario">
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="parentesco">Parentesco</label>
-                                    <select class="formulario-entrada" id="parentesco" th:field="*{parentesco}">
-                                        <option value="">Seleccione parentesco</option>
-                                        <option value="Cónyuge">Cónyuge</option>
-                                        <option value="Hijo(a)">Hijo(a)</option>
-                                        <option value="Padre/Madre">Padre/Madre</option>
-                                        <option value="Hermano(a)">Hermano(a)</option>
-                                        <option value="Otro">Otro</option>
-                                    </select>
-                                </div>
-                                <div class="formulario-grupo grupo-flexible">
-                                    <label class="formulario-etiqueta" for="residenteActivo">Estado de Ocupación</label>
-                                    <select class="formulario-entrada" id="residenteActivo" th:field="*{residenteActivo}" required>
-                                        <option value="true">Ocupada</option>
-                                        <option value="false">Disponible</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="nota-informativa">
-                            <p class="nota-texto">
-                                <strong>Nota informativa:</strong> Si no hay un residente agregado, se supone que el propietario usa la unidad o está disponible para alquiler.
-                            </p>
-                        </div>
-
-                        <div class="contenedor-botones">
-                            <button type="submit" class="boton-primario">Guardar cambios</button>
-                            <button type="button" class="boton-secundario" id="btnRevertir">Revertir</button>
-                            <button type="button" class="boton-secundario boton-peligro" id="btnLimpiarTodo">Limpiar Todo</button>
-                            <button type="button" class="boton-secundario boton-advertencia" id="btnLimpiarResidente">Limpiar Residente</button>
-                        </div>
-                    </form>
+                <div class="fila-formulario">
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="emailPropietario"
+                      >Email</label
+                    >
+                    <input
+                      class="formulario-entrada"
+                      id="emailPropietario"
+                      type="email"
+                      th:field="*{emailPropietario}"
+                      placeholder="Ej: tony@gmail.com"
+                      maxlength="100"
+                    />
+                  </div>
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="telefonoPropietario"
+                      >Teléfono</label
+                    >
+                    <input
+                      class="formulario-entrada"
+                      id="telefonoPropietario"
+                      type="tel"
+                      th:field="*{telefonoPropietario}"
+                      placeholder="Ej: 987654321"
+                      minlength="9"
+                      maxlength="9"
+                      pattern="\d{9}"
+                    />
+                  </div>
                 </div>
-            </section>
-        </main>
+              </div>
+
+              <div class="grupo-seccion">
+                <h3 class="seccion-titulo">Datos del Residente (opcional)</h3>
+                <div class="fila-formulario">
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="nombreResidente"
+                      >Nombre completo</label
+                    >
+                    <input
+                      class="formulario-entrada"
+                      id="nombreResidente"
+                      type="text"
+                      th:field="*{nombreResidente}"
+                      placeholder="Ej: Peter Parker"
+                      minlength="3"
+                      maxlength="100"
+                    />
+                  </div>
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="dniResidente"
+                      >DNI</label
+                    >
+                    <input
+                      class="formulario-entrada"
+                      id="dniResidente"
+                      type="text"
+                      th:field="*{dniResidente}"
+                      placeholder="Ej: 87654321"
+                      minlength="8"
+                      maxlength="8"
+                      pattern="\d{8}"
+                    />
+                  </div>
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="emailResidente"
+                      >Email</label
+                    >
+                    <input
+                      class="formulario-entrada"
+                      id="emailResidente"
+                      type="email"
+                      th:field="*{emailResidente}"
+                      placeholder="Ej: peter@gmail.com"
+                      maxlength="150"
+                    />
+                  </div>
+                </div>
+                <div class="fila-formulario">
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="parentesco"
+                      >Parentesco</label
+                    >
+                    <select
+                      class="formulario-entrada"
+                      id="parentesco"
+                      th:field="*{parentesco}"
+                    >
+                      <option value="">Seleccione parentesco</option>
+                      <option value="Cónyuge">Cónyuge</option>
+                      <option value="Hijo(a)">Hijo(a)</option>
+                      <option value="Padre/Madre">Padre/Madre</option>
+                      <option value="Hermano(a)">Hermano(a)</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                  <div class="formulario-grupo grupo-flexible">
+                    <label class="formulario-etiqueta" for="residenteActivo"
+                      >Estado de Ocupación</label
+                    >
+                    <select
+                      class="formulario-entrada"
+                      id="residenteActivo"
+                      th:field="*{residenteActivo}"
+                      required
+                    >
+                      <option value="true">Ocupada</option>
+                      <option value="false">Disponible</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="nota-informativa">
+                <p class="nota-texto">
+                  <strong>Nota informativa:</strong> Si no hay un residente
+                  agregado, se supone que el propietario usa la unidad o está
+                  disponible para alquiler.
+                </p>
+              </div>
+
+              <div class="contenedor-botones">
+                <button type="submit" class="boton-primario">
+                  Guardar cambios
+                </button>
+                <button type="button" class="boton-secundario" id="btnRevertir">
+                  Revertir
+                </button>
+                <button
+                  type="button"
+                  class="boton-secundario boton-peligro"
+                  id="btnLimpiarTodo"
+                >
+                  Limpiar Todo
+                </button>
+                <button
+                  type="button"
+                  class="boton-secundario boton-advertencia"
+                  id="btnLimpiarResidente"
+                >
+                  Limpiar Residente
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
     </div>
-    <link rel="stylesheet" th:href="@{/css/dominios/unidades/formularios-unidades.css}">
+    <link
+      rel="stylesheet"
+      th:href="@{/css/dominios/unidades/formularios-unidades.css}"
+    />
+    <script th:src="@{/js/dominios/unidades/ocupantes-alertas.js}"></script>
+    <script th:src="@{/js/dominios/unidades/ocupantes-acciones.js}"></script>
     <script th:src="@{/js/dominios/unidades/asignar-ocupantes.js}"></script>
-</body>
+  </body>
 </html>

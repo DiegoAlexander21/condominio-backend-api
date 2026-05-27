@@ -1,109 +1,187 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <th:block th:replace="~{fragmentos/head :: comun('Dashboard de Gestión')}"></th:block>
-    <link rel="stylesheet" th:href="@{/css/dominios/reportes/reportes.css}">
-</head>
-<body>
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <th:block
+      th:replace="~{fragmentos/head :: comun('Dashboard de Gestión')}"
+    ></th:block>
+    <link rel="stylesheet" th:href="@{/css/dominios/reportes/reportes.css}" />
+  </head>
+  <body>
     <div class="contenedor-principal" id="pantallaDashboard">
-        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
-        
-        <main class="contenido-principal" id="areaReportes">
-            <header class="encabezado" id="cabeceraReportes">
-                <div>
-                    <h1 class="titulo-pagina" id="encabezadoDashboard">Dashboard de Gestión</h1>
-                    <p>Reportes analíticos interactivos y métricas financieras en tiempo real.</p>
-                </div>
-            </header>
+      <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
 
-            <div id="datosReporte" class="oculto">
-                <div class="datos-incidencia" th:each="inc : ${dashboard.incidenciasFrecuentes}"
-                     th:data-area="${inc.areaComunNombre}"
-                     th:data-total="${inc.totalIncidencias}">
-                </div>
-                <div class="datos-gasto" th:each="gasto : ${dashboard.areasConMayorGasto}"
-                     th:data-area="${gasto.areaComunNombre}"
-                     th:data-monto="${gasto.montoTotal}">
-                </div>
-                <div class="datos-morosa" th:each="morosa : ${dashboard.unidadesMorosas}"
-                     th:data-unidad="${morosa.unidadNombre}"
-                     th:data-saldo="${morosa.saldo}"
-                     th:data-periodo="${#temporals.format(morosa.periodo, 'MM/yyyy')}">
-                </div>
+      <main class="contenido-principal" id="areaReportes">
+        <header class="encabezado" id="cabeceraReportes">
+          <div>
+            <h1 class="titulo-pagina" id="encabezadoDashboard">
+              Dashboard de Gestión
+            </h1>
+            <p>
+              Reportes analíticos interactivos y métricas financieras en tiempo
+              real.
+            </p>
+          </div>
+        </header>
+
+        <div id="datosReporte" class="oculto">
+          <div
+            class="datos-incidencia"
+            th:each="inc : ${dashboard.incidenciasFrecuentes}"
+            th:data-area="${inc.areaComunNombre}"
+            th:data-total="${inc.totalIncidencias}"
+          ></div>
+          <div
+            class="datos-gasto"
+            th:each="gasto : ${dashboard.areasConMayorGasto}"
+            th:data-area="${gasto.areaComunNombre}"
+            th:data-monto="${gasto.montoTotal}"
+          ></div>
+          <div
+            class="datos-morosa"
+            th:each="morosa : ${dashboard.unidadesMorosas}"
+            th:data-unidad="${morosa.unidadNombre}"
+            th:data-saldo="${morosa.saldo}"
+            th:data-periodo="${#temporals.format(morosa.periodo, 'MM/yyyy')}"
+          ></div>
+        </div>
+
+        <section class="panel-resumen-reportes" id="seccionResumen">
+          <div
+            class="tarjeta tarjeta-estatica tarjeta-kpi"
+            id="tarjetaIncidenciasTotales"
+          >
+            <h3>Incidencias Frecuentes</h3>
+            <p
+              class="valor-kpi"
+              th:text="${#lists.size(dashboard.incidenciasFrecuentes)} + ' Áreas'"
+            ></p>
+            <span class="descripcion-kpi">Con desperfectos reportados</span>
+          </div>
+          <div
+            class="tarjeta tarjeta-estatica tarjeta-kpi"
+            id="tarjetaGastosTotales"
+          >
+            <h3>Gasto Acumulado en Áreas</h3>
+            <p
+              class="valor-kpi"
+              th:text="'S/ ' + ${#numbers.formatDecimal(#aggregates.sum(dashboard.areasConMayorGasto.![montoTotal]) ?: 0.0, 1, 'POINT', 2, 'COMMA')}"
+            ></p>
+            <span class="descripcion-kpi">Inversión extraordinaria total</span>
+          </div>
+          <div
+            class="tarjeta tarjeta-estatica tarjeta-kpi"
+            id="tarjetaUnidadesMorosas"
+          >
+            <h3>Unidades Morosas</h3>
+            <p
+              class="valor-kpi"
+              th:text="${#lists.size(dashboard.unidadesMorosas)} + ' Deptos'"
+            ></p>
+            <span class="descripcion-kpi">Con deudas fuera de vencimiento</span>
+          </div>
+        </section>
+
+        <section class="grid-graficos" id="seccionGraficos">
+          <article
+            class="tarjeta tarjeta-estatica tarjeta-grafico"
+            id="contenedorGraficoIncidencias"
+          >
+            <h2>Áreas con Mayor Incidencias</h2>
+            <p class="tarjeta-descripcion">
+              Frecuencia de daños reportados por áreas comunes
+            </p>
+            <div id="graficoIncidencias" class="grafico-contenedor"></div>
+          </article>
+
+          <article
+            class="tarjeta tarjeta-estatica tarjeta-grafico"
+            id="contenedorGraficoGastos"
+          >
+            <h2>Distribución de Gastos</h2>
+            <p class="tarjeta-descripcion">
+              Áreas comunes con mayor gasto por reparaciones extraordinarias
+            </p>
+            <div id="graficoGastos" class="grafico-contenedor"></div>
+          </article>
+
+          <article
+            class="tarjeta tarjeta-estatica tarjeta-grafico col-ancho-completo"
+            id="contenedorGraficoMorosas"
+          >
+            <h2>Índice de Morosidad</h2>
+            <p class="tarjeta-descripcion">
+              Comparación del saldo vencido por departamento (Top 5)
+            </p>
+            <div id="graficoMorosas" class="grafico-contenedor"></div>
+          </article>
+        </section>
+
+        <section class="panel" id="seccionDetalleMorosos">
+          <div class="tarjeta tarjeta-estatica" id="contenedorTablaMorosos">
+            <div class="encabezado-tarjeta">
+              <h2>Top Unidades con Mayor Deuda</h2>
+              <span
+                class="etiqueta"
+                id="contadorMorosas"
+                th:text="${dashboard.unidadesConMayorDeuda != null ? #lists.size(dashboard.unidadesConMayorDeuda) : 0} + ' unidades'"
+              ></span>
             </div>
 
-            <section class="panel-resumen-reportes" id="seccionResumen">
-                <div class="tarjeta tarjeta-estatica tarjeta-kpi" id="tarjetaIncidenciasTotales">
-                    <h3>Incidencias Frecuentes</h3>
-                    <p class="valor-kpi" th:text="${#lists.size(dashboard.incidenciasFrecuentes)} + ' Áreas'"></p>
-                    <span class="descripcion-kpi">Con desperfectos reportados</span>
-                </div>
-                <div class="tarjeta tarjeta-estatica tarjeta-kpi" id="tarjetaGastosTotales">
-                    <h3>Gasto Acumulado en Áreas</h3>
-                    <p class="valor-kpi" th:text="'S/ ' + ${#numbers.formatDecimal(#aggregates.sum(dashboard.areasConMayorGasto.![montoTotal]) ?: 0.0, 1, 'POINT', 2, 'COMMA')}"></p>
-                    <span class="descripcion-kpi">Inversión extraordinaria total</span>
-                </div>
-                <div class="tarjeta tarjeta-estatica tarjeta-kpi" id="tarjetaUnidadesMorosas">
-                    <h3>Unidades Morosas</h3>
-                    <p class="valor-kpi" th:text="${#lists.size(dashboard.unidadesMorosas)} + ' Deptos'"></p>
-                    <span class="descripcion-kpi">Con deudas fuera de vencimiento</span>
-                </div>
-            </section>
-
-            <section class="grid-graficos" id="seccionGraficos">
-                <article class="tarjeta tarjeta-estatica tarjeta-grafico" id="contenedorGraficoIncidencias">
-                    <h2>Áreas con Mayor Incidencias</h2>
-                    <p class="tarjeta-descripcion">Frecuencia de daños reportados por áreas comunes</p>
-                    <div id="graficoIncidencias" class="grafico-contenedor"></div>
-                </article>
-
-                <article class="tarjeta tarjeta-estatica tarjeta-grafico" id="contenedorGraficoGastos">
-                    <h2>Distribución de Gastos</h2>
-                    <p class="tarjeta-descripcion">Áreas comunes con mayor gasto por reparaciones extraordinarias</p>
-                    <div id="graficoGastos" class="grafico-contenedor"></div>
-                </article>
-
-                <article class="tarjeta tarjeta-estatica tarjeta-grafico col-ancho-completo" id="contenedorGraficoMorosas">
-                    <h2>Índice de Morosidad</h2>
-                    <p class="tarjeta-descripcion">Comparación del saldo vencido por departamento (Top 5)</p>
-                    <div id="graficoMorosas" class="grafico-contenedor"></div>
-                </article>
-            </section>
-
-            <section class="panel" id="seccionDetalleMorosos">
-                <div class="tarjeta tarjeta-estatica" id="contenedorTablaMorosos">
-                    <div class="encabezado-tarjeta">
-                        <h2>Top Unidades con Mayor Deuda</h2>
-                        <span class="etiqueta" id="contadorMorosas" th:text="${dashboard.unidadesConMayorDeuda != null ? #lists.size(dashboard.unidadesConMayorDeuda) : 0} + ' unidades'"></span>
-                    </div>
-                    
-                    <div class="contenedor-tabla">
-                        <table class="tabla-datos tabla-estatica" id="tablaMorosas">
-                            <thead>
-                                <tr>
-                                    <th>Departamento / Torre</th>
-                                    <th>Último Periodo Facturado</th>
-                                    <th>Saldo Pendiente</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:if="${dashboard.unidadesConMayorDeuda == null or #lists.isEmpty(dashboard.unidadesConMayorDeuda)}">
-                                    <td colspan="3" class="celda-vacia">No se registran unidades con deudas en el sistema.</td>
-                                </tr>
-                                <tr th:each="deuda : ${dashboard.unidadesConMayorDeuda}">
-                                    <td class="resaltado-unidad" th:text="${deuda.unidadNombre}"></td>
-                                    <td th:text="${#temporals.format(deuda.periodo, 'MM/yyyy')}"></td>
-                                    <td class="resaltado-saldo" th:text="'S/ ' + ${#numbers.formatDecimal(deuda.saldo, 1, 'POINT', 2, 'COMMA')}"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        </main>
+            <div class="contenedor-tabla">
+              <table class="tabla-datos tabla-estatica" id="tablaMorosas">
+                <thead>
+                  <tr>
+                    <th>Departamento / Torre</th>
+                    <th>Último Periodo Facturado</th>
+                    <th>Saldo Pendiente</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    th:if="${dashboard.unidadesConMayorDeuda == null or #lists.isEmpty(dashboard.unidadesConMayorDeuda)}"
+                  >
+                    <td colspan="3" class="celda-vacia">
+                      No se registran unidades con deudas en el sistema.
+                    </td>
+                  </tr>
+                  <tr th:each="deuda : ${dashboard.unidadesConMayorDeuda}">
+                    <td
+                      class="resaltado-unidad"
+                      th:text="${deuda.unidadNombre}"
+                    ></td>
+                    <td
+                      th:text="${#temporals.format(deuda.periodo, 'MM/yyyy')}"
+                    ></td>
+                    <td
+                      class="resaltado-saldo"
+                      th:text="'S/ ' + ${#numbers.formatDecimal(deuda.saldo, 1, 'POINT', 2, 'COMMA')}"
+                    ></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script th:src="@{/js/dominios/reportes/reportes-datos.js}" defer></script>
+    <script
+      th:src="@{/js/dominios/reportes/reportes-grafico-incidencias.js}"
+      defer
+    ></script>
+    <script
+      th:src="@{/js/dominios/reportes/reportes-grafico-gastos.js}"
+      defer
+    ></script>
+    <script
+      th:src="@{/js/dominios/reportes/reportes-grafico-morosas.js}"
+      defer
+    ></script>
     <script th:src="@{/js/dominios/reportes/reportes.js}" defer></script>
-</body>
+  </body>
 </html>

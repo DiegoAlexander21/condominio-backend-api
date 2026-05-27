@@ -1,87 +1,136 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragmentos/head :: comun('Gestión de Reservas')}"></head>
-<body>
+  <head th:replace="~{fragmentos/head :: comun('Gestión de Reservas')}"></head>
+  <body>
     <div class="contenedor-principal">
-        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
-        
-        <main class="contenido-principal">
-            <header class="encabezado">
-                <div>
-                    <h1 class="titulo-pagina">Gestión de Reservas</h1>
-                    <p>Consulta las reservas de áreas comunes por fecha.</p>
-                </div>
-                <nav>
-                    <a class="boton-primario" th:href="@{/reservas/nuevo}">+ Nueva Reserva</a>
-                </nav>
-            </header>
+      <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
 
-            <section th:if="${successMessage != null or errorMessage != null}">
-                <p class="alerta-exito" th:if="${successMessage != null}" th:text="${successMessage}"></p>
-                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
-            </section>
+      <main class="contenido-principal">
+        <header class="encabezado">
+          <div>
+            <h1 class="titulo-pagina">Gestión de Reservas</h1>
+            <p>Consulta las reservas de áreas comunes por fecha.</p>
+          </div>
+          <nav>
+            <a class="boton-primario" th:href="@{/reservas/nuevo}"
+              >+ Nueva Reserva</a
+            >
+          </nav>
+        </header>
 
-            <section class="panel panel-separado">
-                <div class="tarjeta tarjeta-estatica">
-                    <h2>Filtro de Reservas</h2>
-                    <form th:action="@{/reservas}" method="get" class="fila-formulario filtro-formulario-alineado">
-                        <div class="formulario-grupo grupo-flexible grupo-formulario-sin-margen">
-                            <label class="formulario-etiqueta" for="condominioId">Condominio</label>
-                            <select class="formulario-entrada" id="condominioId" name="condominioId">
-                                <option value="">Todos los condominios...</option>
-                                <option th:each="condominio : ${condominios}" 
-                                        th:value="${condominio.id}" 
-                                        th:text="${condominio.nombre}"
-                                        th:selected="${condominioIdSeleccionado != null and condominioIdSeleccionado == condominio.id}">
-                                </option>
-                            </select>
-                        </div>
-                        <div class="formulario-grupo grupo-flexible grupo-formulario-sin-margen">
-                            <label class="formulario-etiqueta" for="areaComunId">Área Común</label>
-                            <select class="formulario-entrada" id="areaComunId" name="areaComunId" th:disabled="${condominioIdSeleccionado == null}" required>
-                                <option value="">Seleccione el área...</option>
-                                <option th:each="area : ${areasComunes}" 
-                                        th:value="${area.id}" 
-                                        th:data-condominio="${area.condominio.id}"
-                                        th:text="${area.nombre}"
-                                        th:selected="${areaComunIdSeleccionada != null and areaComunIdSeleccionada == area.id}">
-                                </option>
-                            </select>
-                        </div>
-                        <button type="submit" class="boton-primario">Consultar</button>
-                    </form>
-                </div>
-            </section>
+        <section th:if="${successMessage != null or errorMessage != null}">
+          <p
+            class="alerta-exito"
+            th:if="${successMessage != null}"
+            th:text="${successMessage}"
+          ></p>
+          <p
+            class="alerta-error"
+            th:if="${errorMessage != null}"
+            th:text="${errorMessage}"
+          ></p>
+        </section>
 
-            <section class="panel" th:if="${areaComunIdSeleccionada != null}">
-                <div class="tarjeta tarjeta-estatica">
-                    <div class="encabezado-tarjeta">
-                        <h2>Reservas Registradas</h2>
-                        <span class="etiqueta" th:text="${reservas != null ? #lists.size(reservas) : 0} + ' reservas'">0 reservas</span>
-                    </div>
-                    
-                    <table class="tabla-datos">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Horario</th>
-                                <th>Responsable</th>
-                                <th>Unidad</th>
-                                <th>Fecha de Registro</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${reservas == null or #lists.isEmpty(reservas)}">
-                                <td colspan="5" class="celda-vacia">No hay reservas registradas para el área seleccionada.</td>
-                            </tr>
-                            <tr th:each="reserva : ${reservas}">
-                                <td th:text="${#temporals.format(reserva.fechaReserva, 'dd/MM/yyyy')}"></td>
-                                <td th:text="${reserva.horaInicio} + ' - ' + ${reserva.horaFin}"></td>
-                                <td th:text="${reserva.responsableNombre}"></td>
-                                <td>
-                                    <th:block th:each="unidadActual : ${unidades}" th:if="${unidadActual.id == reserva.unidadId}">
-                                        <button type="button" class="boton-secundario btn-tabla boton-detalles"
-                                                th:attr="data-condominio=${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'},
+        <section class="panel panel-separado">
+          <div class="tarjeta tarjeta-estatica">
+            <h2>Filtro de Reservas</h2>
+            <form
+              th:action="@{/reservas}"
+              method="get"
+              class="fila-formulario filtro-formulario-alineado"
+            >
+              <div
+                class="formulario-grupo grupo-flexible grupo-formulario-sin-margen"
+              >
+                <label class="formulario-etiqueta" for="condominioId"
+                  >Condominio</label
+                >
+                <select
+                  class="formulario-entrada"
+                  id="condominioId"
+                  name="condominioId"
+                >
+                  <option value="">Todos los condominios...</option>
+                  <option
+                    th:each="condominio : ${condominios}"
+                    th:value="${condominio.id}"
+                    th:text="${condominio.nombre}"
+                    th:selected="${condominioIdSeleccionado != null and condominioIdSeleccionado == condominio.id}"
+                  ></option>
+                </select>
+              </div>
+              <div
+                class="formulario-grupo grupo-flexible grupo-formulario-sin-margen"
+              >
+                <label class="formulario-etiqueta" for="areaComunId"
+                  >Área Común</label
+                >
+                <select
+                  class="formulario-entrada"
+                  id="areaComunId"
+                  name="areaComunId"
+                  th:disabled="${condominioIdSeleccionado == null}"
+                  required
+                >
+                  <option value="">Seleccione el área...</option>
+                  <option
+                    th:each="area : ${areasComunes}"
+                    th:value="${area.id}"
+                    th:data-condominio="${area.condominio.id}"
+                    th:text="${area.nombre}"
+                    th:selected="${areaComunIdSeleccionada != null and areaComunIdSeleccionada == area.id}"
+                  ></option>
+                </select>
+              </div>
+              <button type="submit" class="boton-primario">Consultar</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="panel" th:if="${areaComunIdSeleccionada != null}">
+          <div class="tarjeta tarjeta-estatica">
+            <div class="encabezado-tarjeta">
+              <h2>Reservas Registradas</h2>
+              <span
+                class="etiqueta"
+                th:text="${reservas != null ? #lists.size(reservas) : 0} + ' reservas'"
+                >0 reservas</span
+              >
+            </div>
+
+            <table class="tabla-datos">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Horario</th>
+                  <th>Responsable</th>
+                  <th>Unidad</th>
+                  <th>Fecha de Registro</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:if="${reservas == null or #lists.isEmpty(reservas)}">
+                  <td colspan="5" class="celda-vacia">
+                    No hay reservas registradas para el área seleccionada.
+                  </td>
+                </tr>
+                <tr th:each="reserva : ${reservas}">
+                  <td
+                    th:text="${#temporals.format(reserva.fechaReserva, 'dd/MM/yyyy')}"
+                  ></td>
+                  <td
+                    th:text="${reserva.horaInicio} + ' - ' + ${reserva.horaFin}"
+                  ></td>
+                  <td th:text="${reserva.responsableNombre}"></td>
+                  <td>
+                    <th:block
+                      th:each="unidadActual : ${unidades}"
+                      th:if="${unidadActual.id == reserva.unidadId}"
+                    >
+                      <button
+                        type="button"
+                        class="boton-secundario btn-tabla boton-detalles"
+                        th:attr="data-condominio=${unidadActual.condominio != null ? unidadActual.condominio.nombre : '-'},
                                                          data-unidad=${unidadActual.numeroUnidad},
                                                          data-torre=${unidadActual.torre},
                                                          data-piso=${unidadActual.piso},
@@ -94,59 +143,101 @@
                                                          data-dni-res=${unidadActual.residente?.dni},
                                                          data-tel-res=${unidadActual.residente?.email},
                                                          data-parentesco=${unidadActual.residente?.parentesco},
-                                                         data-estado=${(unidadActual.residente != null and unidadActual.residente.activo) ? 'Ocupada' : 'Disponible'}">
-                                            <span th:text="${reserva.unidadNumero != null ? reserva.unidadNumero : 'Ver detalles'}"></span>
-                                        </button>
-                                    </th:block>
-                                </td>
-                                <td th:text="${#temporals.format(reserva.fechaRegistro, 'dd/MM/yyyy HH:mm')}"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                                                         data-estado=${(unidadActual.residente != null and unidadActual.residente.activo) ? 'Ocupada' : 'Disponible'}"
+                      >
+                        <span
+                          th:text="${reserva.unidadNumero != null ? reserva.unidadNumero : 'Ver detalles'}"
+                        ></span>
+                      </button>
+                    </th:block>
+                  </td>
+                  <td
+                    th:text="${#temporals.format(reserva.fechaRegistro, 'dd/MM/yyyy HH:mm')}"
+                  ></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-            <div id="modalDetalles" class="modal-overlay">
-                <div class="modal-contenido tarjeta tarjeta-estatica">
-                    <span class="cerrar-modal">&times;</span>
-                    <h2 class="modal-titulo">Detalles de la Unidad</h2>
-                    
-                    <div class="modal-grid">
-                        <div>
-                            <h4 class="modal-seccion-titulo">Ubicación</h4>
-                            <p class="modal-parrafo"><strong>Condominio:</strong> <span id="det-condominio"></span></p>
-                            <p class="modal-parrafo"><strong>Unidad:</strong> <span id="det-unidad"></span></p>
-                            <p class="modal-parrafo"><strong>Torre:</strong> <span id="det-torre"></span></p>
-                            <p class="modal-parrafo"><strong>Piso:</strong> <span id="det-piso"></span></p>
-                        </div>
-                        <div>
-                            <h4 class="modal-seccion-titulo">Características</h4>
-                            <p class="modal-parrafo"><strong>Área:</strong> <span id="det-area"></span> m²</p>
-                            <p class="modal-parrafo"><strong>Estado:</strong> <span id="det-estado"></span></p>
-                        </div>
-                    </div>
+        <div id="modalDetalles" class="modal-overlay">
+          <div class="modal-contenido tarjeta tarjeta-estatica">
+            <span class="cerrar-modal">&times;</span>
+            <h2 class="modal-titulo">Detalles de la Unidad</h2>
 
-                    <div class="modal-grid modal-grid-separado">
-                        <div>
-                            <h4 class="modal-seccion-titulo">Propietario</h4>
-                            <p class="modal-parrafo"><strong>Nombre:</strong> <span id="det-propietario"></span></p>
-                            <p class="modal-parrafo"><strong>DNI:</strong> <span id="det-dni-prop"></span></p>
-                            <p class="modal-parrafo"><strong>Teléfono:</strong> <span id="det-tel-prop"></span></p>
-                            <p class="modal-parrafo"><strong>Email:</strong> <span id="det-email-prop"></span></p>
-                        </div>
-                        <div>
-                            <h4 class="modal-seccion-titulo">Residente Actual</h4>
-                            <p class="modal-parrafo"><strong>Nombre:</strong> <span id="det-residente"></span></p>
-                            <p class="modal-parrafo"><strong>DNI:</strong> <span id="det-dni-res"></span></p>
-                            <p class="modal-parrafo"><strong>Email:</strong> <span id="det-tel-res"></span></p>
-                            <p class="modal-parrafo"><strong>Parentesco:</strong> <span id="det-parentesco"></span></p>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-grid">
+              <div>
+                <h4 class="modal-seccion-titulo">Ubicación</h4>
+                <p class="modal-parrafo">
+                  <strong>Condominio:</strong> <span id="det-condominio"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>Unidad:</strong> <span id="det-unidad"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>Torre:</strong> <span id="det-torre"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>Piso:</strong> <span id="det-piso"></span>
+                </p>
+              </div>
+              <div>
+                <h4 class="modal-seccion-titulo">Características</h4>
+                <p class="modal-parrafo">
+                  <strong>Área:</strong> <span id="det-area"></span> m²
+                </p>
+                <p class="modal-parrafo">
+                  <strong>Estado:</strong> <span id="det-estado"></span>
+                </p>
+              </div>
             </div>
-        </main>
+
+            <div class="modal-grid modal-grid-separado">
+              <div>
+                <h4 class="modal-seccion-titulo">Propietario</h4>
+                <p class="modal-parrafo">
+                  <strong>Nombre:</strong> <span id="det-propietario"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>DNI:</strong> <span id="det-dni-prop"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>Teléfono:</strong> <span id="det-tel-prop"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>Email:</strong> <span id="det-email-prop"></span>
+                </p>
+              </div>
+              <div>
+                <h4 class="modal-seccion-titulo">Residente Actual</h4>
+                <p class="modal-parrafo">
+                  <strong>Nombre:</strong> <span id="det-residente"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>DNI:</strong> <span id="det-dni-res"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>Email:</strong> <span id="det-tel-res"></span>
+                </p>
+                <p class="modal-parrafo">
+                  <strong>Parentesco:</strong> <span id="det-parentesco"></span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-    <link rel="stylesheet" th:href="@{/css/dominios/areascomunes/areascomunes.css}">
+    <link
+      rel="stylesheet"
+      th:href="@{/css/dominios/areascomunes/areascomunes.css}"
+    />
+    <script
+      th:src="@{/js/dominios/areascomunes/gestion-reservas-filtro.js}"
+    ></script>
+    <script
+      th:src="@{/js/dominios/areascomunes/gestion-reservas-modal.js}"
+    ></script>
     <script th:src="@{/js/dominios/areascomunes/gestion-reservas.js}"></script>
-</body>
+  </body>
 </html>
