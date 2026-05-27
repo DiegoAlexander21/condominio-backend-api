@@ -38,7 +38,7 @@
                                     <td colspan="4">No se han registrado cambios de titularidad aún.</td>
                                 </tr>
                                 <tr th:each="historial : ${listaHistorial}" class="fila-dato">
-                                    <td th:text="${'Torre ' + historial.unidad.torre + ' - U. ' + historial.unidad.numeroUnidad}"></td>
+                                    <td th:text="${historial.unidad.torre + ' - U. ' + historial.unidad.numeroUnidad}"></td>
                                     <td th:text="${historial.propietarioAnterior}"></td>
                                     <td th:text="${historial.nuevoPropietario}"></td>
                                     <td th:text="${#temporals.format(historial.fechaCambio, 'dd/MM/yyyy HH:mm')}"></td>

@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**",
                                 "/error")
                         .permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().hasRole("ADMINISTRADOR"))
                 .exceptionHandling(ex -> ex
                         .defaultAuthenticationEntryPointFor(
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
@@ -44,7 +44,11 @@ public class WebSecurityConfig {
                         .defaultAccessDeniedHandlerFor(
                                 (request, response, accessDeniedException) -> response
                                         .sendError(HttpServletResponse.SC_FORBIDDEN),
-                                new AntPathRequestMatcher("/api/**")))
+                                new AntPathRequestMatcher("/api/**"))
+                        .authenticationEntryPoint(
+                                (request, response, authException) -> response.sendRedirect("/auth/login"))
+                        .accessDeniedHandler(
+                                (request, response, accessDeniedException) -> response.sendRedirect("/auth/sin-panel")))
                 .addFilterBefore(filtroJwt, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
