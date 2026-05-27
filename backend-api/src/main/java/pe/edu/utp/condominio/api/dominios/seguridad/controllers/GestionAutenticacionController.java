@@ -81,7 +81,14 @@ public class GestionAutenticacionController {
                     .build();
             response.addHeader("Set-Cookie", cookieJwt.toString());
 
-            return "redirect:/reportes/dashboard";
+            String rolNombre = usuario.getRoles().stream()
+                    .map(rol -> rol.getNombre().name())
+                    .findFirst()
+                    .orElse("");
+
+            return "ADMINISTRADOR".equals(rolNombre)
+                    ? "redirect:/reportes/dashboard"
+                    : "redirect:/auth/sin-panel";
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Credenciales inválidas.");
             return "dominios/seguridad/login";
@@ -100,6 +107,11 @@ public class GestionAutenticacionController {
                 .build();
         response.addHeader("Set-Cookie", cookieJwt.toString());
         return "redirect:/auth/login";
+    }
+
+    @GetMapping("/sin-panel")
+    public String mostrarSinPanel() {
+        return "dominios/seguridad/sin-panel";
     }
 
     @GetMapping("/registro")

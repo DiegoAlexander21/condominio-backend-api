@@ -97,6 +97,7 @@ public class GestionFinanzasService {
         return convertirGastoResponse(guardado);
     }
 
+    @Transactional(readOnly = true)
     public synchronized GastoForm obtenerGastoParaEdicion(Long id) {
         Gasto gasto = gastoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El gasto no existe."));
@@ -320,6 +321,8 @@ public class GestionFinanzasService {
         if (!estadoCuentaRepository.existsById(id)) {
             throw new IllegalArgumentException("El estado de cuenta no existe.");
         }
+        List<Pago> pagos = pagoRepository.listarPorEstadoCuenta(id);
+        pagoRepository.deleteAll(pagos);
         estadoCuentaRepository.deleteById(id);
     }
 
