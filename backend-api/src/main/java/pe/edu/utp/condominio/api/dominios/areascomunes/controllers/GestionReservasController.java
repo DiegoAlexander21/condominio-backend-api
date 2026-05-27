@@ -45,55 +45,58 @@ public class GestionReservasController {
     public String listarReservas(
             @RequestParam(value = "condominioId", required = false) Long condominioId,
             @RequestParam(value = "areaComunId", required = false) Long areaComunId,
-            Model model) {
+            Model modelo) {
 
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-        model.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
-        model.addAttribute("condominioIdSeleccionado", condominioId);
-        model.addAttribute("areaComunIdSeleccionada", areaComunId);
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
+        modelo.addAttribute("unidades", unidadRepository.listarTodosConCondominioOrdenado());
+        modelo.addAttribute("condominioIdSeleccionado", condominioId);
+        modelo.addAttribute("areaComunIdSeleccionada", areaComunId);
 
         if (areaComunId != null) {
-            model.addAttribute("reservas", gestionAreasComunesService.listarReservas(areaComunId, null));
+            modelo.addAttribute("reservas", gestionAreasComunesService.listarReservas(areaComunId, null));
         }
         return "dominios/areascomunes/gestion-reservas";
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormularioReserva(@RequestParam(value = "areaId", required = false) Long areaId, Model model) {
-        ReservaAreaComunForm form = new ReservaAreaComunForm();
-        if (areaId != null) {
-            form.setAreaComunId(areaId);
+    public String mostrarFormularioReserva(@RequestParam(value = "areaId", required = false) Long idArea,
+            Model modelo) {
+        ReservaAreaComunForm formulario = new ReservaAreaComunForm();
+        if (idArea != null) {
+            formulario.setAreaComunId(idArea);
         }
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-        model.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
-        model.addAttribute("unidades", unidadRepository.listarTodosConCondominioOrdenado());
-        model.addAttribute("reservaForm", form);
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
+        modelo.addAttribute("unidades", unidadRepository.listarTodosConCondominioOrdenado());
+        modelo.addAttribute("formularioReserva", formulario);
         return "dominios/areascomunes/registro-reserva";
     }
 
     @PostMapping
     public String registrarReserva(
-            @Valid @ModelAttribute("reservaForm") ReservaAreaComunForm form,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("formularioReserva") ReservaAreaComunForm formulario,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-            model.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
-            model.addAttribute("unidades", unidadRepository.listarTodosConCondominioOrdenado());
+        if (resultadoValidacion.hasErrors()) {
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            modelo.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
+            modelo.addAttribute("unidades", unidadRepository.listarTodosConCondominioOrdenado());
             return "dominios/areascomunes/registro-reserva";
         }
 
         try {
-            gestionAreasComunesService.registrarReserva(form);
-            redirectAttributes.addFlashAttribute("successMessage", "Reserva realizada correctamente.");
-            return "redirect:/reservas?areaComunId=" + form.getAreaComunId() + "&fecha=" + form.getFechaReserva() + "&condominioId=" + form.getCondominioId();
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-            model.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
-            model.addAttribute("unidades", unidadRepository.listarTodosConCondominioOrdenado());
-            model.addAttribute("errorMessage", e.getMessage());
+            gestionAreasComunesService.registrarReserva(formulario);
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Reserva realizada correctamente.");
+            return "redirect:/reservas?areaComunId=" + formulario.getAreaComunId() + "&fecha="
+                    + formulario.getFechaReserva() + "&condominioId=" + formulario.getCondominioId();
+        } catch (IllegalArgumentException excepcion) {
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            modelo.addAttribute("areasComunes", areaComunRepository.listarTodosConCondominio());
+            modelo.addAttribute("unidades", unidadRepository.listarTodosConCondominioOrdenado());
+            modelo.addAttribute("mensajeError", excepcion.getMessage());
             return "dominios/areascomunes/registro-reserva";
         }
     }

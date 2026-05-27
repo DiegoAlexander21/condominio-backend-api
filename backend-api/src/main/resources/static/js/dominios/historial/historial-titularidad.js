@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
-  var alertas = document.querySelectorAll(".alerta-exito");
+  var alertas = document.querySelectorAll(".alerta-exito, .alerta-error");
 
   for (var i = 0; i < alertas.length; i++) {
     setTimeout(function (elemento) {
-      elemento.style.display = "none";
+      elemento.classList.add("oculto");
     }, 5000, alertas[i]);
   }
 
@@ -15,9 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
     for (var k = 0; k < filasReales.length; k++) {
       filasReales[k].addEventListener("click", function () {
         for (var m = 0; m < filasReales.length; m++) {
-          filasReales[m].style.background = "";
+          filasReales[m].classList.remove("fila-seleccionada");
         }
-        this.style.background = "#e8e6df";
+        this.classList.add("fila-seleccionada");
       });
     }
   }

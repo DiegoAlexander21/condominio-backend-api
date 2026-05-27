@@ -1,0 +1,16 @@
+.texto-exito {
+    color: var(--exito);
+    font-weight: 600;
+}
+
+.texto-alerta {
+    color: var(--error);
+}
+
+.texto-centrado {
+    text-align: center;
+}
+
+.celda-derecha {
+    text-align: right;
+}

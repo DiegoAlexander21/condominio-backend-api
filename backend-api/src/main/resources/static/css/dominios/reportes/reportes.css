@@ -1,0 +1,103 @@
+.panel-resumen-reportes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.tarjeta-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-top: 4px solid var(--primario);
+}
+
+.tarjeta-kpi h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--secundario);
+    margin: 0;
+}
+
+.valor-kpi {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primario);
+    margin: 0;
+}
+
+.descripcion-kpi {
+    font-size: 0.85rem;
+    color: var(--secundario);
+}
+
+#tarjetaGastosTotales {
+    border-top-color: #0d9488;
+}
+
+#tarjetaGastosTotales .valor-kpi {
+    color: #0d9488;
+}
+
+#tarjetaUnidadesMorosas {
+    border-top-color: var(--error);
+}
+
+#tarjetaUnidadesMorosas .valor-kpi {
+    color: var(--error);
+}
+
+.grid-graficos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.tarjeta-grafico h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primario);
+    margin: 0 0 0.25rem 0;
+}
+
+.tarjeta-descripcion {
+    font-size: 0.85rem;
+    color: var(--secundario);
+    margin: 0 0 1.5rem 0;
+}
+
+.col-ancho-completo {
+    grid-column: span 2;
+}
+
+.grafico-contenedor {
+    min-height: 350px;
+    width: 100%;
+}
+
+.tabla-estatica tbody tr:hover {
+    background-color: transparent !important;
+}
+
+.resaltado-unidad {
+    font-weight: 600;
+    color: var(--primario);
+}
+
+.resaltado-saldo {
+    font-weight: 700;
+    color: var(--error);
+    font-size: 1.05rem;
+}
+
+@media (max-width: 992px) {
+    .grid-graficos {
+        grid-template-columns: 1fr;
+    }
+    
+    .col-ancho-completo {
+        grid-column: span 1;
+    }
+}

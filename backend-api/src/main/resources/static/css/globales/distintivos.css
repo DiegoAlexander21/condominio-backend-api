@@ -1,0 +1,11 @@
+.distintivo {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radio-borde);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: var(--secundario);
+    color: var(--primario);
+    display: inline-block;
+}

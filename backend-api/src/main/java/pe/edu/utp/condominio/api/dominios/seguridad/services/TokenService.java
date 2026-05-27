@@ -62,6 +62,10 @@ public class TokenService {
         }
     }
 
+    public long obtenerExpiracionSegundos() {
+        return expiracionMillis / 1000;
+    }
+
     private Claims obtenerClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(clave)

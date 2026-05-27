@@ -1,0 +1,27 @@
+.pestanas-filtro {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--secundario);
+    align-items: center;
+}
+
+.pestana-filtro {
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--radio-borde);
+    background: var(--blanco);
+    color: var(--primario);
+    text-decoration: none;
+    border: 1px solid var(--secundario);
+    font-weight: 500;
+    transition: var(--transicion-suave);
+}
+
+.pestana-filtro:hover,
+.pestana-filtro.activo,
+.pestana-filtro.active {
+    background: var(--primario);
+    color: var(--blanco);
+    border-color: var(--primario);
+}

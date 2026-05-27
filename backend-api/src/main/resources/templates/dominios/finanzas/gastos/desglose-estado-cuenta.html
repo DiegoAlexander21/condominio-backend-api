@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: comun('Desglose de Estado de Cuenta')}"></head>
+<body>
+    <div class="contenedor-principal">
+        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+        
+        <main class="contenido-principal">
+            <header class="encabezado">
+                <div>
+                    <h1 class="titulo-pagina">Desglose de Saldo</h1>
+                    <p>Detalle de los gastos cobrados a la unidad en este periodo.</p>
+                </div>
+                <nav>
+                    <a class="boton-secundario" th:href="@{/finanzas/estados-cuenta}">Volver a Estados de Cuenta</a>
+                </nav>
+            </header>
+
+            <section class="estadisticas">
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Unidad</h3>
+                    <p class="tarjeta-valor tarjeta-valor-unidad" th:text="${estadoCuenta.unidadDetalles}"></p>
+                </div>
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Periodo</h3>
+                    <p class="tarjeta-valor" th:text="${#temporals.format(estadoCuenta.periodo, 'MMMM yyyy')}"></p>
+                </div>
+                <div class="tarjeta tarjeta-estatica">
+                    <h3>Saldo Deudor</h3>
+                    <p class="tarjeta-valor texto-alerta" th:text="'S/ ' + ${estadoCuenta.saldo}"></p>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="tarjeta tarjeta-estatica">
+                    <h2>Gastos Aplicados</h2>
+                    <div class="contenedor-tabla">
+                        <table class="tabla-datos">
+                            <thead>
+                                <tr>
+                                    <th>Descripción del Gasto</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha de Registro</th>
+                                    <th>Monto Cobrado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(desglose)}">
+                                    <td colspan="4">No hay gastos detallados para este periodo.</td>
+                                </tr>
+                                <tr th:each="detalle : ${desglose}" class="fila-dato">
+                                    <td th:text="${detalle.descripcionGasto}"></td>
+                                    <td>
+                                        <span class="etiqueta" th:text="${detalle.tipoGasto}"></span>
+                                    </td>
+                                    <td th:text="${#temporals.format(detalle.fechaRegistro, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td th:text="'S/ ' + ${detalle.montoAsignado}"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="celda-derecha">Total Fijos:</th>
+                                    <th th:text="'S/ ' + ${estadoCuenta.totalCuotas}"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="celda-derecha">Total Extraordinarios:</th>
+                                    <th th:text="'S/ ' + ${estadoCuenta.totalExtraordinarios}"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="celda-derecha">Total Deuda Inicial:</th>
+                                    <th th:text="'S/ ' + ${estadoCuenta.totalCuotas + estadoCuenta.totalExtraordinarios}"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="celda-derecha">Total Pagado:</th>
+                                    <th class="texto-exito" th:text="'S/ ' + ${estadoCuenta.totalPagado}"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="3" class="celda-derecha">Saldo Pendiente:</th>
+                                    <th class="texto-alerta" th:text="'S/ ' + ${estadoCuenta.saldo}"></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+ 
+        </main>
+    </div>
+    
+    <link rel="stylesheet" th:href="@{/css/dominios/finanzas/gastos.css(v=7)}">
+    <script th:src="@{/js/dominios/finanzas/gastos-distribucion-modal.js(v=7)}" defer></script>
+    <script th:src="@{/js/dominios/finanzas/gastos-incidencia.js(v=7)}" defer></script>
+    <script th:src="@{/js/dominios/finanzas/gastos-periodo.js(v=7)}" defer></script>
+    <script th:src="@{/js/dominios/finanzas/gastos-modal-detalles.js(v=7)}" defer></script>
+    <script th:src="@{/js/dominios/finanzas/gastos-filtro-torre.js(v=7)}" defer></script>
+    <script th:src="@{/js/dominios/finanzas/gastos-filtro-incidencia.js(v=7)}" defer></script>
+    <script th:src="@{/js/dominios/finanzas/gastos-generar-estado.js(v=7)}" defer></script>
+    <script th:src="@{/js/dominios/finanzas/gastos.js(v=7)}" defer></script>
+</body>
+</html>

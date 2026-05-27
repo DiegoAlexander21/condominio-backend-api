@@ -1,99 +1,225 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragmentos/head :: comun('Nueva Reserva')}"></head>
-<body>
+  <head th:replace="~{fragmentos/head :: comun('Nueva Reserva')}"></head>
+  <body>
     <div class="contenedor-principal">
-        <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
-        
-        <main class="contenido-principal">
-            <header class="encabezado">
-                <div>
-                    <h1 class="titulo-pagina">Solicitar Reserva</h1>
-                    <p>Reserva un área común para una fecha y horario específicos.</p>
+      <div th:replace="~{fragmentos/sidebar :: sidebar}"></div>
+
+      <main class="contenido-principal">
+        <header class="encabezado">
+          <div>
+            <h1 class="titulo-pagina">Solicitar Reserva</h1>
+            <p>Reserva un área común para una fecha y horario específicos.</p>
+          </div>
+          <nav>
+            <a
+              class="boton-secundario"
+              th:href="${formularioReserva.condominioId != null} ? @{/reservas(condominioId=${formularioReserva.condominioId})} : @{/reservas}"
+              >&larr; Volver a reservas</a
+            >
+          </nav>
+        </header>
+
+        <section class="panel">
+          <p
+            class="alerta-error"
+            th:if="${mensajeError != null}"
+            th:text="${mensajeError}"
+          ></p>
+          <div class="tarjeta tarjeta-estatica">
+            <h2>Datos de la Reserva</h2>
+
+            <form
+              id="formularioReserva"
+              th:action="@{/reservas}"
+              th:object="${formularioReserva}"
+              method="post"
+              novalidate
+              class="form-contenedor-margen"
+            >
+              <div class="formulario-grupo">
+                <label class="formulario-etiqueta" for="condominioId"
+                  >Condominio</label
+                >
+                <select
+                  class="formulario-entrada"
+                  id="condominioId"
+                  th:field="*{condominioId}"
+                  required
+                >
+                  <option value="">Seleccione un condominio...</option>
+                  <option
+                    th:each="condominio : ${condominios}"
+                    th:value="${condominio.id}"
+                    th:text="${condominio.nombre}"
+                  ></option>
+                </select>
+                <small
+                  class="error-texto"
+                  th:if="${#fields.hasErrors('condominioId')}"
+                  th:errors="*{condominioId}"
+                ></small>
+              </div>
+
+              <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="areaComunId"
+                    >Área Común</label
+                  >
+                  <select
+                    class="formulario-entrada"
+                    id="areaComunId"
+                    th:field="*{areaComunId}"
+                    th:disabled="${formularioReserva.condominioId == null}"
+                    data-selected=""
+                    required
+                  >
+                    <option value="">Seleccione un área...</option>
+                    <option
+                      th:each="area : ${areasComunes}"
+                      th:value="${area.id}"
+                      th:data-condominio="${area.condominio.id}"
+                      th:data-hora-inicio="${area.horaInicio}"
+                      th:data-hora-fin="${area.horaFin}"
+                      th:text="${area.nombre}"
+                    ></option>
+                  </select>
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('areaComunId')}"
+                    th:errors="*{areaComunId}"
+                  ></small>
                 </div>
-                <nav>
-                    <a class="boton-secundario" th:href="${reservaForm.condominioId != null} ? @{/reservas(condominioId=${reservaForm.condominioId})} : @{/reservas}">&larr; Volver a reservas</a>
-                </nav>
-            </header>
-
-            <section class="panel">
-                <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
-                <div class="tarjeta tarjeta-estatica">
-                    <h2>Datos de la Reserva</h2>
-                    
-                    <form id="formularioReserva" th:action="@{/reservas}" th:object="${reservaForm}" method="post" novalidate class="form-contenedor-margen">
-                        
-                        <div class="formulario-grupo">
-                            <label class="formulario-etiqueta" for="condominioId">Condominio</label>
-                            <select class="formulario-entrada" id="condominioId" th:field="*{condominioId}" required>
-                                <option value="">Seleccione un condominio...</option>
-                                <option th:each="condominio : ${condominios}" th:value="${condominio.id}" th:text="${condominio.nombre}"></option>
-                            </select>
-                            <small class="error-texto" th:if="${#fields.hasErrors('condominioId')}" th:errors="*{condominioId}"></small>
-                        </div>
-
-                        <div class="fila-formulario">
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="areaComunId">Área Común</label>
-                                <select class="formulario-entrada" id="areaComunId" th:field="*{areaComunId}" data-selected="" required>
-                                    <option value="">Seleccione un área...</option>
-                                    <option th:each="area : ${areasComunes}" th:value="${area.id}" 
-                                        th:data-condominio="${area.condominio.id}" 
-                                        th:data-hora-inicio="${area.horaInicio}" 
-                                        th:data-hora-fin="${area.horaFin}"
-                                        th:text="${area.nombre}"></option>
-                                </select>
-                                <small class="error-texto" th:if="${#fields.hasErrors('areaComunId')}" th:errors="*{areaComunId}"></small>
-                            </div>
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="unidadId">Unidad Solicitante</label>
-                                <select class="formulario-entrada" id="unidadId" th:field="*{unidadId}" data-selected="" required>
-                                    <option value="">Seleccione su unidad...</option>
-                                    <option th:each="unidad : ${unidades}" th:value="${unidad.id}" th:data-condominio="${unidad.condominio.id}" th:text="'Unidad ' + ${unidad.numeroUnidad} + ' - ' + ${unidad.torre}"></option>
-                                </select>
-                                <small class="error-texto" th:if="${#fields.hasErrors('unidadId')}" th:errors="*{unidadId}"></small>
-                            </div>
-                        </div>
-
-                        <div class="fila-formulario">
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="responsableNombre">Nombre del Responsable</label>
-                                <input class="formulario-entrada" id="responsableNombre" type="text" th:field="*{responsableNombre}" placeholder="Ej: Bruce Banner" minlength="2" maxlength="150" required />
-                                <small class="error-texto" th:if="${#fields.hasErrors('responsableNombre')}" th:errors="*{responsableNombre}"></small>
-                            </div>
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="fechaReserva">Fecha de la Reserva</label>
-                                <input class="formulario-entrada" id="fechaReserva" type="date" th:field="*{fechaReserva}" required />
-                                <small class="error-texto" th:if="${#fields.hasErrors('fechaReserva')}" th:errors="*{fechaReserva}"></small>
-                            </div>
-                        </div>
-
-                        <div class="fila-formulario">
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="horaInicio">Hora de Inicio</label>
-                                <select class="formulario-entrada" id="horaInicio" th:field="*{horaInicio}" required disabled>
-                                    <option value="">Seleccione hora inicio...</option>
-                                </select>
-                                <small class="error-texto" th:if="${#fields.hasErrors('horaInicio')}" th:errors="*{horaInicio}"></small>
-                            </div>
-                            <div class="formulario-grupo grupo-flexible">
-                                <label class="formulario-etiqueta" for="horaFin">Hora de Fin</label>
-                                <select class="formulario-entrada" id="horaFin" th:field="*{horaFin}" required disabled>
-                                    <option value="">Seleccione hora fin...</option>
-                                </select>
-                                <small class="error-texto" th:if="${#fields.hasErrors('horaFin')}" th:errors="*{horaFin}"></small>
-                            </div>
-                        </div>
-
-                        <div class="contenedor-acciones">
-                            <button type="submit" class="boton-primario">Confirmar Reserva</button>
-                        </div>
-                    </form>
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="unidadId"
+                    >Unidad Solicitante</label
+                  >
+                  <select
+                    class="formulario-entrada"
+                    id="unidadId"
+                    th:field="*{unidadId}"
+                    th:disabled="${formularioReserva.condominioId == null}"
+                    data-selected=""
+                    required
+                  >
+                    <option value="">Seleccione su unidad...</option>
+                    <option
+                      th:each="unidad : ${unidades}"
+                      th:value="${unidad.id}"
+                      th:data-condominio="${unidad.condominio.id}"
+                      th:text="'Unidad ' + ${unidad.numeroUnidad} + ' - ' + ${unidad.torre}"
+                    ></option>
+                  </select>
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('unidadId')}"
+                    th:errors="*{unidadId}"
+                  ></small>
                 </div>
-            </section>
-        </main>
+              </div>
+
+              <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="responsableNombre"
+                    >Nombre del Responsable</label
+                  >
+                  <input
+                    class="formulario-entrada"
+                    id="responsableNombre"
+                    type="text"
+                    th:field="*{responsableNombre}"
+                    placeholder="Ej: Bruce Banner"
+                    minlength="2"
+                    maxlength="150"
+                    required
+                  />
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('responsableNombre')}"
+                    th:errors="*{responsableNombre}"
+                  ></small>
+                </div>
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="fechaReserva"
+                    >Fecha de la Reserva</label
+                  >
+                  <input
+                    class="formulario-entrada"
+                    id="fechaReserva"
+                    type="date"
+                    th:field="*{fechaReserva}"
+                    required
+                  />
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('fechaReserva')}"
+                    th:errors="*{fechaReserva}"
+                  ></small>
+                </div>
+              </div>
+
+              <div class="fila-formulario">
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="horaInicio"
+                    >Hora de Inicio</label
+                  >
+                  <select
+                    class="formulario-entrada"
+                    id="horaInicio"
+                    th:field="*{horaInicio}"
+                    required
+                    disabled
+                  >
+                    <option value="">Seleccione hora inicio...</option>
+                  </select>
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('horaInicio')}"
+                    th:errors="*{horaInicio}"
+                  ></small>
+                </div>
+                <div class="formulario-grupo grupo-flexible">
+                  <label class="formulario-etiqueta" for="horaFin"
+                    >Hora de Fin</label
+                  >
+                  <select
+                    class="formulario-entrada"
+                    id="horaFin"
+                    th:field="*{horaFin}"
+                    required
+                    disabled
+                  >
+                    <option value="">Seleccione hora fin...</option>
+                  </select>
+                  <small
+                    class="error-texto"
+                    th:if="${#fields.hasErrors('horaFin')}"
+                    th:errors="*{horaFin}"
+                  ></small>
+                </div>
+              </div>
+
+              <div class="contenedor-acciones">
+                <button type="submit" class="boton-primario">
+                  Confirmar Reserva
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
     </div>
-    
+
+    <link
+      rel="stylesheet"
+      th:href="@{/css/dominios/areascomunes/areascomunes.css}"
+    />
+    <script
+      th:src="@{/js/dominios/areascomunes/registro-reserva-filtros.js}"
+    ></script>
+    <script
+      th:src="@{/js/dominios/areascomunes/registro-reserva-horarios.js}"
+    ></script>
     <script th:src="@{/js/dominios/areascomunes/registro-reserva.js}"></script>
-</body>
+  </body>
 </html>

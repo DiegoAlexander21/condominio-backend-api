@@ -34,32 +34,34 @@
             <section class="panel">
                 <div class="tarjeta tarjeta-estatica">
                     <h2>Condominios Registrados</h2>
-                    <table class="tabla-datos">
-                        <thead>
-                            <tr>
-                                <th>Condominio</th>
-                                <th>Torres</th>
-                                <th>Pisos por Torre</th>
-                                <th>Actualizado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cuerpoTabla">
-                            <tr th:if="${#lists.isEmpty(condominios)}">
-                                <td colspan="4">No hay registros aún.</td>
-                            </tr>
-                            <tr th:each="condominio : ${condominios}">
-                                <td th:text="${condominio.nombre}"></td>
-                                <td th:text="${condominio.torres}" class="formato-numero"></td>
-                                <td th:text="${condominio.pisosPorTorre}" class="formato-numero"></td>
-                                <td th:text="${#temporals.format(condominio.fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></td>
-                                <td>
-                                    <a th:href="@{/editar-condominio(id=${condominio.id})}" class="boton-secundario btn-tabla">Editar</a>
-                                    <a th:href="@{/eliminar-condominio(id=${condominio.id})}" onclick="return confirm('¿Seguro que desea eliminar este condominio? Todas las unidades, propietarios y residentes registrados en él serán eliminados (Cascada).');" class="boton-secundario btn-tabla btn-eliminar">Eliminar</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="contenedor-tabla">
+                        <table class="tabla-datos">
+                            <thead>
+                                <tr>
+                                    <th>Condominio</th>
+                                    <th>Torres</th>
+                                    <th>Pisos por Torre</th>
+                                    <th>Actualizado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTabla">
+                                <tr th:if="${#lists.isEmpty(condominios)}">
+                                    <td colspan="5">No hay registros aún.</td>
+                                </tr>
+                                <tr th:each="condominio : ${condominios}" class="fila-dato">
+                                    <td th:text="${condominio.nombre}"></td>
+                                    <td th:text="${condominio.torres}" class="formato-numero"></td>
+                                    <td th:text="${condominio.pisosPorTorre}" class="formato-numero"></td>
+                                    <td th:text="${#temporals.format(condominio.fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td>
+                                        <a th:href="@{/editar-condominio(id=${condominio.id})}" class="boton-secundario btn-tabla">Editar</a>
+                                        <a th:href="@{/eliminar-condominio(id=${condominio.id})}" class="boton-secundario btn-tabla btn-eliminar">Eliminar</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </main>

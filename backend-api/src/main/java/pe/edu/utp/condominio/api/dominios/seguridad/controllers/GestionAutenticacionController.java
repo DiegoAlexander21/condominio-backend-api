@@ -1,5 +1,7 @@
 package pe.edu.utp.condominio.api.dominios.seguridad.controllers;
 
+import java.time.Duration;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import pe.edu.utp.condominio.api.dominios.seguridad.dto.request.LoginRequest;
@@ -45,7 +47,7 @@ public class GestionAutenticacionController {
         if (!model.containsAttribute("loginRequest")) {
             model.addAttribute("loginRequest", new LoginRequest());
         }
-        return "seguridad/login";
+        return "dominios/seguridad/login";
     }
 
     @PostMapping("/login")
@@ -53,10 +55,11 @@ public class GestionAutenticacionController {
             @Valid @ModelAttribute("loginRequest") LoginRequest request,
             BindingResult bindingResult,
             Model model,
+            HttpServletRequest httpRequest,
             HttpServletResponse response) {
-        
+
         if (bindingResult.hasErrors()) {
-            return "seguridad/login";
+            return "dominios/seguridad/login";
         }
 
         try {
@@ -66,34 +69,43 @@ public class GestionAutenticacionController {
 
             Usuario usuario = usuarioRepository.buscarPorIdentificador(request.getIdentificador())
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-            
-            String token = tokenService.generarToken(usuario);
-            Cookie cookie = new Cookie("tokenAcceso", token);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
 
-            return "redirect:/gestion-condominio";
+            String token = tokenService.generarToken(usuario);
+            boolean seguro = httpRequest.isSecure();
+            ResponseCookie cookieJwt = ResponseCookie.from("tokenAcceso", token)
+                    .httpOnly(true)
+                    .secure(seguro)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(Duration.ofSeconds(tokenService.obtenerExpiracionSegundos()))
+                    .build();
+            response.addHeader("Set-Cookie", cookieJwt.toString());
+
+            return "redirect:/reportes/dashboard";
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Credenciales inválidas.");
-            return "seguridad/login";
+            return "dominios/seguridad/login";
         }
     }
 
     @GetMapping("/logout")
-    public String procesarLogout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("tokenAcceso", null);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+    public String procesarLogout(HttpServletRequest httpRequest, HttpServletResponse response) {
+        boolean seguro = httpRequest.isSecure();
+        ResponseCookie cookieJwt = ResponseCookie.from("tokenAcceso", "")
+                .httpOnly(true)
+                .secure(seguro)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ZERO)
+                .build();
+        response.addHeader("Set-Cookie", cookieJwt.toString());
         return "redirect:/auth/login";
     }
 
     @GetMapping("/registro")
     public String mostrarRegistro(Model model) {
         model.addAttribute("registroRequest", new RegistroUsuarioRequest());
-        return "seguridad/registro";
+        return "dominios/seguridad/registro";
     }
 
     @PostMapping("/registro")
@@ -102,18 +114,19 @@ public class GestionAutenticacionController {
             BindingResult bindingResult,
             Model model,
             RedirectAttributes redirectAttributes) {
-        
+
         if (bindingResult.hasErrors()) {
-            return "seguridad/registro";
+            return "dominios/seguridad/registro";
         }
 
         try {
             autenticacionService.registrar(request);
-            redirectAttributes.addFlashAttribute("successMessage", "Usuario registrado correctamente. Ahora puedes iniciar sesión.");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Usuario registrado correctamente. Ahora puedes iniciar sesión.");
             return "redirect:/auth/login";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
-            return "seguridad/registro";
+            return "dominios/seguridad/registro";
         }
     }
 }

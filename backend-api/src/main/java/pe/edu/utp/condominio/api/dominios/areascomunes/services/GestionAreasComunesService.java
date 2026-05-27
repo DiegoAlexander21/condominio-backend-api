@@ -38,24 +38,25 @@ public class GestionAreasComunesService {
     }
 
     @Transactional
-    public synchronized AreaComunResponse registrarOActualizarArea(AreaComunForm form) {
-        validarArea(form);
+    public synchronized AreaComunResponse registrarOActualizarArea(AreaComunForm formulario) {
+        validarArea(formulario);
 
-        Condominio condominio = condominioRepository.findById(form.getCondominioId())
+        Condominio condominio = condominioRepository.findById(formulario.getCondominioId())
                 .orElseThrow(() -> new IllegalArgumentException("Condominio no encontrado."));
 
-        AreaComun existente = areaComunRepository.buscarPorNombre(condominio.getId(), form.getNombre().trim());
-        if (existente != null && !existente.getId().equals(form.getId())) {
-            throw new IllegalArgumentException("Ya existe un área común con el nombre '" + form.getNombre() + "' en este condominio.");
+        AreaComun existente = areaComunRepository.buscarPorNombre(condominio.getId(), formulario.getNombre().trim());
+        if (existente != null && !existente.getId().equals(formulario.getId())) {
+            throw new IllegalArgumentException(
+                    "Ya existe un área común con el nombre '" + formulario.getNombre() + "' en este condominio.");
         }
 
-        AreaComun areaComun = obtenerAreaParaRegistro(form, condominio.getId());
+        AreaComun areaComun = obtenerAreaParaRegistro(formulario, condominio.getId());
         areaComun.setCondominio(condominio);
-        areaComun.setNombre(form.getNombre().trim());
-        areaComun.setCapacidad(form.getCapacidad());
-        areaComun.setHoraInicio(form.getHoraInicio());
-        areaComun.setHoraFin(form.getHoraFin());
-        areaComun.setNormasUso(normalizarTexto(form.getNormasUso()));
+        areaComun.setNombre(formulario.getNombre().trim());
+        areaComun.setCapacidad(formulario.getCapacidad());
+        areaComun.setHoraInicio(formulario.getHoraInicio());
+        areaComun.setHoraFin(formulario.getHoraFin());
+        areaComun.setNormasUso(normalizarTexto(formulario.getNormasUso()));
 
         AreaComun guardada = areaComunRepository.save(areaComun);
         return convertirAreaResponse(guardada);
@@ -87,42 +88,43 @@ public class GestionAreasComunesService {
     public synchronized AreaComunForm obtenerFormularioArea(Long id) {
         AreaComun area = areaComunRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El área común no existe."));
-        
-        AreaComunForm form = new AreaComunForm();
-        form.setId(area.getId());
-        form.setCondominioId(area.getCondominio().getId());
-        form.setNombre(area.getNombre());
-        form.setCapacidad(area.getCapacidad());
-        form.setHoraInicio(area.getHoraInicio());
-        form.setHoraFin(area.getHoraFin());
-        form.setNormasUso(area.getNormasUso());
-        return form;
+
+        AreaComunForm formulario = new AreaComunForm();
+        formulario.setId(area.getId());
+        formulario.setCondominioId(area.getCondominio().getId());
+        formulario.setNombre(area.getNombre());
+        formulario.setCapacidad(area.getCapacidad());
+        formulario.setHoraInicio(area.getHoraInicio());
+        formulario.setHoraFin(area.getHoraFin());
+        formulario.setNormasUso(area.getNormasUso());
+        return formulario;
     }
 
     @Transactional
-    public synchronized ReservaAreaComunResponse registrarReserva(ReservaAreaComunForm form) {
-        validarReserva(form);
+    public synchronized ReservaAreaComunResponse registrarReserva(ReservaAreaComunForm formulario) {
+        validarReserva(formulario);
 
-        AreaComun areaComun = areaComunRepository.findById(form.getAreaComunId())
+        AreaComun areaComun = areaComunRepository.findById(formulario.getAreaComunId())
                 .orElseThrow(() -> new IllegalArgumentException("El area comun no existe."));
-        Unidad unidad = unidadRepository.findById(form.getUnidadId())
+        Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                 .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
 
-        validarHorarioDisponible(areaComun, form.getFechaReserva(),
-                form.getHoraInicio(), form.getHoraFin());
+        validarHorarioDisponible(areaComun, formulario.getFechaReserva(),
+                formulario.getHoraInicio(), formulario.getHoraFin());
 
         ReservaAreaComun reserva = new ReservaAreaComun();
         reserva.setAreaComun(areaComun);
         reserva.setUnidad(unidad);
-        reserva.setFechaReserva(form.getFechaReserva());
-        reserva.setHoraInicio(form.getHoraInicio());
-        reserva.setHoraFin(form.getHoraFin());
-        reserva.setResponsableNombre(form.getResponsableNombre().trim());
+        reserva.setFechaReserva(formulario.getFechaReserva());
+        reserva.setHoraInicio(formulario.getHoraInicio());
+        reserva.setHoraFin(formulario.getHoraFin());
+        reserva.setResponsableNombre(formulario.getResponsableNombre().trim());
 
         ReservaAreaComun guardada = reservaAreaComunRepository.save(reserva);
         return convertirReservaResponse(guardada);
     }
 
+    @Transactional(readOnly = true)
     public synchronized List<ReservaAreaComunResponse> listarReservas(Long areaComunId, LocalDate fecha) {
         if (areaComunId == null) {
             throw new IllegalArgumentException("Debe seleccionar un area comun valida.");
@@ -177,7 +179,7 @@ public class GestionAreasComunesService {
     }
 
     private ReservaAreaComunResponse convertirReservaResponse(ReservaAreaComun reserva) {
-        return new ReservaAreaComunResponse(reserva.getId(),
+        ReservaAreaComunResponse respuesta = new ReservaAreaComunResponse(reserva.getId(),
                 reserva.getAreaComun() != null ? reserva.getAreaComun().getId() : null,
                 reserva.getUnidad() != null ? reserva.getUnidad().getId() : null,
                 reserva.getFechaReserva(),
@@ -185,6 +187,10 @@ public class GestionAreasComunesService {
                 reserva.getHoraFin(),
                 reserva.getResponsableNombre(),
                 reserva.getFechaRegistro());
+        if (reserva.getUnidad() != null) {
+            respuesta.setUnidadNumero(reserva.getUnidad().getNumeroUnidad());
+        }
+        return respuesta;
     }
 
     private String normalizarTexto(String texto) {
@@ -195,49 +201,48 @@ public class GestionAreasComunesService {
         return limpio.isEmpty() ? null : limpio;
     }
 
-    private void validarArea(AreaComunForm form) {
-        if (form == null) {
+    private void validarArea(AreaComunForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario del area comun es obligatorio.");
         }
-        if (form.getCondominioId() == null) {
+        if (formulario.getCondominioId() == null) {
             throw new IllegalArgumentException("Debe seleccionar un condominio.");
         }
-        if (form.getNombre() == null || form.getNombre().isBlank()) {
+        if (formulario.getNombre() == null || formulario.getNombre().isBlank()) {
             throw new IllegalArgumentException("El nombre del area comun es obligatorio.");
         }
-        if (form.getCapacidad() == null || form.getCapacidad() <= 0) {
+        if (formulario.getCapacidad() == null || formulario.getCapacidad() <= 0) {
             throw new IllegalArgumentException("La capacidad debe ser mayor a cero.");
         }
-        if (form.getHoraInicio() == null || form.getHoraFin() == null) {
+        if (formulario.getHoraInicio() == null || formulario.getHoraFin() == null) {
             throw new IllegalArgumentException("Debe indicar el horario disponible.");
         }
-        if (!form.getHoraInicio().isBefore(form.getHoraFin())) {
+        if (!formulario.getHoraInicio().isBefore(formulario.getHoraFin())) {
             throw new IllegalArgumentException("La hora de inicio debe ser menor que la hora de fin.");
         }
     }
 
-    private void validarReserva(ReservaAreaComunForm form) {
-        if (form == null) {
+    private void validarReserva(ReservaAreaComunForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de reserva es obligatorio.");
         }
-        if (form.getAreaComunId() == null) {
+        if (formulario.getAreaComunId() == null) {
             throw new IllegalArgumentException("Debe seleccionar un area comun.");
         }
-        if (form.getUnidadId() == null) {
+        if (formulario.getUnidadId() == null) {
             throw new IllegalArgumentException("Debe seleccionar una unidad.");
         }
-        if (form.getFechaReserva() == null) {
+        if (formulario.getFechaReserva() == null) {
             throw new IllegalArgumentException("La fecha de reserva es obligatoria.");
         }
-        if (form.getHoraInicio() == null || form.getHoraFin() == null) {
+        if (formulario.getHoraInicio() == null || formulario.getHoraFin() == null) {
             throw new IllegalArgumentException("Debe indicar el horario de la reserva.");
         }
-        if (!form.getHoraInicio().isBefore(form.getHoraFin())) {
+        if (!formulario.getHoraInicio().isBefore(formulario.getHoraFin())) {
             throw new IllegalArgumentException("La hora de inicio debe ser menor que la hora de fin.");
         }
-        if (form.getResponsableNombre() == null || form.getResponsableNombre().isBlank()) {
+        if (formulario.getResponsableNombre() == null || formulario.getResponsableNombre().isBlank()) {
             throw new IllegalArgumentException("El responsable es obligatorio.");
         }
     }
 }
-

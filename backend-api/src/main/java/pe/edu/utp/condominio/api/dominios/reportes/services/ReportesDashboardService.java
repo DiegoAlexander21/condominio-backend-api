@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.condominio.api.dominios.areascomunes.models.AreaComun;
 import pe.edu.utp.condominio.api.dominios.areascomunes.repositories.AreaComunRepository;
 import pe.edu.utp.condominio.api.dominios.finanzas.models.Gasto;
@@ -40,13 +41,15 @@ public class ReportesDashboardService {
         this.estadoCuentaRepository = estadoCuentaRepository;
     }
 
+    @Transactional(readOnly = true)
     public ReporteDashboardResponse generarReporte(int limite) {
         int limiteSeguro = limite > 0 ? limite : 5;
         List<IncidenciaFrecuenteResponse> incidenciasFrecuentes = obtenerIncidenciasFrecuentes(limiteSeguro);
         List<AreaGastoResponse> areasConMayorGasto = obtenerAreasConMayorGasto(limiteSeguro);
         List<UnidadMorosaResponse> unidadesMorosas = obtenerUnidadesMorosas(limiteSeguro);
+        List<UnidadMorosaResponse> unidadesConMayorDeuda = obtenerUnidadesConMayorDeuda(limiteSeguro);
 
-        return new ReporteDashboardResponse(incidenciasFrecuentes, areasConMayorGasto, unidadesMorosas);
+        return new ReporteDashboardResponse(incidenciasFrecuentes, areasConMayorGasto, unidadesMorosas, unidadesConMayorDeuda);
     }
 
     private List<IncidenciaFrecuenteResponse> obtenerIncidenciasFrecuentes(int limite) {
@@ -114,6 +117,33 @@ public class ReportesDashboardService {
             }
         }
 
+        LocalDate hoy = LocalDate.now();
+        return ultimoEstado.values().stream()
+                .filter(estado -> estado.getSaldo() > 0 && (estado.getFechaVencimiento() == null || estado.getFechaVencimiento().isBefore(hoy)))
+                .map(estado -> {
+                    Unidad unidad = estado.getUnidad();
+                    String nombre = unidad != null ? formatearUnidad(unidad) : "Unidad sin nombre";
+                    return new UnidadMorosaResponse(unidad != null ? unidad.getId() : null,
+                            nombre, estado.getSaldo(), estado.getPeriodo());
+                })
+                .sorted(Comparator.comparingDouble(UnidadMorosaResponse::getSaldo).reversed())
+                .limit(limite)
+                .collect(Collectors.toList());
+    }
+
+    private List<UnidadMorosaResponse> obtenerUnidadesConMayorDeuda(int limite) {
+        Map<Long, EstadoCuenta> ultimoEstado = new HashMap<>();
+        for (EstadoCuenta estado : estadoCuentaRepository.findAll()) {
+            if (estado.getUnidad() == null) {
+                continue;
+            }
+            Long unidadId = estado.getUnidad().getId();
+            EstadoCuenta actual = ultimoEstado.get(unidadId);
+            if (actual == null || esPeriodoPosterior(estado.getPeriodo(), actual.getPeriodo())) {
+                ultimoEstado.put(unidadId, estado);
+            }
+        }
+
         return ultimoEstado.values().stream()
                 .filter(estado -> estado.getSaldo() > 0)
                 .map(estado -> {
@@ -140,13 +170,19 @@ public class ReportesDashboardService {
     private String formatearUnidad(Unidad unidad) {
         String torre = unidad.getTorre() != null ? unidad.getTorre().trim() : "";
         String numero = unidad.getNumeroUnidad() != null ? unidad.getNumeroUnidad().trim() : "";
-        if (torre.isEmpty()) {
+        
+        String nombreTorre = "";
+        if (!torre.isEmpty()) {
+            nombreTorre = torre.toLowerCase().startsWith("torre") ? torre : "Torre " + torre;
+        }
+        
+        if (nombreTorre.isEmpty()) {
             return numero.isEmpty() ? "Unidad" : "Unidad " + numero;
         }
         if (numero.isEmpty()) {
-            return "Torre " + torre;
+            return nombreTorre;
         }
-        return "Torre " + torre + " - Unidad " + numero;
+        return nombreTorre + " - " + numero;
     }
 }
 

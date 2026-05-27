@@ -46,7 +46,7 @@
                             <div class="fila-formulario">
                                 <div class="formulario-grupo grupo-flexible">
                                     <label class="formulario-etiqueta" for="torre">Torre / Bloque</label>
-                                    <select class="formulario-entrada" id="torre" th:field="*{torre}" th:data-selected="*{torre}" required>
+                                    <select class="formulario-entrada" id="torre" th:field="*{torre}" th:data-selected="*{torre}" th:disabled="${unidadForm.nombreCondominio == null or unidadForm.nombreCondominio == ''}" required>
                                         <option value="">Seleccione torre</option>
                                         <option th:if="${esEdicion}" th:value="${unidadForm.torre}" th:text="${unidadForm.torre}" selected></option>
                                     </select>

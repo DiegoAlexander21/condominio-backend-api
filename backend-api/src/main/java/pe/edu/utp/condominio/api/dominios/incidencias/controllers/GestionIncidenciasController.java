@@ -53,7 +53,7 @@ public class GestionIncidenciasController {
             return "redirect:/incidencias?estado=REGISTRADO";
         }
         model.addAttribute("incidencias", gestionIncidenciasService.listarPorEstado(estado));
-        return "incidencias/lista-incidencias";
+        return "dominios/incidencias/lista-incidencias";
     }
 
     @GetMapping("/evidencias/{id}")
@@ -69,7 +69,7 @@ public class GestionIncidenciasController {
         model.addAttribute("incidenciaForm", new IncidenciaForm());
         model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         model.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
-        return "incidencias/formulario-incidencia-area";
+        return "dominios/incidencias/formulario-incidencia-area";
     }
 
     @GetMapping("/nuevo/unidad")
@@ -77,7 +77,7 @@ public class GestionIncidenciasController {
         model.addAttribute("incidenciaForm", new IncidenciaForm());
         model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
-        return "incidencias/formulario-incidencia-unidad";
+        return "dominios/incidencias/formulario-incidencia-unidad";
     }
 
     @PostMapping("/area")
@@ -90,7 +90,7 @@ public class GestionIncidenciasController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
             model.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
-            return "incidencias/formulario-incidencia-area";
+            return "dominios/incidencias/formulario-incidencia-area";
         }
 
         try {
@@ -114,7 +114,7 @@ public class GestionIncidenciasController {
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
             model.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
-            return "incidencias/formulario-incidencia-area";
+            return "dominios/incidencias/formulario-incidencia-area";
         }
     }
 
@@ -128,7 +128,7 @@ public class GestionIncidenciasController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
             model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
-            return "incidencias/formulario-incidencia-unidad";
+            return "dominios/incidencias/formulario-incidencia-unidad";
         }
 
         try {
@@ -152,7 +152,7 @@ public class GestionIncidenciasController {
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
             model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
-            return "incidencias/formulario-incidencia-unidad";
+            return "dominios/incidencias/formulario-incidencia-unidad";
         }
     }
 
@@ -168,7 +168,7 @@ public class GestionIncidenciasController {
         }
 
         model.addAttribute("actualizacionForm", form);
-        return "incidencias/formulario-actualizacion";
+        return "dominios/incidencias/formulario-actualizacion";
     }
 
     @PostMapping("/actualizar")
@@ -178,7 +178,7 @@ public class GestionIncidenciasController {
             RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
-            return "incidencias/formulario-actualizacion";
+            return "dominios/incidencias/formulario-actualizacion";
         }
 
         gestionIncidenciasService.actualizarEstado(form);
