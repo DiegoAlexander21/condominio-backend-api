@@ -1,5 +1,6 @@
 package pe.edu.utp.condominio.api.dominios.finanzas.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class DetalleGastoUnidadResponse {
@@ -11,6 +12,7 @@ public class DetalleGastoUnidadResponse {
     private String tipoGasto;
     private double montoAsignado;
     private LocalDateTime fechaRegistro;
+    private LocalDate fechaLimite;
 
     public DetalleGastoUnidadResponse() {
     }
@@ -24,6 +26,18 @@ public class DetalleGastoUnidadResponse {
         this.tipoGasto = tipoGasto;
         this.montoAsignado = montoAsignado;
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public DetalleGastoUnidadResponse(Long id, Long gastoId, Long unidadId, String descripcionGasto, String tipoGasto,
+            double montoAsignado, LocalDateTime fechaRegistro, LocalDate fechaLimite) {
+        this.id = id;
+        this.gastoId = gastoId;
+        this.unidadId = unidadId;
+        this.descripcionGasto = descripcionGasto;
+        this.tipoGasto = tipoGasto;
+        this.montoAsignado = montoAsignado;
+        this.fechaRegistro = fechaRegistro;
+        this.fechaLimite = fechaLimite;
     }
 
     public Long getId() {
@@ -80,5 +94,13 @@ public class DetalleGastoUnidadResponse {
 
     public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public LocalDate getFechaLimite() {
+        return fechaLimite;
+    }
+
+    public void setFechaLimite(LocalDate fechaLimite) {
+        this.fechaLimite = fechaLimite;
     }
 }

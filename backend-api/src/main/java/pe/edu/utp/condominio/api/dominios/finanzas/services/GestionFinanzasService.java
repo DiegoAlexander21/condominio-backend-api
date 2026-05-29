@@ -596,7 +596,8 @@ public class GestionFinanzasService {
                 detalle.getGasto() != null ? detalle.getGasto().getDescripcion() : "Desconocido",
                 detalle.getGasto() != null ? detalle.getGasto().getTipoGasto().name() : "-",
                 detalle.getMontoAsignado(),
-                detalle.getFechaRegistro());
+                detalle.getFechaRegistro(),
+                detalle.getGasto() != null ? detalle.getGasto().getFechaLimite() : null);
     }
 
     private EstadoCuentaResponse convertirEstadoCuentaResponse(EstadoCuenta estadoCuenta) {

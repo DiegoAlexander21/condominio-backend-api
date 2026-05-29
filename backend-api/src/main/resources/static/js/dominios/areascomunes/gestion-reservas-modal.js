@@ -50,17 +50,17 @@ function inicializarModalDetallesReserva() {
           this.getAttribute("data-parentesco") || "-";
       }
 
-      modal.style.display = "block";
+      modal.classList.add("modal-activo");
     });
   });
 
   botonCerrar.addEventListener("click", function () {
-    modal.style.display = "none";
+    modal.classList.remove("modal-activo");
   });
 
   window.addEventListener("click", function (event) {
     if (event.target === modal) {
-      modal.style.display = "none";
+      modal.classList.remove("modal-activo");
     }
   });
 }

@@ -53,89 +53,79 @@
           </div>
 
           <div
-            class="grid-tarjetas"
+            class="contenedor-tabla"
             th:if="${gastos != null and !gastos.isEmpty()}"
           >
-            <div th:each="gasto : ${gastos}" class="tarjeta tarjeta-estatica">
-              <div class="tarjeta-header">
-                <h3 th:text="${gasto.descripcion}"></h3>
-              </div>
-              <p>
-                <strong>Condominio:</strong>
-                <span th:text="${gasto.condominioNombre}"></span>
-              </p>
-              <p th:if="${gasto.torre != null and !gasto.torre.isEmpty()}">
-                <strong>Torre:</strong> <span th:text="${gasto.torre}"></span>
-              </p>
-              <p>
-                <strong>Monto:</strong> S/
-                <span th:text="${gasto.montoTotal}"></span>
-              </p>
-              <p>
-                <strong>Distribución:</strong>
-                <span th:text="${gasto.metodoDistribucionFormateado}"></span>
-              </p>
-              <p>
-                <strong>Fecha de Registro:</strong>
-                <span
-                  th:text="${#temporals.format(gasto.fechaRegistro, 'dd/MM/yyyy')}"
-                ></span>
-              </p>
-              <p th:if="${gasto.fechaLimite != null}">
-                <strong>Vencimiento:</strong>
-                <span
-                  class="texto-alerta"
-                  th:text="${#temporals.format(gasto.fechaLimite, 'dd/MM/yyyy')}"
-                ></span>
-              </p>
-
-              <div class="acciones-tarjeta">
-                <button
-                  th:if="${!gasto.distribuido}"
-                  type="button"
-                  class="boton-secundario boton-distribuir boton-no-wrap"
-                  th:attr="data-id=${gasto.id}, data-desc=${gasto.descripcion}, data-monto=${gasto.montoTotal}, data-metodo=${gasto.metodoDistribucionFormateado}, data-metodo-raw=${gasto.metodoDistribucion}, data-unidad=${gasto.unidadIdCausante}, data-tipo=${gasto.tipoGasto}"
-                >
-                  Distribuir Gasto
-                </button>
-                <button
-                  th:if="${gasto.distribuido}"
-                  type="button"
-                  class="boton-secundario boton-deshabilitado-exito"
-                  disabled
-                >
-                  Ya Distribuido
-                </button>
-                <a
-                  th:href="@{/finanzas/gastos/{id}/editar(id=${gasto.id})}"
-                  class="boton-secundario boton-editar-centrado"
-                  >Editar</a
-                >
-                <form
-                  th:action="@{/finanzas/gastos/eliminar}"
-                  method="post"
-                  class="form-eliminar"
-                  onsubmit="
-                    return confirm(
-                      '¿Está seguro de eliminar este gasto y toda su distribución?',
-                    );
-                  "
-                >
-                  <input type="hidden" name="id" th:value="${gasto.id}" />
-                  <input
-                    type="hidden"
-                    name="tipoGasto"
-                    th:value="${gasto.tipoGasto}"
-                  />
-                  <button
-                    type="submit"
-                    class="boton-secundario boton-eliminar-ancho"
-                  >
-                    Eliminar
-                  </button>
-                </form>
-              </div>
-            </div>
+            <table class="tabla-datos">
+              <thead>
+                <tr>
+                  <th>Descripción</th>
+                  <th>Ubicación</th>
+                  <th>Monto</th>
+                  <th>Distribución</th>
+                  <th>Fechas</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="gasto : ${gastos}">
+                  <td th:text="${gasto.descripcion}"></td>
+                  <td>
+                    <span th:text="${gasto.condominioNombre}"></span>
+                    <th:block th:if="${gasto.torre != null and !gasto.torre.isEmpty()}">
+                      <br><small th:text="'Torre: ' + ${gasto.torre}"></small>
+                    </th:block>
+                  </td>
+                  <td class="texto-exito" th:text="'S/ ' + ${gasto.montoTotal}"></td>
+                  <td th:text="${gasto.metodoDistribucionFormateado}"></td>
+                  <td>
+                    <small>Reg: <span th:text="${#temporals.format(gasto.fechaRegistro, 'dd/MM/yyyy')}"></span></small>
+                    <th:block th:if="${gasto.fechaLimite != null}">
+                      <br><small class="texto-alerta">Vence: <span th:text="${#temporals.format(gasto.fechaLimite, 'dd/MM/yyyy')}"></span></small>
+                    </th:block>
+                  </td>
+                  <td>
+                    <div class="celda-acciones">
+                      <button
+                        th:if="${!gasto.distribuido}"
+                        type="button"
+                        class="boton-secundario btn-tabla boton-distribuir"
+                        th:attr="data-id=${gasto.id}, data-desc=${gasto.descripcion}, data-monto=${gasto.montoTotal}, data-metodo=${gasto.metodoDistribucionFormateado}, data-metodo-raw=${gasto.metodoDistribucion}, data-unidad=${gasto.unidadIdCausante}, data-tipo=${gasto.tipoGasto}"
+                      >
+                        Distribuir
+                      </button>
+                      <button
+                        th:if="${gasto.distribuido}"
+                        type="button"
+                        class="boton-secundario btn-tabla boton-deshabilitado-exito"
+                        disabled
+                      >
+                        Distribuido
+                      </button>
+                      <a
+                        th:href="@{/finanzas/gastos/{id}/editar(id=${gasto.id})}"
+                        class="boton-secundario btn-tabla"
+                        >Editar</a
+                      >
+                      <form
+                        th:action="@{/finanzas/gastos/eliminar}"
+                        method="post"
+                        class="form-eliminar form-eliminar-en-linea"
+                        onsubmit="
+                          return confirm('¿Está seguro de eliminar este gasto y toda su distribución?');
+                        "
+                      >
+                        <input type="hidden" name="id" th:value="${gasto.id}" />
+                        <input type="hidden" name="tipoGasto" th:value="${gasto.tipoGasto}" />
+                        <button type="submit" class="boton-secundario btn-tabla btn-eliminar">
+                          Eliminar
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
       </main>

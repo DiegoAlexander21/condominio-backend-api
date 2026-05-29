@@ -4,16 +4,16 @@
 
 .btn-habitantes {
     background-color: var(--primario);
-    color: white;
+    color: #ffffff;
     border-color: var(--primario);
 }
 
 .estado-ocupada {
     color: var(--exito);
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .estado-disponible {
     color: var(--secundario);
-    font-weight: bold;
+    font-weight: 700;
 }

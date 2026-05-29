@@ -18,10 +18,10 @@
           </div>
           <nav class="acciones-encabezado">
             <a class="boton-primario" th:href="@{/incidencias/nuevo/area}"
-              >+ Reportar Área</a
+              >Reportar Área</a
             >
             <a class="boton-primario" th:href="@{/incidencias/nuevo/unidad}"
-              >+ Reportar Unidad</a
+              >Reportar Unidad</a
             >
           </nav>
         </header>
@@ -68,53 +68,48 @@
 
         <section class="panel">
           <div
-            class="grid-tarjetas"
+            class="contenedor-tabla"
             th:if="${incidencias != null and !incidencias.isEmpty()}"
           >
-            <div
-              th:each="inc : ${incidencias}"
-              class="incidencia-card tarjeta tarjeta-estatica"
-              th:classappend="'gravedad-' + ${inc.gravedad}"
-            >
-              <div class="incidencia-header">
-                <h3
-                  class="incidencia-title"
-                  th:text="'Causa: ' + ${inc.causaFormateada}"
-                ></h3>
-              </div>
-              <div class="incidencia-meta">
-                <span th:if="${inc.lugarAfectado != null}"
-                  ><strong th:text="${inc.lugarAfectado}"></strong
-                ></span>
-                <span
-                  >Fecha:
-                  <strong
-                    th:text="${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy')}"
-                  ></strong
-                ></span>
-                <span
-                  >Hora:
-                  <strong
-                    th:text="${#temporals.format(inc.fechaReporte, 'HH:mm')}"
-                  ></strong
-                ></span>
-              </div>
-              <div class="incidencia-actions">
-                <button
-                  type="button"
-                  class="boton-secundario btn-tabla boton-detalles"
-                  th:attr="data-id=${inc.id}, data-causa=${inc.causaFormateada}, data-estado=${inc.estadoFormateado}, data-desc=${inc.descripcion}, data-gravedad=${inc.gravedadFormateada}, data-fecha=${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy HH:mm')}, data-responsable=${inc.responsableAtencion}, data-lugar=${inc.lugarAfectado}"
-                >
-                  Ver Detalles
-                </button>
-                <a
-                  sec:authorize="hasRole('ADMINISTRADOR')"
-                  th:href="@{/incidencias/actualizar(incidenciaId=${inc.id})}"
-                  class="boton-secundario btn-tabla"
-                  >Actualizar Estado</a
-                >
-              </div>
-            </div>
+            <table class="tabla-datos">
+              <thead>
+                <tr>
+                  <th>Causa</th>
+                  <th>Gravedad</th>
+                  <th>Lugar Afectado</th>
+                  <th>Fecha y Hora</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="inc : ${incidencias}">
+                  <td th:text="${inc.causaFormateada}"></td>
+                  <td th:text="${inc.gravedadFormateada}"></td>
+                  <td th:text="${inc.lugarAfectado}"></td>
+                  <td>
+                    <span th:text="${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy')}"></span><br>
+                    <small th:text="${#temporals.format(inc.fechaReporte, 'HH:mm')}"></small>
+                  </td>
+                  <td>
+                    <div class="celda-acciones">
+                      <button
+                        type="button"
+                        class="boton-secundario btn-tabla boton-detalles"
+                        th:attr="data-id=${inc.id}, data-causa=${inc.causaFormateada}, data-estado=${inc.estadoFormateado}, data-desc=${inc.descripcion}, data-gravedad=${inc.gravedadFormateada}, data-fecha=${#temporals.format(inc.fechaReporte, 'dd/MM/yyyy HH:mm')}, data-responsable=${inc.responsableAtencion}, data-lugar=${inc.lugarAfectado}"
+                      >
+                        Ver Detalles
+                      </button>
+                      <a
+                        sec:authorize="hasRole('ADMINISTRADOR')"
+                        th:href="@{/incidencias/actualizar(incidenciaId=${inc.id})}"
+                        class="boton-secundario btn-tabla"
+                        >Actualizar Estado</a
+                      >
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <div

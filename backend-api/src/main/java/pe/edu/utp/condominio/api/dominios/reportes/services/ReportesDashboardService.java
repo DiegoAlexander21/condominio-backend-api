@@ -105,26 +105,25 @@ public class ReportesDashboardService {
     }
 
     private List<UnidadMorosaResponse> obtenerUnidadesMorosas(int limite) {
-        Map<Long, EstadoCuenta> ultimoEstado = new HashMap<>();
-        for (EstadoCuenta estado : estadoCuentaRepository.findAll()) {
-            if (estado.getUnidad() == null) {
-                continue;
-            }
-            Long unidadId = estado.getUnidad().getId();
-            EstadoCuenta actual = ultimoEstado.get(unidadId);
-            if (actual == null || esPeriodoPosterior(estado.getPeriodo(), actual.getPeriodo())) {
-                ultimoEstado.put(unidadId, estado);
-            }
-        }
-
         LocalDate hoy = LocalDate.now();
-        return ultimoEstado.values().stream()
-                .filter(estado -> estado.getSaldo() > 0 && (estado.getFechaVencimiento() == null || estado.getFechaVencimiento().isBefore(hoy)))
-                .map(estado -> {
-                    Unidad unidad = estado.getUnidad();
+        Map<Long, List<EstadoCuenta>> estadosPorUnidad = estadoCuentaRepository.findAll().stream()
+                .filter(estado -> estado.getUnidad() != null && estado.getSaldo() > 0 &&
+                        (estado.getFechaVencimiento() == null || !estado.getFechaVencimiento().isAfter(hoy)))
+                .collect(Collectors.groupingBy(estado -> estado.getUnidad().getId()));
+
+        return estadosPorUnidad.entrySet().stream()
+                .map(entry -> {
+                    List<EstadoCuenta> estados = entry.getValue();
+                    Unidad unidad = estados.get(0).getUnidad();
                     String nombre = unidad != null ? formatearUnidad(unidad) : "Unidad sin nombre";
-                    return new UnidadMorosaResponse(unidad != null ? unidad.getId() : null,
-                            nombre, estado.getSaldo(), estado.getPeriodo());
+                    
+                    double totalSaldo = estados.stream().mapToDouble(EstadoCuenta::getSaldo).sum();
+                    LocalDate maxPeriodo = estados.stream()
+                            .map(EstadoCuenta::getPeriodo)
+                            .max(LocalDate::compareTo)
+                            .orElse(null);
+
+                    return new UnidadMorosaResponse(entry.getKey(), nombre, totalSaldo, maxPeriodo);
                 })
                 .sorted(Comparator.comparingDouble(UnidadMorosaResponse::getSaldo).reversed())
                 .limit(limite)
@@ -132,39 +131,27 @@ public class ReportesDashboardService {
     }
 
     private List<UnidadMorosaResponse> obtenerUnidadesConMayorDeuda(int limite) {
-        Map<Long, EstadoCuenta> ultimoEstado = new HashMap<>();
-        for (EstadoCuenta estado : estadoCuentaRepository.findAll()) {
-            if (estado.getUnidad() == null) {
-                continue;
-            }
-            Long unidadId = estado.getUnidad().getId();
-            EstadoCuenta actual = ultimoEstado.get(unidadId);
-            if (actual == null || esPeriodoPosterior(estado.getPeriodo(), actual.getPeriodo())) {
-                ultimoEstado.put(unidadId, estado);
-            }
-        }
+        Map<Long, List<EstadoCuenta>> estadosPorUnidad = estadoCuentaRepository.findAll().stream()
+                .filter(estado -> estado.getUnidad() != null && estado.getSaldo() > 0)
+                .collect(Collectors.groupingBy(estado -> estado.getUnidad().getId()));
 
-        return ultimoEstado.values().stream()
-                .filter(estado -> estado.getSaldo() > 0)
-                .map(estado -> {
-                    Unidad unidad = estado.getUnidad();
+        return estadosPorUnidad.entrySet().stream()
+                .map(entry -> {
+                    List<EstadoCuenta> estados = entry.getValue();
+                    Unidad unidad = estados.get(0).getUnidad();
                     String nombre = unidad != null ? formatearUnidad(unidad) : "Unidad sin nombre";
-                    return new UnidadMorosaResponse(unidad != null ? unidad.getId() : null,
-                            nombre, estado.getSaldo(), estado.getPeriodo());
+                    
+                    double totalSaldo = estados.stream().mapToDouble(EstadoCuenta::getSaldo).sum();
+                    LocalDate maxPeriodo = estados.stream()
+                            .map(EstadoCuenta::getPeriodo)
+                            .max(LocalDate::compareTo)
+                            .orElse(null);
+
+                    return new UnidadMorosaResponse(entry.getKey(), nombre, totalSaldo, maxPeriodo);
                 })
                 .sorted(Comparator.comparingDouble(UnidadMorosaResponse::getSaldo).reversed())
                 .limit(limite)
                 .collect(Collectors.toList());
-    }
-
-    private boolean esPeriodoPosterior(LocalDate candidato, LocalDate actual) {
-        if (candidato == null) {
-            return false;
-        }
-        if (actual == null) {
-            return true;
-        }
-        return candidato.isAfter(actual);
     }
 
     private String formatearUnidad(Unidad unidad) {

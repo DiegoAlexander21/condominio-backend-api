@@ -41,12 +41,13 @@
                                     <th>Descripción del Gasto</th>
                                     <th>Tipo</th>
                                     <th>Fecha de Registro</th>
+                                    <th>Fecha de Vencimiento</th>
                                     <th>Monto Cobrado</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:if="${#lists.isEmpty(desglose)}">
-                                    <td colspan="4">No hay gastos detallados para este periodo.</td>
+                                    <td colspan="5">No hay gastos detallados para este periodo.</td>
                                 </tr>
                                 <tr th:each="detalle : ${desglose}" class="fila-dato">
                                     <td th:text="${detalle.descripcionGasto}"></td>
@@ -54,31 +55,32 @@
                                         <span class="etiqueta" th:text="${detalle.tipoGasto}"></span>
                                     </td>
                                     <td th:text="${#temporals.format(detalle.fechaRegistro, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td th:text="${detalle.fechaLimite != null ? #temporals.format(detalle.fechaLimite, 'dd/MM/yyyy') : '-'}"></td>
                                     <td th:text="'S/ ' + ${detalle.montoAsignado}"></td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="3" class="celda-derecha">Total Fijos:</th>
+                                    <th colspan="4" class="celda-derecha">Total Fijos:</th>
                                     <th th:text="'S/ ' + ${estadoCuenta.totalCuotas}"></th>
                                 </tr>
                                 <tr>
-                                    <th colspan="3" class="celda-derecha">Total Extraordinarios:</th>
+                                    <th colspan="4" class="celda-derecha">Total Extraordinarios:</th>
                                     <th th:text="'S/ ' + ${estadoCuenta.totalExtraordinarios}"></th>
                                 </tr>
                                 <tr>
-                                    <th colspan="3" class="celda-derecha">Total Deuda Inicial:</th>
+                                    <th colspan="4" class="celda-derecha">Total Deuda Inicial:</th>
                                     <th th:text="'S/ ' + ${estadoCuenta.totalCuotas + estadoCuenta.totalExtraordinarios}"></th>
                                 </tr>
                                 <tr>
-                                    <th colspan="3" class="celda-derecha">Total Pagado:</th>
+                                    <th colspan="4" class="celda-derecha">Total Pagado:</th>
                                     <th class="texto-exito" th:text="'S/ ' + ${estadoCuenta.totalPagado}"></th>
                                 </tr>
                                 <tr>
-                                    <th colspan="3" class="celda-derecha">Saldo Pendiente:</th>
+                                    <th colspan="4" class="celda-derecha">Saldo Pendiente:</th>
                                     <th class="texto-alerta" th:text="'S/ ' + ${estadoCuenta.saldo}"></th>
                                 </tr>
-                            </tbody>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
