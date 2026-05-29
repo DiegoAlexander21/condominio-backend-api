@@ -55,7 +55,6 @@
           >
             <h3>Incidencias Frecuentes</h3>
             <p
-              class="valor-kpi"
               th:text="${#lists.size(dashboard.incidenciasFrecuentes)} + ' Áreas'"
             ></p>
             <span class="descripcion-kpi">Con desperfectos reportados</span>
@@ -66,7 +65,6 @@
           >
             <h3>Gasto Acumulado en Áreas</h3>
             <p
-              class="valor-kpi"
               th:text="'S/ ' + ${#numbers.formatDecimal(#aggregates.sum(dashboard.areasConMayorGasto.![montoTotal]) ?: 0.0, 1, 'POINT', 2, 'COMMA')}"
             ></p>
             <span class="descripcion-kpi">Inversión extraordinaria total</span>
@@ -77,14 +75,13 @@
           >
             <h3>Unidades Morosas</h3>
             <p
-              class="valor-kpi"
               th:text="${#lists.size(dashboard.unidadesMorosas)} + ' Deptos'"
             ></p>
             <span class="descripcion-kpi">Con deudas fuera de vencimiento</span>
           </div>
         </section>
 
-        <section class="grid-graficos" id="seccionGraficos">
+        <section class="contenedor-graficos" id="seccionGraficos">
           <article
             class="tarjeta tarjeta-estatica tarjeta-grafico"
             id="contenedorGraficoIncidencias"
@@ -108,7 +105,7 @@
           </article>
 
           <article
-            class="tarjeta tarjeta-estatica tarjeta-grafico col-ancho-completo"
+            class="tarjeta tarjeta-estatica tarjeta-grafico grafico-ancho-completo"
             id="contenedorGraficoMorosas"
           >
             <h2>Índice de Morosidad</h2>

@@ -1,50 +1,6 @@
-.incidencia-card {
-    border-left: 4px solid var(--secundario);
-}
-
-.incidencia-card.gravedad-LEVE { border-left-color: var(--secundario); }
-.incidencia-card.gravedad-MODERADO { border-left-color: #F59E0B; }
-.incidencia-card.gravedad-GRAVE { border-left-color: #F97316; }
-.incidencia-card.gravedad-CRITICO { border-left-color: var(--error); }
-
-.incidencia-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.incidencia-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primario);
-    margin-bottom: 0.5rem;
-}
-
-.incidencia-meta {
-    font-size: 0.9rem;
-    color: var(--primario);
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-.badge-estado-REGISTRADO { background-color: var(--secundario); }
-.badge-estado-EN_REVISION { background-color: #FDE68A; color: #92400E; }
-.badge-estado-EN_ATENCION { background-color: #D1FAE5; color: #065F46; }
-.badge-estado-RESUELTO { background-color: rgba(46, 125, 50, 0.2); color: var(--exito); }
-
-.incidencia-actions {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 0.5rem;
-    border-top: 1px solid var(--secundario);
-    padding-top: 1rem;
-}
-
 .modal-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 1.5rem;
     padding: 1rem;
@@ -52,7 +8,8 @@
     border-radius: var(--radio-borde);
 }
 
-.modal-info p {
+.modal-info > p {
+    flex: 1 1 200px;
     margin: 0;
     font-size: 0.9rem;
     color: var(--primario);

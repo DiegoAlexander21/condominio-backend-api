@@ -1,6 +1,6 @@
-.grid-tarjetas {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+.contenedor-tarjetas {
+    display: flex;
+    flex-wrap: wrap;
     gap: 1.5rem;
 }
 
@@ -14,17 +14,6 @@
 .tarjeta {
     background-color: var(--blanco);
     border-radius: var(--radio-borde);
-    box-shadow: var(--sombra-tarjeta);
     padding: 1.5rem;
-    transition: var(--transicion-suave);
-}
-
-.tarjeta:hover {
-    box-shadow: var(--sombra-suave);
-    transform: translateY(-2px);
-}
-
-.tarjeta-estatica:hover {
-    box-shadow: var(--sombra-tarjeta);
-    transform: none;
+    flex: 1 1 300px;
 }

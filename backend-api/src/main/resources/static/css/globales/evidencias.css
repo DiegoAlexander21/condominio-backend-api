@@ -8,6 +8,7 @@
 .contenedor-imagen-previa {
     position: relative;
     display: inline-block;
+    margin: 0 5px;
 }
 
 .contenedor-imagen-previa img {
@@ -17,13 +18,7 @@
     border-radius: var(--radio-borde);
     border: 1px solid var(--secundario);
     cursor: pointer;
-    box-shadow: var(--sombra-suave);
-    transition: var(--transicion-suave);
-}
 
-.contenedor-imagen-previa img:hover {
-    transform: scale(1.05);
-    box-shadow: var(--sombra-tarjeta);
 }
 
 .boton-eliminar-imagen {
@@ -36,14 +31,10 @@
     border-radius: 50%;
     width: 24px;
     height: 24px;
-    font-size: 14px;
-    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--sombra-suave);
-    transition: var(--transicion-suave);
 }
 
 .boton-eliminar-imagen:hover {

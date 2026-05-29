@@ -1,35 +1,29 @@
 .tabla-datos {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1.5rem;
     background: var(--blanco);
-    border-radius: var(--radio-borde);
-    overflow: hidden;
+}
+
+.tabla-datos th,
+.tabla-datos td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--secundario);
 }
 
 .tabla-datos th {
     background-color: var(--primario);
     color: var(--blanco);
-    padding: 1rem;
-    text-align: left;
-    font-weight: 600;
-}
-
-.tabla-datos td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--secundario);
-}
-
-.tabla-datos tr:last-child td {
-    border-bottom: none;
-}
-
-.tabla-datos tr:hover {
-    background-color: rgba(194, 203, 212, 0.1);
+    font-weight: 700;
 }
 
 .contenedor-tabla {
     width: 100%;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+}
+
+.celda-acciones {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
 }
