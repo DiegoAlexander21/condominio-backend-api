@@ -33,26 +33,26 @@ public class GestionUnidadesService {
     }
 
     @Transactional
-    public synchronized Unidad registrarOActualizarUnidad(UnidadForm form) {
-        validarUnidad(form);
+    public synchronized Unidad registrarOActualizarUnidad(UnidadForm formulario) {
+        validarUnidad(formulario);
 
-        Condominio condominio = obtenerCondominio(form.getNombreCondominio());
+        Condominio condominio = obtenerCondominio(formulario.getNombreCondominio());
         Optional<Unidad> existente = unidadRepository.buscarPorCondominioTorreYNumero(condominio.getId(),
-                form.getTorre(), form.getNumeroUnidad());
+                formulario.getTorre(), formulario.getNumeroUnidad());
 
-        if (existente.isPresent() && !existente.get().getId().equals(form.getId())) {
-            throw new IllegalArgumentException("Ya existe la Unidad '" + form.getNumeroUnidad()
-                    + "' en la torre/bloque '" + form.getTorre() + "' de este condominio.");
+        if (existente.isPresent() && !existente.get().getId().equals(formulario.getId())) {
+            throw new IllegalArgumentException("Ya existe la Unidad '" + formulario.getNumeroUnidad()
+                    + "' en la torre/bloque '" + formulario.getTorre() + "' de este condominio.");
         }
 
-        if (form.getId() != null) {
-            return unidadRepository.findById(form.getId())
-                    .map(unidad -> actualizarUnidadExistente(unidad, form))
-                    .orElseGet(() -> crearNuevaUnidad(form));
+        if (formulario.getId() != null) {
+            return unidadRepository.findById(formulario.getId())
+                    .map(unidad -> actualizarUnidadExistente(unidad, formulario))
+                    .orElseGet(() -> crearNuevaUnidad(formulario));
         }
 
-        return existente.map(unidad -> actualizarUnidadExistente(unidad, form))
-                .orElseGet(() -> crearNuevaUnidad(form));
+        return existente.map(unidad -> actualizarUnidadExistente(unidad, formulario))
+                .orElseGet(() -> crearNuevaUnidad(formulario));
     }
 
     public synchronized List<Unidad> obtenerUnidades() {
@@ -100,46 +100,46 @@ public class GestionUnidadesService {
     }
 
     public UnidadForm convertirAForm(Unidad unidad) {
-        UnidadForm form = new UnidadForm();
-        form.setId(unidad.getId());
-        form.setNombreCondominio(unidad.getCondominio() != null ? unidad.getCondominio().getNombre() : null);
-        form.setNumeroUnidad(unidad.getNumeroUnidad());
-        form.setTorre(unidad.getTorre());
-        form.setPiso(unidad.getPiso());
-        form.setArea(unidad.getArea());
-        return form;
+        UnidadForm formulario = new UnidadForm();
+        formulario.setId(unidad.getId());
+        formulario.setNombreCondominio(unidad.getCondominio() != null ? unidad.getCondominio().getNombre() : null);
+        formulario.setNumeroUnidad(unidad.getNumeroUnidad());
+        formulario.setTorre(unidad.getTorre());
+        formulario.setPiso(unidad.getPiso());
+        formulario.setArea(unidad.getArea());
+        return formulario;
     }
 
-    private Unidad actualizarUnidadExistente(Unidad unidad, UnidadForm form) {
-        Condominio condominio = obtenerCondominio(form.getNombreCondominio());
+    private Unidad actualizarUnidadExistente(Unidad unidad, UnidadForm formulario) {
+        Condominio condominio = obtenerCondominio(formulario.getNombreCondominio());
 
-        if (form.getPiso() > condominio.getPisosPorTorre()) {
-            throw new IllegalArgumentException("El piso ingresado (" + form.getPiso()
+        if (formulario.getPiso() > condominio.getPisosPorTorre()) {
+            throw new IllegalArgumentException("El piso ingresado (" + formulario.getPiso()
                     + ") supera el máximo de pisos por torre del condominio (" + condominio.getPisosPorTorre() + ").");
         }
 
-        unidad.setNumeroUnidad(form.getNumeroUnidad());
-        unidad.setTorre(form.getTorre());
-        unidad.setPiso(form.getPiso());
-        unidad.setArea(form.getArea());
+        unidad.setNumeroUnidad(formulario.getNumeroUnidad());
+        unidad.setTorre(formulario.getTorre());
+        unidad.setPiso(formulario.getPiso());
+        unidad.setArea(formulario.getArea());
         unidad.setCondominio(condominio);
         return unidadRepository.save(unidad);
     }
 
-    private Unidad crearNuevaUnidad(UnidadForm form) {
-        Condominio condominio = obtenerCondominio(form.getNombreCondominio());
+    private Unidad crearNuevaUnidad(UnidadForm formulario) {
+        Condominio condominio = obtenerCondominio(formulario.getNombreCondominio());
 
-        if (form.getPiso() > condominio.getPisosPorTorre()) {
-            throw new IllegalArgumentException("El piso ingresado (" + form.getPiso()
+        if (formulario.getPiso() > condominio.getPisosPorTorre()) {
+            throw new IllegalArgumentException("El piso ingresado (" + formulario.getPiso()
                     + ") supera el máximo de pisos por torre del condominio (" + condominio.getPisosPorTorre() + ").");
         }
 
         Unidad nueva = new Unidad();
         nueva.setCondominio(condominio);
-        nueva.setNumeroUnidad(form.getNumeroUnidad());
-        nueva.setTorre(form.getTorre());
-        nueva.setPiso(form.getPiso());
-        nueva.setArea(form.getArea());
+        nueva.setNumeroUnidad(formulario.getNumeroUnidad());
+        nueva.setTorre(formulario.getTorre());
+        nueva.setPiso(formulario.getPiso());
+        nueva.setArea(formulario.getArea());
         return unidadRepository.save(nueva);
     }
 
@@ -148,23 +148,23 @@ public class GestionUnidadesService {
                 .orElseThrow(() -> new IllegalArgumentException("Debe seleccionar un condominio valido."));
     }
 
-    private void validarUnidad(UnidadForm form) {
-        if (form == null) {
+    private void validarUnidad(UnidadForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de la unidad es obligatorio.");
         }
-        if (form.getNombreCondominio() == null || form.getNombreCondominio().isBlank()) {
+        if (formulario.getNombreCondominio() == null || formulario.getNombreCondominio().isBlank()) {
             throw new IllegalArgumentException("Debe seleccionar un condominio.");
         }
-        if (form.getNumeroUnidad() == null || form.getNumeroUnidad().isBlank()) {
+        if (formulario.getNumeroUnidad() == null || formulario.getNumeroUnidad().isBlank()) {
             throw new IllegalArgumentException("El numero de unidad no puede estar vacio.");
         }
-        if (form.getTorre() == null || form.getTorre().isBlank()) {
+        if (formulario.getTorre() == null || formulario.getTorre().isBlank()) {
             throw new IllegalArgumentException("La torre no puede estar vacia.");
         }
-        if (form.getPiso() <= 0) {
+        if (formulario.getPiso() <= 0) {
             throw new IllegalArgumentException("El piso debe ser mayor a cero.");
         }
-        if (form.getArea() <= 0) {
+        if (formulario.getArea() <= 0) {
             throw new IllegalArgumentException("El area debe ser mayor a cero.");
         }
     }
@@ -175,35 +175,35 @@ public class GestionUnidadesService {
         if (unidad == null) {
             return null;
         }
-        AsignarOcupantesForm form = new AsignarOcupantesForm();
-        form.setId(unidad.getId());
+        AsignarOcupantesForm formulario = new AsignarOcupantesForm();
+        formulario.setId(unidad.getId());
 
         Propietario propietario = unidad.getPropietario();
         if (propietario != null) {
-            form.setNombrePropietario(propietario.getNombre());
-            form.setDniPropietario(propietario.getDni());
-            form.setEmailPropietario(propietario.getEmail());
-            form.setTelefonoPropietario(propietario.getTelefono());
+            formulario.setNombrePropietario(propietario.getNombre());
+            formulario.setDniPropietario(propietario.getDni());
+            formulario.setEmailPropietario(propietario.getEmail());
+            formulario.setTelefonoPropietario(propietario.getTelefono());
         }
 
         Residente residente = unidad.getResidente();
         if (residente != null) {
-            form.setNombreResidente(residente.getNombre());
-            form.setEmailResidente(residente.getEmail());
-            form.setDniResidente(residente.getDni());
-            form.setParentesco(residente.getParentesco());
-            form.setResidenteActivo(residente.isActivo());
+            formulario.setNombreResidente(residente.getNombre());
+            formulario.setEmailResidente(residente.getEmail());
+            formulario.setDniResidente(residente.getDni());
+            formulario.setParentesco(residente.getParentesco());
+            formulario.setResidenteActivo(residente.isActivo());
         }
-        return form;
+        return formulario;
     }
 
     @Transactional
-    public synchronized Unidad asignarOcupantes(AsignarOcupantesForm form) {
-        Unidad unidad = unidadRepository.findById(form.getId())
+    public synchronized Unidad asignarOcupantes(AsignarOcupantesForm formulario) {
+        Unidad unidad = unidadRepository.findById(formulario.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Unidad no encontrada."));
 
-        String dniPropietarioForm = form.getDniPropietario() != null ? form.getDniPropietario().trim() : "";
-        String dniResidenteForm = form.getDniResidente() != null ? form.getDniResidente().trim() : "";
+        String dniPropietarioForm = formulario.getDniPropietario() != null ? formulario.getDniPropietario().trim() : "";
+        String dniResidenteForm = formulario.getDniResidente() != null ? formulario.getDniResidente().trim() : "";
 
         if (!dniPropietarioForm.isEmpty() && !dniResidenteForm.isEmpty()) {
             if (dniPropietarioForm.equalsIgnoreCase(dniResidenteForm)) {
@@ -212,8 +212,8 @@ public class GestionUnidadesService {
             }
         }
 
-        boolean tieneNombrePropietario = form.getNombrePropietario() != null && !form.getNombrePropietario().isBlank();
-        boolean tieneNombreResidente = form.getNombreResidente() != null && !form.getNombreResidente().isBlank();
+        boolean tieneNombrePropietario = formulario.getNombrePropietario() != null && !formulario.getNombrePropietario().isBlank();
+        boolean tieneNombreResidente = formulario.getNombreResidente() != null && !formulario.getNombreResidente().isBlank();
 
         if (!tieneNombrePropietario && tieneNombreResidente) {
             throw new IllegalArgumentException(
@@ -221,14 +221,14 @@ public class GestionUnidadesService {
         }
 
         if (tieneNombrePropietario && tieneNombreResidente) {
-            if (form.getNombrePropietario().trim().equalsIgnoreCase(form.getNombreResidente().trim())) {
+            if (formulario.getNombrePropietario().trim().equalsIgnoreCase(formulario.getNombreResidente().trim())) {
                 throw new IllegalArgumentException(
                         "El nombre del residente no puede ser igual al del propietario. Si el propietario vive en la unidad, deje los datos del residente en blanco.");
             }
         }
 
-        String emailPropietarioForm = form.getEmailPropietario() != null ? form.getEmailPropietario().trim() : "";
-        String emailResidenteForm = form.getEmailResidente() != null ? form.getEmailResidente().trim() : "";
+        String emailPropietarioForm = formulario.getEmailPropietario() != null ? formulario.getEmailPropietario().trim() : "";
+        String emailResidenteForm = formulario.getEmailResidente() != null ? formulario.getEmailResidente().trim() : "";
         if (!emailPropietarioForm.isEmpty() && !emailResidenteForm.isEmpty()) {
             if (emailPropietarioForm.equalsIgnoreCase(emailResidenteForm)) {
                 throw new IllegalArgumentException(
@@ -240,7 +240,7 @@ public class GestionUnidadesService {
         boolean cambioDePropietario = !dniActualPropietario.equalsIgnoreCase(dniPropietarioForm);
 
         if (cambioDePropietario) {
-            String nuevoPropietarioNombre = tieneNombrePropietario ? form.getNombrePropietario().trim() : "Sin propietario";
+            String nuevoPropietarioNombre = tieneNombrePropietario ? formulario.getNombrePropietario().trim() : "Sin propietario";
             String viejoPropietarioNombre = unidad.getPropietario() != null ? unidad.getPropietario().getNombre().trim() : "Sin propietario";
 
             if (!nuevoPropietarioNombre.equals("Sin propietario") && viejoPropietarioNombre.equalsIgnoreCase(nuevoPropietarioNombre)) {
@@ -258,10 +258,10 @@ public class GestionUnidadesService {
         if (tieneNombrePropietario) {
             Propietario propietario = unidad.getPropietario() != null ? unidad.getPropietario() : new Propietario();
             propietario.setUnidad(unidad);
-            propietario.setNombre(form.getNombrePropietario().trim());
+            propietario.setNombre(formulario.getNombrePropietario().trim());
             propietario.setDni(dniPropietarioForm);
             propietario.setEmail(emailPropietarioForm.isEmpty() ? null : emailPropietarioForm);
-            propietario.setTelefono(form.getTelefonoPropietario() != null ? form.getTelefonoPropietario().trim() : null);
+            propietario.setTelefono(formulario.getTelefonoPropietario() != null ? formulario.getTelefonoPropietario().trim() : null);
             unidad.setPropietario(propietario);
         } else {
             unidad.setPropietario(null);
@@ -270,11 +270,11 @@ public class GestionUnidadesService {
         if (tieneNombreResidente) {
             Residente residente = unidad.getResidente() != null ? unidad.getResidente() : new Residente();
             residente.setUnidad(unidad);
-            residente.setNombre(form.getNombreResidente().trim());
+            residente.setNombre(formulario.getNombreResidente().trim());
             residente.setDni(dniResidenteForm);
             residente.setEmail(emailResidenteForm.isEmpty() ? null : emailResidenteForm);
-            residente.setParentesco(form.getParentesco() != null ? form.getParentesco().trim() : null);
-            residente.setActivo(form.isResidenteActivo());
+            residente.setParentesco(formulario.getParentesco() != null ? formulario.getParentesco().trim() : null);
+            residente.setActivo(formulario.isResidenteActivo());
             unidad.setResidente(residente);
         } else {
             unidad.setResidente(null);

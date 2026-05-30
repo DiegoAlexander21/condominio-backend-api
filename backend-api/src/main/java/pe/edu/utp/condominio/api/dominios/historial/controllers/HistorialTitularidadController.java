@@ -15,8 +15,8 @@ public class HistorialTitularidadController {
     }
 
     @GetMapping("/historial-titularidad")
-    public String mostrarHistorial(Model model) {
-        model.addAttribute("listaHistorial", historialService.obtenerTodoElHistorial());
+    public String mostrarHistorial(Model modelo) {
+        modelo.addAttribute("listaHistorial", historialService.obtenerTodoElHistorial());
         return "dominios/historial/historial-titularidad";
     }
 }

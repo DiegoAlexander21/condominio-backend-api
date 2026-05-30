@@ -66,10 +66,10 @@ public class ReportesDashboardService {
         }
 
         return conteo.entrySet().stream()
-                .map(entry -> {
-                    AreaComun area = areas.get(entry.getKey());
+                .map(entrada -> {
+                    AreaComun area = areas.get(entrada.getKey());
                     String nombre = area != null ? area.getNombre() : "Area sin nombre";
-                    return new IncidenciaFrecuenteResponse(entry.getKey(), nombre, entry.getValue());
+                    return new IncidenciaFrecuenteResponse(entrada.getKey(), nombre, entrada.getValue());
                 })
                 .sorted(Comparator.comparingLong(IncidenciaFrecuenteResponse::getTotalIncidencias).reversed())
                 .limit(limite)
@@ -94,10 +94,10 @@ public class ReportesDashboardService {
         }
 
         return totales.entrySet().stream()
-                .map(entry -> {
-                    AreaComun area = areas.get(entry.getKey());
+                .map(entrada -> {
+                    AreaComun area = areas.get(entrada.getKey());
                     String nombre = area != null ? area.getNombre() : "Area sin nombre";
-                    return new AreaGastoResponse(entry.getKey(), nombre, entry.getValue());
+                    return new AreaGastoResponse(entrada.getKey(), nombre, entrada.getValue());
                 })
                 .sorted(Comparator.comparingDouble(AreaGastoResponse::getMontoTotal).reversed())
                 .limit(limite)
@@ -112,8 +112,8 @@ public class ReportesDashboardService {
                 .collect(Collectors.groupingBy(estado -> estado.getUnidad().getId()));
 
         return estadosPorUnidad.entrySet().stream()
-                .map(entry -> {
-                    List<EstadoCuenta> estados = entry.getValue();
+                .map(entrada -> {
+                    List<EstadoCuenta> estados = entrada.getValue();
                     Unidad unidad = estados.get(0).getUnidad();
                     String nombre = unidad != null ? formatearUnidad(unidad) : "Unidad sin nombre";
                     
@@ -123,7 +123,7 @@ public class ReportesDashboardService {
                             .max(LocalDate::compareTo)
                             .orElse(null);
 
-                    return new UnidadMorosaResponse(entry.getKey(), nombre, totalSaldo, maxPeriodo);
+                    return new UnidadMorosaResponse(entrada.getKey(), nombre, totalSaldo, maxPeriodo);
                 })
                 .sorted(Comparator.comparingDouble(UnidadMorosaResponse::getSaldo).reversed())
                 .limit(limite)
@@ -136,8 +136,8 @@ public class ReportesDashboardService {
                 .collect(Collectors.groupingBy(estado -> estado.getUnidad().getId()));
 
         return estadosPorUnidad.entrySet().stream()
-                .map(entry -> {
-                    List<EstadoCuenta> estados = entry.getValue();
+                .map(entrada -> {
+                    List<EstadoCuenta> estados = entrada.getValue();
                     Unidad unidad = estados.get(0).getUnidad();
                     String nombre = unidad != null ? formatearUnidad(unidad) : "Unidad sin nombre";
                     
@@ -147,7 +147,7 @@ public class ReportesDashboardService {
                             .max(LocalDate::compareTo)
                             .orElse(null);
 
-                    return new UnidadMorosaResponse(entry.getKey(), nombre, totalSaldo, maxPeriodo);
+                    return new UnidadMorosaResponse(entrada.getKey(), nombre, totalSaldo, maxPeriodo);
                 })
                 .sorted(Comparator.comparingDouble(UnidadMorosaResponse::getSaldo).reversed())
                 .limit(limite)

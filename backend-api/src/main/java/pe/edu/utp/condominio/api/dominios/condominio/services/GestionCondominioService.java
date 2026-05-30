@@ -17,19 +17,19 @@ public class GestionCondominioService {
     }
 
     @Transactional
-    public synchronized Condominio registrarOActualizarCondominio(CondominioForm form) {
-        validarCondominio(form);
+    public synchronized Condominio registrarOActualizarCondominio(CondominioForm formulario) {
+        validarCondominio(formulario);
 
-        String nombreNormalizado = form.getNombre().trim();
+        String nombreNormalizado = formulario.getNombre().trim();
         
-        if (form.getId() != null) {
-            if (condominioRepository.existePorNombreEstrictoYIdDiferente(nombreNormalizado, form.getId())) {
+        if (formulario.getId() != null) {
+            if (condominioRepository.existePorNombreEstrictoYIdDiferente(nombreNormalizado, formulario.getId())) {
                 throw new IllegalArgumentException("El condominio '" + nombreNormalizado + "' ya se encuentra registrado.");
             }
-            Condominio condominio = condominioRepository.findById(form.getId()).orElseThrow(() -> new IllegalArgumentException("Condominio no encontrado."));
+            Condominio condominio = condominioRepository.findById(formulario.getId()).orElseThrow(() -> new IllegalArgumentException("Condominio no encontrado."));
             condominio.setNombre(nombreNormalizado);
-            condominio.setTorres(form.getTorres());
-            condominio.setPisosPorTorre(form.getPisosPorTorre());
+            condominio.setTorres(formulario.getTorres());
+            condominio.setPisosPorTorre(formulario.getPisosPorTorre());
             return condominioRepository.save(condominio);
         } else {
             if (condominioRepository.existePorNombreEstricto(nombreNormalizado)) {
@@ -37,8 +37,8 @@ public class GestionCondominioService {
             }
             Condominio condominio = new Condominio();
             condominio.setNombre(nombreNormalizado);
-            condominio.setTorres(form.getTorres());
-            condominio.setPisosPorTorre(form.getPisosPorTorre());
+            condominio.setTorres(formulario.getTorres());
+            condominio.setPisosPorTorre(formulario.getPisosPorTorre());
             return condominioRepository.save(condominio);
         }
     }
@@ -50,12 +50,12 @@ public class GestionCondominioService {
     public synchronized CondominioForm obtenerFormCondominio(Long id) {
         Condominio condominio = condominioRepository.findById(id).orElse(null);
         if (condominio == null) return null;
-        CondominioForm form = new CondominioForm();
-        form.setId(condominio.getId());
-        form.setNombre(condominio.getNombre());
-        form.setTorres(condominio.getTorres());
-        form.setPisosPorTorre(condominio.getPisosPorTorre());
-        return form;
+        CondominioForm formulario = new CondominioForm();
+        formulario.setId(condominio.getId());
+        formulario.setNombre(condominio.getNombre());
+        formulario.setTorres(condominio.getTorres());
+        formulario.setPisosPorTorre(condominio.getPisosPorTorre());
+        return formulario;
     }
 
     public synchronized List<Condominio> obtenerCondominios() {
@@ -84,20 +84,20 @@ public class GestionCondominioService {
         return total;
     }
 
-    private void validarCondominio(CondominioForm form) {
-        if (form == null) {
+    private void validarCondominio(CondominioForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario del condominio es obligatorio.");
         }
 
-        if (form.getNombre() == null || form.getNombre().isBlank()) {
+        if (formulario.getNombre() == null || formulario.getNombre().isBlank()) {
             throw new IllegalArgumentException("El nombre del condominio no puede estar vacio.");
         }
 
-        if (form.getTorres() == null || form.getTorres() <= 0) {
+        if (formulario.getTorres() == null || formulario.getTorres() <= 0) {
             throw new IllegalArgumentException("El numero de torres debe ser mayor a cero.");
         }
 
-        if (form.getPisosPorTorre() == null || form.getPisosPorTorre() <= 0) {
+        if (formulario.getPisosPorTorre() == null || formulario.getPisosPorTorre() <= 0) {
             throw new IllegalArgumentException("El numero de pisos por torre debe ser mayor a cero.");
         }
     }

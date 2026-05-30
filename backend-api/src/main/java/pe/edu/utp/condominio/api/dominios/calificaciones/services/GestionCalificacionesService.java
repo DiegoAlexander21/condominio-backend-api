@@ -49,7 +49,7 @@ public class GestionCalificacionesService {
     @Transactional
     public CalificacionResponse registrarCalificacion(CalificacionForm formulario) {
         AreaComun area = areaComunRepository.findById(formulario.getAreaComunId())
-                .orElseThrow(() -> new RuntimeException("Ãrea comÃºn no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Área común no encontrada"));
 
         Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                 .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
@@ -70,7 +70,7 @@ public class GestionCalificacionesService {
     @Transactional
     public EstadoAreaResponse actualizarEstadoAutomatico(Long areaId) {
         AreaComun area = areaComunRepository.findById(areaId)
-                .orElseThrow(() -> new RuntimeException("Ãrea comÃºn no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Área común no encontrada"));
 
         Double promedio = calificacionRepository.obtenerPromedioPorArea(areaId);
         long totalIncidencias = incidenciaRepository.contarPorArea(areaId);
@@ -105,26 +105,26 @@ public class GestionCalificacionesService {
         return mapearEstadoAResponse(estado);
     }
 
-    private CalificacionResponse mapearCalificacionAResponse(CalificacionArea entity) {
-        String identificadorUnidad = "Unidad " + entity.getUnidad().getNumeroUnidad() + " - Torre " + entity.getUnidad().getTorre();
+    private CalificacionResponse mapearCalificacionAResponse(CalificacionArea entidad) {
+        String identificadorUnidad = "Unidad " + entidad.getUnidad().getNumeroUnidad() + " - Torre " + entidad.getUnidad().getTorre();
         return new CalificacionResponse(
-                entity.getId(),
-                entity.getAreaComun().getNombre(),
+                entidad.getId(),
+                entidad.getAreaComun().getNombre(),
                 identificadorUnidad,
-                entity.getPuntaje(),
-                entity.getComentario(),
-                entity.getFechaRegistro()
+                entidad.getPuntaje(),
+                entidad.getComentario(),
+                entidad.getFechaRegistro()
         );
     }
 
-    private EstadoAreaResponse mapearEstadoAResponse(EstadoArea entity) {
+    private EstadoAreaResponse mapearEstadoAResponse(EstadoArea entidad) {
         return new EstadoAreaResponse(
-                entity.getId(),
-                entity.getAreaComun() != null ? entity.getAreaComun().getNombre() : "N/A",
-                entity.getCalificacionPromedio(),
-                entity.getTotalIncidencias(),
-                entity.getTotalChecklistsNoAprobados(),
-                entity.getFechaCalculo()
+                entidad.getId(),
+                entidad.getAreaComun() != null ? entidad.getAreaComun().getNombre() : "N/A",
+                entidad.getCalificacionPromedio(),
+                entidad.getTotalIncidencias(),
+                entidad.getTotalChecklistsNoAprobados(),
+                entidad.getFechaCalculo()
         );
     }
 }

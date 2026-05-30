@@ -25,59 +25,59 @@ public class GestionMantenimientoController {
     }
 
     @GetMapping
-    public String mostrarPanelControl(Model model) {
-        model.addAttribute("insumos", mantenimientoService.listarInsumos());
-        model.addAttribute("insumosCriticos", mantenimientoService.listarInsumosCriticos());
+    public String mostrarPanelControl(Model modelo) {
+        modelo.addAttribute("insumos", mantenimientoService.listarInsumos());
+        modelo.addAttribute("insumosCriticos", mantenimientoService.listarInsumosCriticos());
         return "mantenimiento/panel-control";
     }
 
     @GetMapping("/nuevo-insumo")
-    public String mostrarFormularioInsumo(Model model) {
-        model.addAttribute("insumoForm", new InsumoForm());
+    public String mostrarFormularioInsumo(Model modelo) {
+        modelo.addAttribute("insumoForm", new InsumoForm());
         return "mantenimiento/formulario-insumo";
     }
 
     @PostMapping("/insumos")
     public String registrarInsumo(
             @Valid @ModelAttribute("insumoForm") InsumoForm formulario,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "mantenimiento/formulario-insumo";
         }
 
         mantenimientoService.registrarInsumo(formulario);
-        redirectAttributes.addFlashAttribute("successMessage", "Insumo registrado correctamente.");
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Insumo registrado correctamente.");
         return "redirect:/mantenimiento";
     }
 
     @GetMapping("/nueva-tarea")
-    public String mostrarFormularioTarea(Model model) {
-        model.addAttribute("tareaForm", new TareaMantenimientoForm());
-        model.addAttribute("insumosDisponibles", mantenimientoService.listarInsumos());
+    public String mostrarFormularioTarea(Model modelo) {
+        modelo.addAttribute("tareaForm", new TareaMantenimientoForm());
+        modelo.addAttribute("insumosDisponibles", mantenimientoService.listarInsumos());
         return "mantenimiento/formulario-tarea";
     }
 
     @PostMapping("/tareas")
     public String registrarTarea(
             @Valid @ModelAttribute("tareaForm") TareaMantenimientoForm formulario,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("insumosDisponibles", mantenimientoService.listarInsumos());
+        if (resultadoValidacion.hasErrors()) {
+            modelo.addAttribute("insumosDisponibles", mantenimientoService.listarInsumos());
             return "mantenimiento/formulario-tarea";
         }
 
         try {
             mantenimientoService.registrarTareaConInsumos(formulario);
-            redirectAttributes.addFlashAttribute("successMessage", "Tarea registrada y costos distribuidos en finanzas.");
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Tarea registrada y costos distribuidos en finanzas.");
             return "redirect:/mantenimiento";
         } catch (RuntimeException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            model.addAttribute("insumosDisponibles", mantenimientoService.listarInsumos());
+            modelo.addAttribute("mensajeError", ex.getMessage());
+            modelo.addAttribute("insumosDisponibles", mantenimientoService.listarInsumos());
             return "mantenimiento/formulario-tarea";
         }
     }

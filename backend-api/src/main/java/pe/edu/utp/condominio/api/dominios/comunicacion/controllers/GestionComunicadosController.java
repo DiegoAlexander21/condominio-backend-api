@@ -26,45 +26,45 @@ public class GestionComunicadosController {
     }
 
     @GetMapping
-    public String listarComunicados(@RequestParam("condominioId") Long condominioId, Model model) {
-        model.addAttribute("comunicados", gestionComunicadosService.listarPorCondominio(condominioId));
+    public String listarComunicados(@RequestParam("condominioId") Long condominioId, Model modelo) {
+        modelo.addAttribute("comunicados", gestionComunicadosService.listarPorCondominio(condominioId));
         return "comunicacion/lista-comunicados";
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormularioRegistro(Model model) {
-        if (!model.containsAttribute("comunicadoForm")) {
-            model.addAttribute("comunicadoForm", new ComunicadoForm());
+    public String mostrarFormularioRegistro(Model modelo) {
+        if (!modelo.containsAttribute("comunicadoForm")) {
+            modelo.addAttribute("comunicadoForm", new ComunicadoForm());
         }
         return "comunicacion/formulario-comunicado";
     }
 
     @PostMapping
     public String registrarComunicado(
-            @Valid @ModelAttribute("comunicadoForm") ComunicadoForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("comunicadoForm") ComunicadoForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "comunicacion/formulario-comunicado";
         }
 
-        gestionComunicadosService.registrarComunicado(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Comunicado registrado correctamente.");
-        return "redirect:/comunicacion/comunicados?condominioId=" + form.getCondominioId();
+        gestionComunicadosService.registrarComunicado(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Comunicado registrado correctamente.");
+        return "redirect:/comunicacion/comunicados?condominioId=" + formulario.getCondominioId();
     }
 
     @PostMapping("/ia")
     public String generarConIA(
-            @Valid @ModelAttribute("comunicadoIAForm") ComunicadoIAForm form,
-            BindingResult bindingResult,
-            Model model) {
+            @Valid @ModelAttribute("comunicadoIAForm") ComunicadoIAForm formulario,
+            BindingResult resultadoValidacion,
+            Model modelo) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "comunicacion/formulario-comunicado";
         }
 
-        model.addAttribute("comunicadoGenerado", gestionComunicadosService.generarConIA(form));
+        modelo.addAttribute("comunicadoGenerado", gestionComunicadosService.generarConIA(formulario));
         return "comunicacion/formulario-comunicado";
     }
 }

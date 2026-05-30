@@ -19,48 +19,48 @@ import pe.edu.utp.condominio.api.dominios.seguridad.security.FiltroJwt;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig {
+public class SeguridadWebConfig {
 
     private final FiltroJwt filtroJwt;
 
-    public WebSecurityConfig(FiltroJwt filtroJwt) {
+    public SeguridadWebConfig(FiltroJwt filtroJwt) {
         this.filtroJwt = filtroJwt;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain cadenaFiltrosSeguridad(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
+                .sessionManagement(sesion -> sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(autenticacion -> autenticacion
                         .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**",
                                 "/error")
                         .permitAll()
                         .anyRequest().hasRole("ADMINISTRADOR"))
-                .exceptionHandling(ex -> ex
+                .exceptionHandling(excepcion -> excepcion
                         .defaultAuthenticationEntryPointFor(
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                                 new AntPathRequestMatcher("/api/**"))
                         .defaultAccessDeniedHandlerFor(
-                                (request, response, accessDeniedException) -> response
+                                (solicitud, respuesta, excepcionAccesoDenegado) -> respuesta
                                         .sendError(HttpServletResponse.SC_FORBIDDEN),
                                 new AntPathRequestMatcher("/api/**"))
                         .authenticationEntryPoint(
-                                (request, response, authException) -> response.sendRedirect("/auth/login"))
+                                (solicitud, respuesta, excepcionAutenticacion) -> respuesta.sendRedirect("/auth/login"))
                         .accessDeniedHandler(
-                                (request, response, accessDeniedException) -> response.sendRedirect("/auth/sin-panel")))
+                                (solicitud, respuesta, excepcionAccesoDenegado) -> respuesta.sendRedirect("/auth/sin-panel")))
                 .addFilterBefore(filtroJwt, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder codificadorContrasena() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager gestorAutenticacion(AuthenticationConfiguration configuracion) throws Exception {
+        return configuracion.getAuthenticationManager();
     }
 }

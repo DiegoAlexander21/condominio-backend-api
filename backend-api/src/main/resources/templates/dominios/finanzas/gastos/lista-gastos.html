@@ -37,11 +37,11 @@
           </nav>
         </header>
 
-        <section th:if="${successMessage != null}">
-          <p class="alerta-exito" th:text="${successMessage}"></p>
+        <section th:if="${mensajeExito != null}">
+          <p class="alerta-exito" th:text="${mensajeExito}"></p>
         </section>
-        <section th:if="${errorMessage != null}">
-          <p class="alerta-error" th:text="${errorMessage}"></p>
+        <section th:if="${mensajeError != null}">
+          <p class="alerta-error" th:text="${mensajeError}"></p>
         </section>
 
         <section class="panel">
@@ -110,10 +110,7 @@
                       <form
                         th:action="@{/finanzas/gastos/eliminar}"
                         method="post"
-                        class="form-eliminar form-eliminar-en-linea"
-                        onsubmit="
-                          return confirm('¿Está seguro de eliminar este gasto y toda su distribución?');
-                        "
+                        class="form-eliminar form-eliminar-en-linea confirmacion-eliminar-gasto"
                       >
                         <input type="hidden" name="id" th:value="${gasto.id}" />
                         <input type="hidden" name="tipoGasto" th:value="${gasto.tipoGasto}" />
@@ -193,6 +190,7 @@
       th:src="@{/js/dominios/finanzas/gastos-generar-estado.js}"
       defer
     ></script>
+    <script th:src="@{/js/dominios/finanzas/gastos-eliminar.js}" defer></script>
     <script th:src="@{/js/dominios/finanzas/gastos.js}" defer></script>
   </body>
 </html>

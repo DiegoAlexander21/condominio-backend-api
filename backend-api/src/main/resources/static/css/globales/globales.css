@@ -106,3 +106,7 @@ button {
     color: var(--primario);
     margin-top: 0.5rem;
 }
+
+.tarjeta-valor-unidad {
+    font-size: 1.5rem;
+}

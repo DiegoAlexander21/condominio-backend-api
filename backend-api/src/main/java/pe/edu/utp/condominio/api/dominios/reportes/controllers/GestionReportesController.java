@@ -21,8 +21,8 @@ public class GestionReportesController {
     @GetMapping("/dashboard")
     public String mostrarDashboard(
             @RequestParam(name = "limite", required = false, defaultValue = "5") int limite,
-            Model model) {
-        model.addAttribute("dashboard", reportesDashboardService.generarReporte(limite));
+            Model modelo) {
+        modelo.addAttribute("dashboard", reportesDashboardService.generarReporte(limite));
         return "dominios/reportes/dashboard";
     }
 }

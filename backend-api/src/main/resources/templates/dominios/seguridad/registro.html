@@ -11,8 +11,8 @@
             <p>Completa tus datos para registrarte</p>
         </div>
 
-        <section th:if="${errorMessage != null}">
-            <p class="alerta-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+        <section th:if="${mensajeError != null}">
+            <p class="alerta-error" th:if="${mensajeError != null}" th:text="${mensajeError}"></p>
         </section>
 
         <form id="formularioRegistro" th:action="@{/auth/registro}" th:object="${registroRequest}" method="post" novalidate>

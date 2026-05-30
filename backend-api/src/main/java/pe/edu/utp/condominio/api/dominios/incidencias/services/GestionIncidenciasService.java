@@ -40,19 +40,19 @@ public class GestionIncidenciasService {
     }
 
     @Transactional
-    public synchronized IncidenciaResponse registrarIncidencia(IncidenciaForm form) {
-        validarIncidencia(form);
+    public synchronized IncidenciaResponse registrarIncidencia(IncidenciaForm formulario) {
+        validarIncidencia(formulario);
 
         Incidencia incidencia;
 
-        if (form.getAreaComunId() != null) {
-            AreaComun areaComun = areaComunRepository.findById(form.getAreaComunId())
+        if (formulario.getAreaComunId() != null) {
+            AreaComun areaComun = areaComunRepository.findById(formulario.getAreaComunId())
                     .orElseThrow(() -> new IllegalArgumentException("El area comun no existe."));
             IncidenciaAreaComun incidenciaArea = new IncidenciaAreaComun();
             incidenciaArea.setAreaComun(areaComun);
             incidencia = incidenciaArea;
-        } else if (form.getUnidadId() != null) {
-            Unidad unidad = unidadRepository.findById(form.getUnidadId())
+        } else if (formulario.getUnidadId() != null) {
+            Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                     .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
             IncidenciaUnidad incidenciaUnidad = new IncidenciaUnidad();
             incidenciaUnidad.setUnidad(unidad);
@@ -61,9 +61,9 @@ public class GestionIncidenciasService {
             throw new IllegalArgumentException("Debe indicar el area afectada o la unidad.");
         }
 
-        incidencia.setDescripcion(form.getDescripcion().trim());
-        incidencia.setGravedad(form.getGravedad());
-        incidencia.setCausa(form.getCausa());
+        incidencia.setDescripcion(formulario.getDescripcion().trim());
+        incidencia.setGravedad(formulario.getGravedad());
+        incidencia.setCausa(formulario.getCausa());
         incidencia.setEstado(EstadoIncidencia.REGISTRADO);
         incidencia.setResponsableAtencion("Sin asignar");
 
@@ -72,14 +72,14 @@ public class GestionIncidenciasService {
     }
 
     @Transactional
-    public synchronized IncidenciaResponse actualizarEstado(ActualizacionIncidenciaForm form) {
-        validarActualizacion(form);
+    public synchronized IncidenciaResponse actualizarEstado(ActualizacionIncidenciaForm formulario) {
+        validarActualizacion(formulario);
 
-        Incidencia incidencia = incidenciaRepository.findById(form.getIncidenciaId())
+        Incidencia incidencia = incidenciaRepository.findById(formulario.getIncidenciaId())
                 .orElseThrow(() -> new IllegalArgumentException("La incidencia no existe."));
 
-        incidencia.setEstado(form.getEstado());
-        incidencia.setResponsableAtencion(normalizarTexto(form.getResponsableAtencion()));
+        incidencia.setEstado(formulario.getEstado());
+        incidencia.setResponsableAtencion(normalizarTexto(formulario.getResponsableAtencion()));
 
         Incidencia actualizada = incidenciaRepository.save(incidencia);
         return convertirIncidenciaResponse(actualizada);
@@ -103,15 +103,15 @@ public class GestionIncidenciasService {
     }
 
     @Transactional
-    public synchronized EvidenciaIncidenciaResponse registrarEvidencia(EvidenciaIncidenciaForm form) {
-        validarEvidencia(form);
+    public synchronized EvidenciaIncidenciaResponse registrarEvidencia(EvidenciaIncidenciaForm formulario) {
+        validarEvidencia(formulario);
 
-        Incidencia incidencia = incidenciaRepository.findById(form.getIncidenciaId())
+        Incidencia incidencia = incidenciaRepository.findById(formulario.getIncidenciaId())
                 .orElseThrow(() -> new IllegalArgumentException("La incidencia no existe."));
 
         EvidenciaIncidencia evidencia = new EvidenciaIncidencia();
         evidencia.setIncidencia(incidencia);
-        evidencia.setUrlArchivo(form.getUrlArchivo().trim());
+        evidencia.setUrlArchivo(formulario.getUrlArchivo().trim());
 
         EvidenciaIncidencia guardada = evidenciaIncidenciaRepository.save(evidencia);
         return convertirEvidenciaResponse(guardada);
@@ -132,44 +132,44 @@ public class GestionIncidenciasService {
         return incidenciaRepository.findById(incidenciaId).orElse(null);
     }
 
-    private void validarIncidencia(IncidenciaForm form) {
-        if (form == null) {
+    private void validarIncidencia(IncidenciaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de incidencia es obligatorio.");
         }
-        if (form.getAreaComunId() == null && form.getUnidadId() == null) {
+        if (formulario.getAreaComunId() == null && formulario.getUnidadId() == null) {
             throw new IllegalArgumentException("Debe indicar el area afectada o la unidad.");
         }
-        if (form.getDescripcion() == null || form.getDescripcion().isBlank()) {
+        if (formulario.getDescripcion() == null || formulario.getDescripcion().isBlank()) {
             throw new IllegalArgumentException("La descripcion es obligatoria.");
         }
-        if (form.getGravedad() == null) {
+        if (formulario.getGravedad() == null) {
             throw new IllegalArgumentException("La gravedad es obligatoria.");
         }
-        if (form.getCausa() == null) {
+        if (formulario.getCausa() == null) {
             throw new IllegalArgumentException("La causa es obligatoria.");
         }
     }
 
-    private void validarActualizacion(ActualizacionIncidenciaForm form) {
-        if (form == null) {
+    private void validarActualizacion(ActualizacionIncidenciaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de actualizacion es obligatorio.");
         }
-        if (form.getIncidenciaId() == null) {
+        if (formulario.getIncidenciaId() == null) {
             throw new IllegalArgumentException("La incidencia es obligatoria.");
         }
-        if (form.getEstado() == null) {
+        if (formulario.getEstado() == null) {
             throw new IllegalArgumentException("El estado es obligatorio.");
         }
     }
 
-    private void validarEvidencia(EvidenciaIncidenciaForm form) {
-        if (form == null) {
+    private void validarEvidencia(EvidenciaIncidenciaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de evidencia es obligatorio.");
         }
-        if (form.getIncidenciaId() == null) {
+        if (formulario.getIncidenciaId() == null) {
             throw new IllegalArgumentException("La incidencia es obligatoria.");
         }
-        if (form.getUrlArchivo() == null || form.getUrlArchivo().isBlank()) {
+        if (formulario.getUrlArchivo() == null || formulario.getUrlArchivo().isBlank()) {
             throw new IllegalArgumentException("La URL del archivo es obligatoria.");
         }
     }

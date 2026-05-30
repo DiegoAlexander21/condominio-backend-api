@@ -28,50 +28,50 @@ import pe.edu.utp.condominio.api.dominios.seguridad.services.TokenService;
 public class GestionAutenticacionController {
 
     private final AutenticacionService autenticacionService;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager administradorAutenticacion;
     private final TokenService tokenService;
     private final UsuarioRepository usuarioRepository;
 
     public GestionAutenticacionController(AutenticacionService autenticacionService,
-            AuthenticationManager authenticationManager,
+            AuthenticationManager administradorAutenticacion,
             TokenService tokenService,
             UsuarioRepository usuarioRepository) {
         this.autenticacionService = autenticacionService;
-        this.authenticationManager = authenticationManager;
+        this.administradorAutenticacion = administradorAutenticacion;
         this.tokenService = tokenService;
         this.usuarioRepository = usuarioRepository;
     }
 
     @GetMapping("/login")
-    public String mostrarLogin(Model model) {
-        if (!model.containsAttribute("loginRequest")) {
-            model.addAttribute("loginRequest", new LoginRequest());
+    public String mostrarLogin(Model modelo) {
+        if (!modelo.containsAttribute("loginRequest")) {
+            modelo.addAttribute("loginRequest", new LoginRequest());
         }
         return "dominios/seguridad/login";
     }
 
     @PostMapping("/login")
     public String procesarLogin(
-            @Valid @ModelAttribute("loginRequest") LoginRequest request,
-            BindingResult bindingResult,
-            Model model,
-            HttpServletRequest httpRequest,
-            HttpServletResponse response) {
+            @Valid @ModelAttribute("loginRequest") LoginRequest peticion,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            HttpServletRequest peticionHttp,
+            HttpServletResponse respuestaHttp) {
 
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "dominios/seguridad/login";
         }
 
         try {
             var autenticacion = new UsernamePasswordAuthenticationToken(
-                    request.getIdentificador(), request.getContrasena());
-            authenticationManager.authenticate(autenticacion);
+                    peticion.getIdentificador(), peticion.getContrasena());
+            administradorAutenticacion.authenticate(autenticacion);
 
-            Usuario usuario = usuarioRepository.buscarPorIdentificador(request.getIdentificador())
+            Usuario usuario = usuarioRepository.buscarPorIdentificador(peticion.getIdentificador())
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
             String token = tokenService.generarToken(usuario);
-            boolean seguro = httpRequest.isSecure();
+            boolean seguro = peticionHttp.isSecure();
             ResponseCookie cookieJwt = ResponseCookie.from("tokenAcceso", token)
                     .httpOnly(true)
                     .secure(seguro)
@@ -79,7 +79,7 @@ public class GestionAutenticacionController {
                     .path("/")
                     .maxAge(Duration.ofSeconds(tokenService.obtenerExpiracionSegundos()))
                     .build();
-            response.addHeader("Set-Cookie", cookieJwt.toString());
+            respuestaHttp.addHeader("Set-Cookie", cookieJwt.toString());
 
             String rolNombre = usuario.getRoles().stream()
                     .map(rol -> rol.getNombre().name())
@@ -90,14 +90,14 @@ public class GestionAutenticacionController {
                     ? "redirect:/reportes/dashboard"
                     : "redirect:/auth/sin-panel";
         } catch (Exception ex) {
-            model.addAttribute("errorMessage", "Credenciales inválidas.");
+            modelo.addAttribute("mensajeError", "Credenciales inválidas.");
             return "dominios/seguridad/login";
         }
     }
 
     @GetMapping("/logout")
-    public String procesarLogout(HttpServletRequest httpRequest, HttpServletResponse response) {
-        boolean seguro = httpRequest.isSecure();
+    public String procesarLogout(HttpServletRequest peticionHttp, HttpServletResponse respuestaHttp) {
+        boolean seguro = peticionHttp.isSecure();
         ResponseCookie cookieJwt = ResponseCookie.from("tokenAcceso", "")
                 .httpOnly(true)
                 .secure(seguro)
@@ -105,7 +105,7 @@ public class GestionAutenticacionController {
                 .path("/")
                 .maxAge(Duration.ZERO)
                 .build();
-        response.addHeader("Set-Cookie", cookieJwt.toString());
+        respuestaHttp.addHeader("Set-Cookie", cookieJwt.toString());
         return "redirect:/auth/login";
     }
 
@@ -115,29 +115,29 @@ public class GestionAutenticacionController {
     }
 
     @GetMapping("/registro")
-    public String mostrarRegistro(Model model) {
-        model.addAttribute("registroRequest", new RegistroUsuarioRequest());
+    public String mostrarRegistro(Model modelo) {
+        modelo.addAttribute("registroRequest", new RegistroUsuarioRequest());
         return "dominios/seguridad/registro";
     }
 
     @PostMapping("/registro")
     public String registrar(
-            @Valid @ModelAttribute("registroRequest") RegistroUsuarioRequest request,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("registroRequest") RegistroUsuarioRequest peticion,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "dominios/seguridad/registro";
         }
 
         try {
-            autenticacionService.registrar(request);
-            redirectAttributes.addFlashAttribute("successMessage",
+            autenticacionService.registrar(peticion);
+            atributosRedireccion.addFlashAttribute("mensajeExito",
                     "Usuario registrado correctamente. Ahora puedes iniciar sesión.");
             return "redirect:/auth/login";
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
+            modelo.addAttribute("mensajeError", ex.getMessage());
             return "dominios/seguridad/registro";
         }
     }

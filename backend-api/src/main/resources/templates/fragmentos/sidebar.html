@@ -19,7 +19,7 @@
             <a sec:authorize="hasRole('ADMINISTRADOR')" th:href="@{/finanzas/estados-cuenta}" class="enlace-menu">Estados de Cuenta</a>
             <a sec:authorize="hasRole('RESIDENTE')" th:href="@{/finanzas/mi-estado-cuenta}" class="enlace-menu">Mi Estado de Cuenta</a>
 
-            <a th:href="@{/auth/logout}" class="boton-secundario boton-salir" style="text-align: center;">Cerrar Sesión</a>
+            <a th:href="@{/auth/logout}" class="boton-secundario boton-salir">Cerrar Sesión</a>
         </nav>
     </aside>
 </body>

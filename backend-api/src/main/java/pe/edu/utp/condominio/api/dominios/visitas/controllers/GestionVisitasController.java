@@ -28,77 +28,77 @@ public class GestionVisitasController {
     }
 
     @GetMapping
-    public String listarPorEstado(@RequestParam(value = "estado", required = false) EstadoVisita estado, Model model) {
+    public String listarPorEstado(@RequestParam(value = "estado", required = false) EstadoVisita estado, Model modelo) {
         if (estado != null) {
-            model.addAttribute("visitas", gestionVisitasService.listarPorEstado(estado));
+            modelo.addAttribute("visitas", gestionVisitasService.listarPorEstado(estado));
         }
         return "visitas/lista-visitas";
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormularioProgramacion(Model model) {
-        model.addAttribute("visitaForm", new VisitaForm());
+    public String mostrarFormularioProgramacion(Model modelo) {
+        modelo.addAttribute("visitaForm", new VisitaForm());
         return "visitas/formulario-programacion";
     }
 
     @PostMapping
     public String registrarVisita(
-            @Valid @ModelAttribute("visitaForm") VisitaForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("visitaForm") VisitaForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "visitas/formulario-programacion";
         }
 
-        gestionVisitasService.registrarVisita(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Visita programada correctamente.");
+        gestionVisitasService.registrarVisita(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Visita programada correctamente.");
         return "redirect:/visitas";
     }
 
     @GetMapping("/ingreso")
-    public String mostrarFormularioIngreso(@RequestParam("visitaId") Long visitaId, Model model) {
-        RegistroIngresoVisitaForm form = new RegistroIngresoVisitaForm();
-        form.setVisitaId(visitaId);
-        model.addAttribute("ingresoForm", form);
+    public String mostrarFormularioIngreso(@RequestParam("visitaId") Long visitaId, Model modelo) {
+        RegistroIngresoVisitaForm formulario = new RegistroIngresoVisitaForm();
+        formulario.setVisitaId(visitaId);
+        modelo.addAttribute("ingresoForm", formulario);
         return "visitas/formulario-ingreso";
     }
 
     @PostMapping("/ingreso")
     public String registrarIngreso(
-            @Valid @ModelAttribute("ingresoForm") RegistroIngresoVisitaForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("ingresoForm") RegistroIngresoVisitaForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "visitas/formulario-ingreso";
         }
 
-        gestionVisitasService.registrarIngreso(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Ingreso de visita registrado.");
+        gestionVisitasService.registrarIngreso(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Ingreso de visita registrado.");
         return "redirect:/visitas";
     }
 
     @GetMapping("/salida")
-    public String mostrarFormularioSalida(@RequestParam("visitaId") Long visitaId, Model model) {
-        RegistroSalidaVisitaForm form = new RegistroSalidaVisitaForm();
-        form.setVisitaId(visitaId);
-        model.addAttribute("salidaForm", form);
+    public String mostrarFormularioSalida(@RequestParam("visitaId") Long visitaId, Model modelo) {
+        RegistroSalidaVisitaForm formulario = new RegistroSalidaVisitaForm();
+        formulario.setVisitaId(visitaId);
+        modelo.addAttribute("salidaForm", formulario);
         return "visitas/formulario-salida";
     }
 
     @PostMapping("/salida")
     public String registrarSalida(
-            @Valid @ModelAttribute("salidaForm") RegistroSalidaVisitaForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("salidaForm") RegistroSalidaVisitaForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "visitas/formulario-salida";
         }
 
-        gestionVisitasService.registrarSalida(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Salida de visita registrada.");
+        gestionVisitasService.registrarSalida(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Salida de visita registrada.");
         return "redirect:/visitas";
     }
 }

@@ -25,39 +25,39 @@ public class GestionCalificacionesController {
     }
 
     @GetMapping("/area/{areaId}")
-    public String mostrarCalificacionesArea(@PathVariable Long areaId, Model model) {
-        model.addAttribute("calificaciones", calificacionesService.listarCalificacionesPorArea(areaId));
-        model.addAttribute("estadoActual", calificacionesService.obtenerEstadoActual(areaId));
+    public String mostrarCalificacionesArea(@PathVariable Long areaId, Model modelo) {
+        modelo.addAttribute("calificaciones", calificacionesService.listarCalificacionesPorArea(areaId));
+        modelo.addAttribute("estadoActual", calificacionesService.obtenerEstadoActual(areaId));
         return "calificaciones/lista-area";
     }
 
     @GetMapping("/registrar/{areaId}")
-    public String mostrarFormularioCalificacion(@PathVariable Long areaId, Model model) {
-        CalificacionForm form = new CalificacionForm();
-        form.setAreaComunId(areaId);
-        model.addAttribute("calificacionForm", form);
+    public String mostrarFormularioCalificacion(@PathVariable Long areaId, Model modelo) {
+        CalificacionForm formulario = new CalificacionForm();
+        formulario.setAreaComunId(areaId);
+        modelo.addAttribute("calificacionForm", formulario);
         return "calificaciones/formulario-registro";
     }
 
     @PostMapping("/registrar")
     public String registrarCalificacion(
             @Valid @ModelAttribute("calificacionForm") CalificacionForm formulario,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "calificaciones/formulario-registro";
         }
 
         calificacionesService.registrarCalificacion(formulario);
-        redirectAttributes.addFlashAttribute("successMessage", "¡Gracias por tu calificación!");
+        atributosRedireccion.addFlashAttribute("mensajeExito", "¡Gracias por tu calificación!");
         return "redirect:/calificaciones/area/" + formulario.getAreaComunId();
     }
 
     @PostMapping("/area/{areaId}/actualizar-estado")
-    public String actualizarEstado(@PathVariable Long areaId, RedirectAttributes redirectAttributes) {
+    public String actualizarEstado(@PathVariable Long areaId, RedirectAttributes atributosRedireccion) {
         calificacionesService.actualizarEstadoAutomatico(areaId);
-        redirectAttributes.addFlashAttribute("successMessage", "Estado del área actualizado manualmente.");
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Estado del área actualizado manualmente.");
         return "redirect:/calificaciones/area/" + areaId;
     }
 }

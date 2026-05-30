@@ -28,33 +28,33 @@ public class GestionComunicadosService {
     }
 
     @Transactional
-    public synchronized ComunicadoResponse registrarComunicado(ComunicadoForm form) {
-        validarComunicado(form);
+    public synchronized ComunicadoResponse registrarComunicado(ComunicadoForm formulario) {
+        validarComunicado(formulario);
 
-        Condominio condominio = condominioRepository.findById(form.getCondominioId())
+        Condominio condominio = condominioRepository.findById(formulario.getCondominioId())
                 .orElseThrow(() -> new IllegalArgumentException("El condominio no existe."));
 
         Comunicado comunicado = new Comunicado();
         comunicado.setCondominio(condominio);
-        comunicado.setTitulo(form.getTitulo().trim());
-        comunicado.setContenido(form.getContenido().trim());
+        comunicado.setTitulo(formulario.getTitulo().trim());
+        comunicado.setContenido(formulario.getContenido().trim());
 
         Comunicado guardado = comunicadoRepository.save(comunicado);
         return convertirComunicadoResponse(guardado);
     }
 
     @Transactional
-    public synchronized ComunicadoResponse generarConIA(ComunicadoIAForm form) {
-        validarComunicadoIA(form);
+    public synchronized ComunicadoResponse generarConIA(ComunicadoIAForm formulario) {
+        validarComunicadoIA(formulario);
 
-        Condominio condominio = condominioRepository.findById(form.getCondominioId())
+        Condominio condominio = condominioRepository.findById(formulario.getCondominioId())
                 .orElseThrow(() -> new IllegalArgumentException("El condominio no existe."));
 
-        String contenido = servicioIAComunicados.generarComunicado(form.getTitulo(), form.getBorrador());
+        String contenido = servicioIAComunicados.generarComunicado(formulario.getTitulo(), formulario.getBorrador());
 
         Comunicado comunicado = new Comunicado();
         comunicado.setCondominio(condominio);
-        comunicado.setTitulo(form.getTitulo().trim());
+        comunicado.setTitulo(formulario.getTitulo().trim());
         comunicado.setContenido(contenido);
 
         Comunicado guardado = comunicadoRepository.save(comunicado);
@@ -70,32 +70,32 @@ public class GestionComunicadosService {
                 .collect(Collectors.toList());
     }
 
-    private void validarComunicado(ComunicadoForm form) {
-        if (form == null) {
+    private void validarComunicado(ComunicadoForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario del comunicado es obligatorio.");
         }
-        if (form.getCondominioId() == null) {
+        if (formulario.getCondominioId() == null) {
             throw new IllegalArgumentException("El condominio es obligatorio.");
         }
-        if (form.getTitulo() == null || form.getTitulo().isBlank()) {
+        if (formulario.getTitulo() == null || formulario.getTitulo().isBlank()) {
             throw new IllegalArgumentException("El titulo es obligatorio.");
         }
-        if (form.getContenido() == null || form.getContenido().isBlank()) {
+        if (formulario.getContenido() == null || formulario.getContenido().isBlank()) {
             throw new IllegalArgumentException("El contenido es obligatorio.");
         }
     }
 
-    private void validarComunicadoIA(ComunicadoIAForm form) {
-        if (form == null) {
+    private void validarComunicadoIA(ComunicadoIAForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario del comunicado IA es obligatorio.");
         }
-        if (form.getCondominioId() == null) {
+        if (formulario.getCondominioId() == null) {
             throw new IllegalArgumentException("El condominio es obligatorio.");
         }
-        if (form.getTitulo() == null || form.getTitulo().isBlank()) {
+        if (formulario.getTitulo() == null || formulario.getTitulo().isBlank()) {
             throw new IllegalArgumentException("El titulo es obligatorio.");
         }
-        if (form.getBorrador() == null || form.getBorrador().isBlank()) {
+        if (formulario.getBorrador() == null || formulario.getBorrador().isBlank()) {
             throw new IllegalArgumentException("El borrador es obligatorio.");
         }
     }

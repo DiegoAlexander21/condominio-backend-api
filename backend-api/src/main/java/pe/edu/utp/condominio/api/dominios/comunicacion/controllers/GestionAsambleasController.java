@@ -26,58 +26,58 @@ public class GestionAsambleasController {
     }
 
     @GetMapping
-    public String listarAsambleas(@RequestParam("condominioId") Long condominioId, Model model) {
-        model.addAttribute("asambleas", gestionAsambleasService.listarPorCondominio(condominioId));
+    public String listarAsambleas(@RequestParam("condominioId") Long condominioId, Model modelo) {
+        modelo.addAttribute("asambleas", gestionAsambleasService.listarPorCondominio(condominioId));
         return "comunicacion/lista-asambleas";
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormularioRegistro(Model model) {
-        model.addAttribute("asambleaForm", new AsambleaForm());
+    public String mostrarFormularioRegistro(Model modelo) {
+        modelo.addAttribute("asambleaForm", new AsambleaForm());
         return "comunicacion/formulario-asamblea";
     }
 
     @PostMapping
     public String registrarAsamblea(
-            @Valid @ModelAttribute("asambleaForm") AsambleaForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("asambleaForm") AsambleaForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "comunicacion/formulario-asamblea";
         }
 
-        gestionAsambleasService.registrarAsamblea(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Asamblea programada correctamente.");
-        return "redirect:/comunicacion/asambleas?condominioId=" + form.getCondominioId();
+        gestionAsambleasService.registrarAsamblea(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Asamblea programada correctamente.");
+        return "redirect:/comunicacion/asambleas?condominioId=" + formulario.getCondominioId();
     }
 
     @GetMapping("/votar")
-    public String mostrarFormularioVotacion(@RequestParam("asambleaId") Long asambleaId, Model model) {
-        VotoAsambleaForm form = new VotoAsambleaForm();
-        form.setAsambleaId(asambleaId);
-        model.addAttribute("votoForm", form);
+    public String mostrarFormularioVotacion(@RequestParam("asambleaId") Long asambleaId, Model modelo) {
+        VotoAsambleaForm formulario = new VotoAsambleaForm();
+        formulario.setAsambleaId(asambleaId);
+        modelo.addAttribute("votoForm", formulario);
         return "comunicacion/formulario-voto";
     }
 
     @PostMapping("/votos")
     public String registrarVoto(
-            @Valid @ModelAttribute("votoForm") VotoAsambleaForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("votoForm") VotoAsambleaForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "comunicacion/formulario-voto";
         }
 
-        gestionAsambleasService.registrarVoto(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Voto registrado correctamente.");
-        return "redirect:/comunicacion/asambleas/resultados?asambleaId=" + form.getAsambleaId();
+        gestionAsambleasService.registrarVoto(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Voto registrado correctamente.");
+        return "redirect:/comunicacion/asambleas/resultados?asambleaId=" + formulario.getAsambleaId();
     }
 
     @GetMapping("/resultados")
-    public String obtenerResultados(@RequestParam("asambleaId") Long asambleaId, Model model) {
-        model.addAttribute("resultado", gestionAsambleasService.obtenerResultados(asambleaId));
+    public String obtenerResultados(@RequestParam("asambleaId") Long asambleaId, Model modelo) {
+        modelo.addAttribute("resultado", gestionAsambleasService.obtenerResultados(asambleaId));
         return "comunicacion/resultados-asamblea";
     }
 }

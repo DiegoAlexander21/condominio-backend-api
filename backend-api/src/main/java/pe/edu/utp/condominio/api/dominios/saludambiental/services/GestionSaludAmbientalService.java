@@ -53,10 +53,10 @@ public class GestionSaludAmbientalService {
         checklist.setAreaComun(area);
         checklist.setActivo(true);
 
-        List<ItemChecklist> items = formulario.getItems().stream().map(itemForm -> {
+        List<ItemChecklist> items = formulario.getItems().stream().map(formularioItem -> {
             ItemChecklist item = new ItemChecklist();
-            item.setDescripcion(itemForm.getDescripcion());
-            item.setOrden(itemForm.getOrden());
+            item.setDescripcion(formularioItem.getDescripcion());
+            item.setOrden(formularioItem.getOrden());
             item.setChecklist(checklist);
             return item;
         }).collect(Collectors.toList());
@@ -107,39 +107,39 @@ public class GestionSaludAmbientalService {
                 .collect(Collectors.toList());
     }
 
-    private ChecklistResponse mapearChecklistAResponse(ChecklistSaludAmbiente entity) {
-        List<ItemChecklistResponse> items = entity.getItems().stream()
-                .map(i -> new ItemChecklistResponse(i.getId(), i.getDescripcion(), i.getOrden()))
+    private ChecklistResponse mapearChecklistAResponse(ChecklistSaludAmbiente entidad) {
+        List<ItemChecklistResponse> items = entidad.getItems().stream()
+                .map(item -> new ItemChecklistResponse(item.getId(), item.getDescripcion(), item.getOrden()))
                 .collect(Collectors.toList());
 
         return new ChecklistResponse(
-                entity.getId(),
-                entity.getAreaComun().getId(),
-                entity.getAreaComun().getNombre(),
-                entity.getNombre(),
-                entity.isActivo(),
-                entity.getFechaRegistro(),
+                entidad.getId(),
+                entidad.getAreaComun().getId(),
+                entidad.getAreaComun().getNombre(),
+                entidad.getNombre(),
+                entidad.isActivo(),
+                entidad.getFechaRegistro(),
                 items);
     }
 
-    private EvaluacionResponse mapearEvaluacionAResponse(EvaluacionChecklist entity) {
+    private EvaluacionResponse mapearEvaluacionAResponse(EvaluacionChecklist entidad) {
         return new EvaluacionResponse(
-                entity.getId(),
-                entity.getChecklist().getNombre(),
-                entity.getChecklist().getAreaComun().getNombre(),
-                entity.getFechaEvaluacion(),
-                entity.getResultado(),
-                entity.getObservacion(),
-                entity.isAlertaGenerada());
+                entidad.getId(),
+                entidad.getChecklist().getNombre(),
+                entidad.getChecklist().getAreaComun().getNombre(),
+                entidad.getFechaEvaluacion(),
+                entidad.getResultado(),
+                entidad.getObservacion(),
+                entidad.isAlertaGenerada());
     }
 
-    private MantenimientoAmbientalResponse mapearMantenimientoAResponse(RegistroMantenimientoAmbiental entity) {
+    private MantenimientoAmbientalResponse mapearMantenimientoAResponse(RegistroMantenimientoAmbiental entidad) {
         return new MantenimientoAmbientalResponse(
-                entity.getId(),
-                entity.getAreaComun().getNombre(),
-                entity.getDescripcion(),
-                entity.getFechaRegistro(),
-                entity.getResponsable());
+                entidad.getId(),
+                entidad.getAreaComun().getNombre(),
+                entidad.getDescripcion(),
+                entidad.getFechaRegistro(),
+                entidad.getResponsable());
     }
 }
 

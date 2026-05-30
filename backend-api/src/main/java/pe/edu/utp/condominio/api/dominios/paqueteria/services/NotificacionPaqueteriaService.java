@@ -10,12 +10,12 @@ import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 @Service
 public class NotificacionPaqueteriaService {
 
-    private final JavaMailSender mailSender;
+    private final JavaMailSender enviadorCorreo;
     private final String correoOrigen;
 
-    public NotificacionPaqueteriaService(JavaMailSender mailSender,
+    public NotificacionPaqueteriaService(JavaMailSender enviadorCorreo,
             @Value("${spring.mail.username:}") String correoOrigen) {
-        this.mailSender = mailSender;
+        this.enviadorCorreo = enviadorCorreo;
         this.correoOrigen = correoOrigen;
     }
 
@@ -33,7 +33,7 @@ public class NotificacionPaqueteriaService {
         mensaje.setSubject("Notificacion de paquete recibido");
         mensaje.setText(construirMensaje(paquete, unidad));
 
-        mailSender.send(mensaje);
+        enviadorCorreo.send(mensaje);
     }
 
     private String obtenerCorreoDestino(Unidad unidad) {

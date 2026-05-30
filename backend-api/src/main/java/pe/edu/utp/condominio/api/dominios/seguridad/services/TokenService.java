@@ -17,18 +17,18 @@ import pe.edu.utp.condominio.api.dominios.seguridad.models.Usuario;
 @Service
 public class TokenService {
 
-    private final JwtProperties jwtProperties;
+    private final JwtProperties propiedadesJwt;
     private Key clave;
     private long expiracionMillis;
 
-    public TokenService(JwtProperties jwtProperties) {
-        this.jwtProperties = jwtProperties;
+    public TokenService(JwtProperties propiedadesJwt) {
+        this.propiedadesJwt = propiedadesJwt;
     }
 
     @PostConstruct
     public void init() {
-        this.clave = Keys.hmacShaKeyFor(jwtProperties.getSecreto().getBytes(StandardCharsets.UTF_8));
-        this.expiracionMillis = jwtProperties.getExpiracionMinutos() * 60 * 1000;
+        this.clave = Keys.hmacShaKeyFor(propiedadesJwt.getSecreto().getBytes(StandardCharsets.UTF_8));
+        this.expiracionMillis = propiedadesJwt.getExpiracionMinutos() * 60 * 1000;
     }
 
     public String generarToken(Usuario usuario) {
@@ -49,8 +49,8 @@ public class TokenService {
     }
 
     public Long obtenerIdUsuario(String token) {
-        Claims claims = obtenerClaims(token);
-        return Long.parseLong(claims.getSubject());
+        Claims reclamaciones = obtenerClaims(token);
+        return Long.parseLong(reclamaciones.getSubject());
     }
 
     public boolean esTokenValido(String token) {

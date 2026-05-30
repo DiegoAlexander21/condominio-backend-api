@@ -48,11 +48,11 @@ public class GestionIncidenciasController {
 
     @GetMapping
     public String listarPorEstado(@RequestParam(value = "estado", required = false) EstadoIncidencia estado,
-            Model model) {
+            Model modelo) {
         if (estado == null) {
             return "redirect:/incidencias?estado=REGISTRADO";
         }
-        model.addAttribute("incidencias", gestionIncidenciasService.listarPorEstado(estado));
+        modelo.addAttribute("incidencias", gestionIncidenciasService.listarPorEstado(estado));
         return "dominios/incidencias/lista-incidencias";
     }
 
@@ -65,124 +65,124 @@ public class GestionIncidenciasController {
     }
 
     @GetMapping("/nuevo/area")
-    public String mostrarFormularioRegistroArea(Model model) {
-        model.addAttribute("incidenciaForm", new IncidenciaForm());
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-        model.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
+    public String mostrarFormularioRegistroArea(Model modelo) {
+        modelo.addAttribute("incidenciaForm", new IncidenciaForm());
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
         return "dominios/incidencias/formulario-incidencia-area";
     }
 
     @GetMapping("/nuevo/unidad")
-    public String mostrarFormularioRegistroUnidad(Model model) {
-        model.addAttribute("incidenciaForm", new IncidenciaForm());
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-        model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
+    public String mostrarFormularioRegistroUnidad(Model modelo) {
+        modelo.addAttribute("incidenciaForm", new IncidenciaForm());
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
         return "dominios/incidencias/formulario-incidencia-unidad";
     }
 
     @PostMapping("/area")
     public String registrarIncidenciaArea(
-            @Valid @ModelAttribute("incidenciaForm") IncidenciaForm form,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("incidenciaForm") IncidenciaForm formulario,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-            model.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
+        if (resultadoValidacion.hasErrors()) {
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            modelo.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
             return "dominios/incidencias/formulario-incidencia-area";
         }
 
         try {
-            IncidenciaResponse response = gestionIncidenciasService.registrarIncidencia(form);
+            IncidenciaResponse respuesta = gestionIncidenciasService.registrarIncidencia(formulario);
 
-            if (form.getEvidenciaUrl() != null && !form.getEvidenciaUrl().isBlank()) {
-                String[] enlaces = form.getEvidenciaUrl().split(",");
+            if (formulario.getEvidenciaUrl() != null && !formulario.getEvidenciaUrl().isBlank()) {
+                String[] enlaces = formulario.getEvidenciaUrl().split(",");
                 for (String enlace : enlaces) {
                     if (!enlace.isBlank()) {
-                        EvidenciaIncidenciaForm evidenciaForm = new EvidenciaIncidenciaForm();
-                        evidenciaForm.setIncidenciaId(response.getId());
-                        evidenciaForm.setUrlArchivo(enlace.trim());
-                        gestionIncidenciasService.registrarEvidencia(evidenciaForm);
+                        EvidenciaIncidenciaForm formularioEvidencia = new EvidenciaIncidenciaForm();
+                        formularioEvidencia.setIncidenciaId(respuesta.getId());
+                        formularioEvidencia.setUrlArchivo(enlace.trim());
+                        gestionIncidenciasService.registrarEvidencia(formularioEvidencia);
                     }
                 }
             }
 
-            redirectAttributes.addFlashAttribute("successMessage", "Incidencia de área reportada correctamente.");
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Incidencia de área reportada correctamente.");
             return "redirect:/incidencias";
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-            model.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
+            modelo.addAttribute("mensajeError", ex.getMessage());
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            modelo.addAttribute("areasComunes", gestionAreasComunesService.obtenerTodasLasAreasComunes());
             return "dominios/incidencias/formulario-incidencia-area";
         }
     }
 
     @PostMapping("/unidad")
     public String registrarIncidenciaUnidad(
-            @Valid @ModelAttribute("incidenciaForm") IncidenciaForm form,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("incidenciaForm") IncidenciaForm formulario,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-            model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
+        if (resultadoValidacion.hasErrors()) {
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            modelo.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
             return "dominios/incidencias/formulario-incidencia-unidad";
         }
 
         try {
-            IncidenciaResponse response = gestionIncidenciasService.registrarIncidencia(form);
+            IncidenciaResponse respuesta = gestionIncidenciasService.registrarIncidencia(formulario);
 
-            if (form.getEvidenciaUrl() != null && !form.getEvidenciaUrl().isBlank()) {
-                String[] enlaces = form.getEvidenciaUrl().split(",");
+            if (formulario.getEvidenciaUrl() != null && !formulario.getEvidenciaUrl().isBlank()) {
+                String[] enlaces = formulario.getEvidenciaUrl().split(",");
                 for (String enlace : enlaces) {
                     if (!enlace.isBlank()) {
-                        EvidenciaIncidenciaForm evidenciaForm = new EvidenciaIncidenciaForm();
-                        evidenciaForm.setIncidenciaId(response.getId());
-                        evidenciaForm.setUrlArchivo(enlace.trim());
-                        gestionIncidenciasService.registrarEvidencia(evidenciaForm);
+                        EvidenciaIncidenciaForm formularioEvidencia = new EvidenciaIncidenciaForm();
+                        formularioEvidencia.setIncidenciaId(respuesta.getId());
+                        formularioEvidencia.setUrlArchivo(enlace.trim());
+                        gestionIncidenciasService.registrarEvidencia(formularioEvidencia);
                     }
                 }
             }
 
-            redirectAttributes.addFlashAttribute("successMessage", "Incidencia de unidad reportada correctamente.");
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Incidencia de unidad reportada correctamente.");
             return "redirect:/incidencias";
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-            model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
+            modelo.addAttribute("mensajeError", ex.getMessage());
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            modelo.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
             return "dominios/incidencias/formulario-incidencia-unidad";
         }
     }
 
     @GetMapping("/actualizar")
-    public String mostrarFormularioActualizacion(@RequestParam("incidenciaId") Long incidenciaId, Model model) {
-        ActualizacionIncidenciaForm form = new ActualizacionIncidenciaForm();
-        form.setIncidenciaId(incidenciaId);
+    public String mostrarFormularioActualizacion(@RequestParam("incidenciaId") Long incidenciaId, Model modelo) {
+        ActualizacionIncidenciaForm formulario = new ActualizacionIncidenciaForm();
+        formulario.setIncidenciaId(incidenciaId);
 
         Incidencia incidenciaExistente = gestionIncidenciasService.obtenerPorId(incidenciaId);
         if (incidenciaExistente != null) {
-            form.setEstado(incidenciaExistente.getEstado());
-            form.setResponsableAtencion(incidenciaExistente.getResponsableAtencion());
+            formulario.setEstado(incidenciaExistente.getEstado());
+            formulario.setResponsableAtencion(incidenciaExistente.getResponsableAtencion());
         }
 
-        model.addAttribute("actualizacionForm", form);
+        modelo.addAttribute("actualizacionForm", formulario);
         return "dominios/incidencias/formulario-actualizacion";
     }
 
     @PostMapping("/actualizar")
     public String actualizarEstado(
-            @Valid @ModelAttribute("actualizacionForm") ActualizacionIncidenciaForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("actualizacionForm") ActualizacionIncidenciaForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "dominios/incidencias/formulario-actualizacion";
         }
 
-        gestionIncidenciasService.actualizarEstado(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Estado de la incidencia actualizado.");
+        gestionIncidenciasService.actualizarEstado(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Estado de la incidencia actualizado.");
         return "redirect:/incidencias";
     }
 }

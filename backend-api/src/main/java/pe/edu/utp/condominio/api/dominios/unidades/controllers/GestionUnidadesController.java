@@ -27,103 +27,103 @@ public class GestionUnidadesController {
     }
 
     @GetMapping("/gestion-unidades")
-    public String mostrarGestionUnidades(Model model) {
-        cargarModeloGestion(model);
+    public String mostrarGestionUnidades(Model modelo) {
+        cargarModeloGestion(modelo);
         return "dominios/unidades/gestion-unidades";
     }
 
     @GetMapping("/registro-unidad")
-    public String mostrarRegistroUnidad(Model model) {
-        if (!model.containsAttribute("unidadForm")) {
-            model.addAttribute("unidadForm", new UnidadForm());
-            model.addAttribute("esEdicion", false);
+    public String mostrarRegistroUnidad(Model modelo) {
+        if (!modelo.containsAttribute("unidadForm")) {
+            modelo.addAttribute("unidadForm", new UnidadForm());
+            modelo.addAttribute("esEdicion", false);
         }
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         return "dominios/unidades/registro-unidad";
     }
 
     @GetMapping("/editar-unidad")
-    public String editarUnidad(@RequestParam("id") Long id, Model model) {
-        UnidadForm form = gestionUnidadesService.obtenerFormUnidad(id);
-        if (form == null) {
+    public String editarUnidad(@RequestParam("id") Long id, Model modelo) {
+        UnidadForm formulario = gestionUnidadesService.obtenerFormUnidad(id);
+        if (formulario == null) {
             return "redirect:/gestion-unidades";
         }
-        model.addAttribute("unidadForm", form);
-        model.addAttribute("esEdicion", true);
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("unidadForm", formulario);
+        modelo.addAttribute("esEdicion", true);
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
         return "dominios/unidades/registro-unidad";
     }
 
     @GetMapping("/eliminar-unidad")
-    public String eliminarUnidad(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarUnidad(@RequestParam("id") Long id, RedirectAttributes atributosRedireccion) {
         try {
             gestionUnidadesService.eliminarUnidad(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Unidad eliminada correctamente.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar la unidad.");
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Unidad eliminada correctamente.");
+        } catch (Exception ex) {
+            atributosRedireccion.addFlashAttribute("mensajeError", "Error al eliminar la unidad.");
         }
         return "redirect:/gestion-unidades";
     }
 
     @PostMapping("/gestion-unidades/unidad")
     public String registrarUnidad(
-            @Valid @ModelAttribute("unidadForm") UnidadForm unidadForm,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "Revisa los campos del formulario.");
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            @Valid @ModelAttribute("unidadForm") UnidadForm formularioUnidad,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
+        if (resultadoValidacion.hasErrors()) {
+            modelo.addAttribute("mensajeError", "Revisa los campos del formulario.");
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
             return "dominios/unidades/registro-unidad";
         }
 
         try {
-            gestionUnidadesService.registrarOActualizarUnidad(unidadForm);
-            redirectAttributes.addFlashAttribute("successMessage",
+            gestionUnidadesService.registrarOActualizarUnidad(formularioUnidad);
+            atributosRedireccion.addFlashAttribute("mensajeExito",
                     "Unidad registrada o actualizada correctamente.");
             return "redirect:/gestion-unidades";
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+            modelo.addAttribute("mensajeError", ex.getMessage());
+            modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
             return "dominios/unidades/registro-unidad";
         }
     }
 
     @GetMapping("/asignar-ocupantes")
-    public String mostrarAsignarOcupantes(@RequestParam("id") Long id, Model model) {
-        pe.edu.utp.condominio.api.dominios.unidades.dto.request.AsignarOcupantesForm form = gestionUnidadesService
+    public String mostrarAsignarOcupantes(@RequestParam("id") Long id, Model modelo) {
+        pe.edu.utp.condominio.api.dominios.unidades.dto.request.AsignarOcupantesForm formulario = gestionUnidadesService
                 .obtenerFormOcupantes(id);
-        if (form == null) {
+        if (formulario == null) {
             return "redirect:/gestion-unidades";
         }
-        model.addAttribute("ocupantesForm", form);
+        modelo.addAttribute("ocupantesForm", formulario);
         return "dominios/unidades/asignar-ocupantes";
     }
 
     @PostMapping("/gestion-unidades/ocupantes")
     public String asignarOcupantes(
-            @Valid @ModelAttribute("ocupantesForm") pe.edu.utp.condominio.api.dominios.unidades.dto.request.AsignarOcupantesForm form,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "Revisa los campos obligatorios del propietario.");
+            @Valid @ModelAttribute("ocupantesForm") pe.edu.utp.condominio.api.dominios.unidades.dto.request.AsignarOcupantesForm formulario,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
+        if (resultadoValidacion.hasErrors()) {
+            modelo.addAttribute("mensajeError", "Revisa los campos obligatorios del propietario.");
             return "dominios/unidades/asignar-ocupantes";
         }
 
         try {
-            gestionUnidadesService.asignarOcupantes(form);
-            redirectAttributes.addFlashAttribute("successMessage", "Habitantes asignados correctamente.");
+            gestionUnidadesService.asignarOcupantes(formulario);
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Habitantes asignados correctamente.");
             return "redirect:/gestion-unidades";
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
+            modelo.addAttribute("mensajeError", ex.getMessage());
             return "dominios/unidades/asignar-ocupantes";
         }
     }
 
-    private void cargarModeloGestion(Model model) {
-        model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
-        model.addAttribute("totalPropietarios", gestionUnidadesService.contarPropietarios());
-        model.addAttribute("totalResidentes", gestionUnidadesService.contarResidentesActivos());
+    private void cargarModeloGestion(Model modelo) {
+        modelo.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
+        modelo.addAttribute("totalPropietarios", gestionUnidadesService.contarPropietarios());
+        modelo.addAttribute("totalResidentes", gestionUnidadesService.contarResidentesActivos());
     }
 }

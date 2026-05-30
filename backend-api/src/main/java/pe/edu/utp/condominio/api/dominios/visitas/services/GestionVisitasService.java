@@ -27,17 +27,17 @@ public class GestionVisitasService {
     }
 
     @Transactional
-    public synchronized VisitaResponse registrarVisita(VisitaForm form) {
-        validarVisita(form);
+    public synchronized VisitaResponse registrarVisita(VisitaForm formulario) {
+        validarVisita(formulario);
 
-        Unidad unidad = unidadRepository.findById(form.getUnidadId())
+        Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                 .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
 
         Visita visita = new Visita();
         visita.setUnidad(unidad);
-        visita.setNombreVisitante(form.getNombreVisitante().trim());
-        visita.setDocumentoVisitante(form.getDocumentoVisitante().trim());
-        visita.setFechaVisitaProgramada(form.getFechaVisitaProgramada());
+        visita.setNombreVisitante(formulario.getNombreVisitante().trim());
+        visita.setDocumentoVisitante(formulario.getDocumentoVisitante().trim());
+        visita.setFechaVisitaProgramada(formulario.getFechaVisitaProgramada());
         visita.setEstado(EstadoVisita.PRE_REGISTRADA);
 
         Visita guardada = visitaRepository.save(visita);
@@ -45,17 +45,17 @@ public class GestionVisitasService {
     }
 
     @Transactional
-    public synchronized VisitaResponse registrarIngreso(RegistroIngresoVisitaForm form) {
-        validarIngreso(form);
+    public synchronized VisitaResponse registrarIngreso(RegistroIngresoVisitaForm formulario) {
+        validarIngreso(formulario);
 
-        Visita visita = visitaRepository.findById(form.getVisitaId())
+        Visita visita = visitaRepository.findById(formulario.getVisitaId())
                 .orElseThrow(() -> new IllegalArgumentException("La visita no existe."));
 
         if (visita.getEstado() != EstadoVisita.PRE_REGISTRADA) {
             throw new IllegalArgumentException("La visita no esta en estado pre-registrado.");
         }
 
-        LocalDateTime ingreso = form.getFechaIngreso() != null ? form.getFechaIngreso() : LocalDateTime.now();
+        LocalDateTime ingreso = formulario.getFechaIngreso() != null ? formulario.getFechaIngreso() : LocalDateTime.now();
         visita.setFechaIngreso(ingreso);
         visita.setEstado(EstadoVisita.INGRESO_REGISTRADO);
 
@@ -64,17 +64,17 @@ public class GestionVisitasService {
     }
 
     @Transactional
-    public synchronized VisitaResponse registrarSalida(RegistroSalidaVisitaForm form) {
-        validarSalida(form);
+    public synchronized VisitaResponse registrarSalida(RegistroSalidaVisitaForm formulario) {
+        validarSalida(formulario);
 
-        Visita visita = visitaRepository.findById(form.getVisitaId())
+        Visita visita = visitaRepository.findById(formulario.getVisitaId())
                 .orElseThrow(() -> new IllegalArgumentException("La visita no existe."));
 
         if (visita.getEstado() != EstadoVisita.INGRESO_REGISTRADO) {
             throw new IllegalArgumentException("La visita no tiene ingreso registrado.");
         }
 
-        LocalDateTime salida = form.getFechaSalida() != null ? form.getFechaSalida() : LocalDateTime.now();
+        LocalDateTime salida = formulario.getFechaSalida() != null ? formulario.getFechaSalida() : LocalDateTime.now();
         visita.setFechaSalida(salida);
         visita.setEstado(EstadoVisita.SALIDA_REGISTRADA);
 
@@ -112,38 +112,38 @@ public class GestionVisitasService {
                 .collect(Collectors.toList());
     }
 
-    private void validarVisita(VisitaForm form) {
-        if (form == null) {
+    private void validarVisita(VisitaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de visita es obligatorio.");
         }
-        if (form.getUnidadId() == null) {
+        if (formulario.getUnidadId() == null) {
             throw new IllegalArgumentException("La unidad es obligatoria.");
         }
-        if (form.getNombreVisitante() == null || form.getNombreVisitante().isBlank()) {
+        if (formulario.getNombreVisitante() == null || formulario.getNombreVisitante().isBlank()) {
             throw new IllegalArgumentException("El nombre del visitante es obligatorio.");
         }
-        if (form.getDocumentoVisitante() == null || form.getDocumentoVisitante().isBlank()) {
+        if (formulario.getDocumentoVisitante() == null || formulario.getDocumentoVisitante().isBlank()) {
             throw new IllegalArgumentException("El documento del visitante es obligatorio.");
         }
-        if (form.getFechaVisitaProgramada() == null) {
+        if (formulario.getFechaVisitaProgramada() == null) {
             throw new IllegalArgumentException("La fecha programada es obligatoria.");
         }
     }
 
-    private void validarIngreso(RegistroIngresoVisitaForm form) {
-        if (form == null) {
+    private void validarIngreso(RegistroIngresoVisitaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de ingreso es obligatorio.");
         }
-        if (form.getVisitaId() == null) {
+        if (formulario.getVisitaId() == null) {
             throw new IllegalArgumentException("La visita es obligatoria.");
         }
     }
 
-    private void validarSalida(RegistroSalidaVisitaForm form) {
-        if (form == null) {
+    private void validarSalida(RegistroSalidaVisitaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de salida es obligatorio.");
         }
-        if (form.getVisitaId() == null) {
+        if (formulario.getVisitaId() == null) {
             throw new IllegalArgumentException("La visita es obligatoria.");
         }
     }

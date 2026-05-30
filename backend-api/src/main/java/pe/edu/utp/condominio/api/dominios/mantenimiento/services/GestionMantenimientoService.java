@@ -69,22 +69,22 @@ public class GestionMantenimientoService {
         double costoTotalInsumos = 0;
 
         if (formulario.getUsosInsumos() != null) {
-            for (UsoInsumoForm usoForm : formulario.getUsosInsumos()) {
-                InsumoMantenimiento insumo = insumoRepository.findById(usoForm.getInsumoId())
-                        .orElseThrow(() -> new RuntimeException("Insumo no encontrado: " + usoForm.getInsumoId()));
+            for (UsoInsumoForm formularioUso : formulario.getUsosInsumos()) {
+                InsumoMantenimiento insumo = insumoRepository.findById(formularioUso.getInsumoId())
+                        .orElseThrow(() -> new RuntimeException("Insumo no encontrado: " + formularioUso.getInsumoId()));
 
-                if (insumo.getStockActual() < usoForm.getCantidadUsada()) {
+                if (insumo.getStockActual() < formularioUso.getCantidadUsada()) {
                     throw new RuntimeException("Stock insuficiente para el insumo: " + insumo.getNombre());
                 }
-                insumo.setStockActual(insumo.getStockActual() - usoForm.getCantidadUsada());
+                insumo.setStockActual(insumo.getStockActual() - formularioUso.getCantidadUsada());
                 insumoRepository.save(insumo);
 
                 UsoInsumo uso = new UsoInsumo();
                 uso.setTarea(tarea);
                 uso.setInsumo(insumo);
-                uso.setCantidadUsada(usoForm.getCantidadUsada());
+                uso.setCantidadUsada(formularioUso.getCantidadUsada());
                 tarea.getUsosInsumos().add(uso);
-                costoTotalInsumos += (usoForm.getCantidadUsada() * insumo.getPrecioUnitario());
+                costoTotalInsumos += (formularioUso.getCantidadUsada() * insumo.getPrecioUnitario());
             }
         }
 
@@ -114,39 +114,39 @@ public class GestionMantenimientoService {
                 .collect(Collectors.toList());
     }
 
-    private InsumoResponse mapearInsumoAResponse(InsumoMantenimiento entity) {
+    private InsumoResponse mapearInsumoAResponse(InsumoMantenimiento entidad) {
         return new InsumoResponse(
-                entity.getId(),
-                entity.getNombre(),
-                entity.getUnidadMedida(),
-                entity.getStockActual(),
-                entity.getStockMinimo(),
-                entity.getPrecioUnitario(),
-                entity.getFechaActualizacion());
+                entidad.getId(),
+                entidad.getNombre(),
+                entidad.getUnidadMedida(),
+                entidad.getStockActual(),
+                entidad.getStockMinimo(),
+                entidad.getPrecioUnitario(),
+                entidad.getFechaActualizacion());
     }
 
-    private TareaMantenimientoResponse mapearTareaAResponse(TareaMantenimiento entity) {
+    private TareaMantenimientoResponse mapearTareaAResponse(TareaMantenimiento entidad) {
         double costoTotal = 0;
-        List<UsoInsumoResponse> usos = entity.getUsosInsumos().stream().map(u -> {
-            double subtotal = u.getCantidadUsada() * u.getInsumo().getPrecioUnitario();
+        List<UsoInsumoResponse> usos = entidad.getUsosInsumos().stream().map(uso -> {
+            double subtotal = uso.getCantidadUsada() * uso.getInsumo().getPrecioUnitario();
             return new UsoInsumoResponse(
-                    u.getId(),
-                    u.getInsumo().getNombre(),
-                    u.getCantidadUsada(),
-                    u.getInsumo().getUnidadMedida(),
-                    u.getInsumo().getPrecioUnitario(),
+                    uso.getId(),
+                    uso.getInsumo().getNombre(),
+                    uso.getCantidadUsada(),
+                    uso.getInsumo().getUnidadMedida(),
+                    uso.getInsumo().getPrecioUnitario(),
                     subtotal);
         }).collect(Collectors.toList());
 
-        for (UsoInsumoResponse u : usos) {
-            costoTotal += u.getSubtotal();
+        for (UsoInsumoResponse uso : usos) {
+            costoTotal += uso.getSubtotal();
         }
 
         return new TareaMantenimientoResponse(
-                entity.getId(),
-                entity.getAreaComun().getNombre(),
-                entity.getDescripcion(),
-                entity.getFechaProgramada(),
+                entidad.getId(),
+                entidad.getAreaComun().getNombre(),
+                entidad.getDescripcion(),
+                entidad.getFechaProgramada(),
                 usos,
                 costoTotal);
     }

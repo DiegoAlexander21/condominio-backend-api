@@ -69,26 +69,26 @@ public class GestionFinanzasService {
     }
 
     @Transactional
-    public synchronized GastoResponse registrarGasto(GastoForm form) {
-        validarGasto(form);
+    public synchronized GastoResponse registrarGasto(GastoForm formulario) {
+        validarGasto(formulario);
 
         Gasto gasto = new Gasto();
-        gasto.setDescripcion(form.getDescripcion().trim());
-        gasto.setTipoGasto(form.getTipoGasto());
-        gasto.setMetodoDistribucion(form.getMetodoDistribucion());
-        gasto.setMontoTotal(form.getMontoTotal());
-        gasto.setFechaLimite(form.getFechaLimite());
+        gasto.setDescripcion(formulario.getDescripcion().trim());
+        gasto.setTipoGasto(formulario.getTipoGasto());
+        gasto.setMetodoDistribucion(formulario.getMetodoDistribucion());
+        gasto.setMontoTotal(formulario.getMontoTotal());
+        gasto.setFechaLimite(formulario.getFechaLimite());
 
-        Condominio condominio = condominioRepository.findById(form.getCondominioId())
+        Condominio condominio = condominioRepository.findById(formulario.getCondominioId())
                 .orElseThrow(() -> new IllegalArgumentException("El condominio no existe."));
         gasto.setCondominio(condominio);
         gasto.getTorres().clear();
-        if (form.getTorre() != null && !form.getTorre().isBlank()) {
-            gasto.getTorres().add(form.getTorre().trim());
+        if (formulario.getTorre() != null && !formulario.getTorre().isBlank()) {
+            gasto.getTorres().add(formulario.getTorre().trim());
         }
 
-        if (form.getIncidenciaId() != null) {
-            Incidencia incidencia = incidenciaRepository.findById(form.getIncidenciaId())
+        if (formulario.getIncidenciaId() != null) {
+            Incidencia incidencia = incidenciaRepository.findById(formulario.getIncidenciaId())
                     .orElseThrow(() -> new IllegalArgumentException("La incidencia no existe."));
             gasto.setIncidencia(incidencia);
         }
@@ -101,48 +101,48 @@ public class GestionFinanzasService {
     public synchronized GastoForm obtenerGastoParaEdicion(Long id) {
         Gasto gasto = gastoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El gasto no existe."));
-        GastoForm form = new GastoForm();
-        form.setId(gasto.getId());
-        form.setDescripcion(gasto.getDescripcion());
-        form.setTipoGasto(gasto.getTipoGasto());
-        form.setMetodoDistribucion(gasto.getMetodoDistribucion());
-        form.setMontoTotal(gasto.getMontoTotal());
-        form.setFechaLimite(gasto.getFechaLimite());
+        GastoForm formulario = new GastoForm();
+        formulario.setId(gasto.getId());
+        formulario.setDescripcion(gasto.getDescripcion());
+        formulario.setTipoGasto(gasto.getTipoGasto());
+        formulario.setMetodoDistribucion(gasto.getMetodoDistribucion());
+        formulario.setMontoTotal(gasto.getMontoTotal());
+        formulario.setFechaLimite(gasto.getFechaLimite());
         if (gasto.getIncidencia() != null) {
-            form.setIncidenciaId(gasto.getIncidencia().getId());
+            formulario.setIncidenciaId(gasto.getIncidencia().getId());
         }
         if (gasto.getCondominio() != null) {
-            form.setCondominioId(gasto.getCondominio().getId());
+            formulario.setCondominioId(gasto.getCondominio().getId());
         }
         if (!gasto.getTorres().isEmpty()) {
-            form.setTorre(gasto.getTorres().get(0));
+            formulario.setTorre(gasto.getTorres().get(0));
         }
-        return form;
+        return formulario;
     }
 
     @Transactional
-    public synchronized GastoResponse actualizarGasto(Long id, GastoForm form) {
-        validarGasto(form);
+    public synchronized GastoResponse actualizarGasto(Long id, GastoForm formulario) {
+        validarGasto(formulario);
 
         Gasto gasto = gastoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El gasto no existe."));
 
-        gasto.setDescripcion(form.getDescripcion().trim());
-        gasto.setTipoGasto(form.getTipoGasto());
-        gasto.setMetodoDistribucion(form.getMetodoDistribucion());
-        gasto.setMontoTotal(form.getMontoTotal());
-        gasto.setFechaLimite(form.getFechaLimite());
+        gasto.setDescripcion(formulario.getDescripcion().trim());
+        gasto.setTipoGasto(formulario.getTipoGasto());
+        gasto.setMetodoDistribucion(formulario.getMetodoDistribucion());
+        gasto.setMontoTotal(formulario.getMontoTotal());
+        gasto.setFechaLimite(formulario.getFechaLimite());
 
-        Condominio condominio = condominioRepository.findById(form.getCondominioId())
+        Condominio condominio = condominioRepository.findById(formulario.getCondominioId())
                 .orElseThrow(() -> new IllegalArgumentException("El condominio no existe."));
         gasto.setCondominio(condominio);
         gasto.getTorres().clear();
-        if (form.getTorre() != null && !form.getTorre().isBlank()) {
-            gasto.getTorres().add(form.getTorre().trim());
+        if (formulario.getTorre() != null && !formulario.getTorre().isBlank()) {
+            gasto.getTorres().add(formulario.getTorre().trim());
         }
 
-        if (form.getIncidenciaId() != null) {
-            Incidencia incidencia = incidenciaRepository.findById(form.getIncidenciaId())
+        if (formulario.getIncidenciaId() != null) {
+            Incidencia incidencia = incidenciaRepository.findById(formulario.getIncidenciaId())
                     .orElseThrow(() -> new IllegalArgumentException("La incidencia no existe."));
             gasto.setIncidencia(incidencia);
         } else {
@@ -177,17 +177,17 @@ public class GestionFinanzasService {
     }
 
     @Transactional
-    public synchronized List<DetalleGastoUnidadResponse> distribuirGasto(DistribucionGastoForm form) {
-        validarDistribucion(form);
+    public synchronized List<DetalleGastoUnidadResponse> distribuirGasto(DistribucionGastoForm formulario) {
+        validarDistribucion(formulario);
 
-        Gasto gasto = gastoRepository.findById(form.getGastoId())
+        Gasto gasto = gastoRepository.findById(formulario.getGastoId())
                 .orElseThrow(() -> new IllegalArgumentException("El gasto no existe."));
 
         if (!detalleGastoUnidadRepository.listarPorGasto(gasto.getId()).isEmpty()) {
             throw new IllegalArgumentException("El gasto ya tiene distribucion registrada.");
         }
 
-        List<DetalleGastoUnidad> detalles = generarDetalles(gasto, form.getUnidadId());
+        List<DetalleGastoUnidad> detalles = generarDetalles(gasto, formulario.getUnidadId());
         List<DetalleGastoUnidad> guardados = detalleGastoUnidadRepository.saveAll(detalles);
 
         return guardados.stream()
@@ -214,13 +214,13 @@ public class GestionFinanzasService {
     }
 
     @Transactional
-    public synchronized EstadoCuentaResponse generarEstadoCuenta(EstadoCuentaForm form) {
-        validarEstadoCuenta(form);
+    public synchronized EstadoCuentaResponse generarEstadoCuenta(EstadoCuentaForm formulario) {
+        validarEstadoCuenta(formulario);
 
-        Unidad unidad = unidadRepository.findById(form.getUnidadId())
+        Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                 .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
 
-        LocalDate periodoInput = LocalDate.parse(form.getPeriodo() + "-01");
+        LocalDate periodoInput = LocalDate.parse(formulario.getPeriodo() + "-01");
         LocalDate periodo = normalizarPeriodo(periodoInput);
 
         List<DetalleGastoUnidad> detalles = detalleGastoUnidadRepository.listarPorUnidad(unidad.getId());
@@ -344,29 +344,29 @@ public class GestionFinanzasService {
     }
 
     @Transactional
-    public synchronized PagoResponse registrarPago(PagoForm form) {
-        validarPago(form);
+    public synchronized PagoResponse registrarPago(PagoForm formulario) {
+        validarPago(formulario);
 
-        Unidad unidad = unidadRepository.findById(form.getUnidadId())
+        Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                 .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
 
         Pago pago = new Pago();
         pago.setUnidad(unidad);
-        pago.setMonto(form.getMonto());
-        pago.setObservacion(normalizarTexto(form.getObservacion()));
+        pago.setMonto(formulario.getMonto());
+        pago.setObservacion(normalizarTexto(formulario.getObservacion()));
 
-        if (form.getEstadoCuentaId() != null) {
-            EstadoCuenta estadoCuenta = estadoCuentaRepository.findById(form.getEstadoCuentaId())
+        if (formulario.getEstadoCuentaId() != null) {
+            EstadoCuenta estadoCuenta = estadoCuentaRepository.findById(formulario.getEstadoCuentaId())
                     .orElseThrow(() -> new IllegalArgumentException("El estado de cuenta no existe."));
 
             double saldoPendiente = estadoCuenta.getSaldo();
-            if (form.getMonto() > saldoPendiente) {
-                throw new IllegalArgumentException(String.format("El monto del pago (S/ %.2f) no puede ser mayor al saldo pendiente (S/ %.2f).", form.getMonto(), saldoPendiente));
+            if (formulario.getMonto() > saldoPendiente) {
+                throw new IllegalArgumentException(String.format("El monto del pago (S/ %.2f) no puede ser mayor al saldo pendiente (S/ %.2f).", formulario.getMonto(), saldoPendiente));
             }
 
             pago.setEstadoCuenta(estadoCuenta);
 
-            estadoCuenta.setTotalPagado(estadoCuenta.getTotalPagado() + form.getMonto());
+            estadoCuenta.setTotalPagado(estadoCuenta.getTotalPagado() + formulario.getMonto());
             estadoCuenta.setSaldo(estadoCuenta.getTotalCuotas() + estadoCuenta.getTotalExtraordinarios()
                     - estadoCuenta.getTotalPagado());
             estadoCuentaRepository.save(estadoCuenta);
@@ -377,23 +377,23 @@ public class GestionFinanzasService {
     }
 
     @Transactional
-    public synchronized EvidenciaPagoResponse registrarEvidenciaPago(EvidenciaPagoForm form) {
-        if (form == null) {
+    public synchronized EvidenciaPagoResponse registrarEvidenciaPago(EvidenciaPagoForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de evidencia es obligatorio.");
         }
-        if (form.getPagoId() == null) {
+        if (formulario.getPagoId() == null) {
             throw new IllegalArgumentException("El ID del pago es obligatorio.");
         }
-        if (form.getUrlArchivo() == null || form.getUrlArchivo().isBlank()) {
+        if (formulario.getUrlArchivo() == null || formulario.getUrlArchivo().isBlank()) {
             throw new IllegalArgumentException("La URL del archivo es obligatoria.");
         }
 
-        Pago pago = pagoRepository.findById(form.getPagoId())
+        Pago pago = pagoRepository.findById(formulario.getPagoId())
                 .orElseThrow(() -> new IllegalArgumentException("El pago no existe."));
 
         EvidenciaPago evidencia = new EvidenciaPago();
         evidencia.setPago(pago);
-        evidencia.setUrlArchivo(form.getUrlArchivo().trim());
+        evidencia.setUrlArchivo(formulario.getUrlArchivo().trim());
 
         EvidenciaPago guardada = evidenciaPagoRepository.save(evidencia);
         return convertirEvidenciaPagoResponse(guardada);
@@ -505,67 +505,67 @@ public class GestionFinanzasService {
         return periodo.withDayOfMonth(1);
     }
 
-    private void validarGasto(GastoForm form) {
-        if (form == null) {
+    private void validarGasto(GastoForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario del gasto es obligatorio.");
         }
-        if (form.getDescripcion() == null || form.getDescripcion().isBlank()) {
+        if (formulario.getDescripcion() == null || formulario.getDescripcion().isBlank()) {
             throw new IllegalArgumentException("La descripcion es obligatoria.");
         }
-        if (form.getTipoGasto() == null) {
+        if (formulario.getTipoGasto() == null) {
             throw new IllegalArgumentException("El tipo de gasto es obligatorio.");
         }
-        if (form.getMetodoDistribucion() == null) {
+        if (formulario.getMetodoDistribucion() == null) {
             throw new IllegalArgumentException("El metodo de distribucion es obligatorio.");
         }
-        if (form.getMontoTotal() <= 0) {
+        if (formulario.getMontoTotal() <= 0) {
             throw new IllegalArgumentException("El monto total debe ser mayor a cero.");
         }
 
-        if (form.getTipoGasto() == TipoGasto.EXTRAORDINARIO && form.getIncidenciaId() == null) {
+        if (formulario.getTipoGasto() == TipoGasto.EXTRAORDINARIO && formulario.getIncidenciaId() == null) {
             throw new IllegalArgumentException("Debe asociar la incidencia al gasto extraordinario.");
         }
 
-        if (form.getTipoGasto() == TipoGasto.FIJO && form.getIncidenciaId() != null) {
+        if (formulario.getTipoGasto() == TipoGasto.FIJO && formulario.getIncidenciaId() != null) {
             throw new IllegalArgumentException("El gasto fijo no debe asociarse a incidencias.");
         }
     }
 
-    private void validarDistribucion(DistribucionGastoForm form) {
-        if (form == null) {
+    private void validarDistribucion(DistribucionGastoForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de distribucion es obligatorio.");
         }
-        if (form.getGastoId() == null) {
+        if (formulario.getGastoId() == null) {
             throw new IllegalArgumentException("El gasto es obligatorio.");
         }
     }
 
-    private void validarEstadoCuenta(EstadoCuentaForm form) {
-        if (form == null) {
+    private void validarEstadoCuenta(EstadoCuentaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario del estado de cuenta es obligatorio.");
         }
-        if (form.getUnidadId() == null) {
+        if (formulario.getUnidadId() == null) {
             throw new IllegalArgumentException("La unidad es obligatoria.");
         }
-        if (form.getPeriodo() == null) {
+        if (formulario.getPeriodo() == null) {
             throw new IllegalArgumentException("El periodo es obligatorio.");
         }
     }
 
-    private void validarPago(PagoForm form) {
-        if (form == null) {
+    private void validarPago(PagoForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario del pago es obligatorio.");
         }
-        if (form.getUnidadId() == null) {
+        if (formulario.getUnidadId() == null) {
             throw new IllegalArgumentException("La unidad es obligatoria.");
         }
-        if (form.getMonto() <= 0) {
+        if (formulario.getMonto() <= 0) {
             throw new IllegalArgumentException("El monto debe ser mayor a cero.");
         }
     }
 
     private GastoResponse convertirGastoResponse(Gasto gasto) {
-        GastoResponse response = new GastoResponse(gasto.getId(), gasto.getDescripcion(), gasto.getTipoGasto(),
+        GastoResponse respuesta = new GastoResponse(gasto.getId(), gasto.getDescripcion(), gasto.getTipoGasto(),
                 gasto.getMetodoDistribucion(),
                 gasto.getIncidencia() != null ? gasto.getIncidencia().getId() : null,
                 gasto.getMontoTotal(),
@@ -576,17 +576,17 @@ public class GestionFinanzasService {
                 gasto.getTorres().isEmpty() ? null : gasto.getTorres().get(0));
         
         if (gasto.getIncidencia() != null) {
-            Incidencia realIncidencia = (Incidencia) Hibernate.unproxy(gasto.getIncidencia());
-            if (realIncidencia instanceof IncidenciaUnidad) {
-                IncidenciaUnidad iu = (IncidenciaUnidad) realIncidencia;
-                response.setUnidadIdCausante(iu.getUnidad().getId());
+            Incidencia incidenciaReal = (Incidencia) Hibernate.unproxy(gasto.getIncidencia());
+            if (incidenciaReal instanceof IncidenciaUnidad) {
+                IncidenciaUnidad incidenciaUnidadLocal = (IncidenciaUnidad) incidenciaReal;
+                respuesta.setUnidadIdCausante(incidenciaUnidadLocal.getUnidad().getId());
             }
         }
         
         boolean distribuido = !detalleGastoUnidadRepository.listarPorGasto(gasto.getId()).isEmpty();
-        response.setDistribuido(distribuido);
+        respuesta.setDistribuido(distribuido);
         
-        return response;
+        return respuesta;
     }
 
     private DetalleGastoUnidadResponse convertirDetalleResponse(DetalleGastoUnidad detalle) {
@@ -622,7 +622,7 @@ public class GestionFinanzasService {
     }
 
     private PagoResponse convertirPagoResponse(Pago pago) {
-        List<EvidenciaPagoResponse> evidenciasResponse = pago.getEvidencias().stream()
+        List<EvidenciaPagoResponse> respuestasEvidencias = pago.getEvidencias().stream()
                 .map(this::convertirEvidenciaPagoResponse)
                 .collect(Collectors.toList());
 
@@ -634,7 +634,7 @@ public class GestionFinanzasService {
                 pago.getMonto(),
                 pago.getFechaPago(),
                 pago.getObservacion(),
-                evidenciasResponse);
+                respuestasEvidencias);
     }
 
     private EvidenciaPagoResponse convertirEvidenciaPagoResponse(EvidenciaPago evidencia) {

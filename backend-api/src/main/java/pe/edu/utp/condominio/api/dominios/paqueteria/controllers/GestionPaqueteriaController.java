@@ -27,54 +27,54 @@ public class GestionPaqueteriaController {
     }
 
     @GetMapping
-    public String listarPorEstado(@RequestParam(value = "estado", required = false) EstadoPaquete estado, Model model) {
+    public String listarPorEstado(@RequestParam(value = "estado", required = false) EstadoPaquete estado, Model modelo) {
         if (estado != null) {
-            model.addAttribute("paquetes", gestionPaqueteriaService.listarPorEstado(estado));
+            modelo.addAttribute("paquetes", gestionPaqueteriaService.listarPorEstado(estado));
         }
         return "paqueteria/lista-paquetes";
     }
 
     @GetMapping("/nuevo")
-    public String mostrarFormularioRecepcion(Model model) {
-        model.addAttribute("paqueteForm", new PaqueteForm());
+    public String mostrarFormularioRecepcion(Model modelo) {
+        modelo.addAttribute("paqueteForm", new PaqueteForm());
         return "paqueteria/formulario-recepcion";
     }
 
     @PostMapping("/paquetes")
     public String registrarRecepcion(
-            @Valid @ModelAttribute("paqueteForm") PaqueteForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("paqueteForm") PaqueteForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "paqueteria/formulario-recepcion";
         }
 
-        gestionPaqueteriaService.registrarRecepcion(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Paquete recibido y notificación enviada.");
+        gestionPaqueteriaService.registrarRecepcion(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Paquete recibido y notificación enviada.");
         return "redirect:/paqueteria";
     }
 
     @GetMapping("/entregar")
-    public String mostrarFormularioEntrega(@RequestParam("paqueteId") Long paqueteId, Model model) {
-        RegistroEntregaPaqueteForm form = new RegistroEntregaPaqueteForm();
-        form.setPaqueteId(paqueteId);
-        model.addAttribute("entregaForm", form);
+    public String mostrarFormularioEntrega(@RequestParam("paqueteId") Long paqueteId, Model modelo) {
+        RegistroEntregaPaqueteForm formulario = new RegistroEntregaPaqueteForm();
+        formulario.setPaqueteId(paqueteId);
+        modelo.addAttribute("entregaForm", formulario);
         return "paqueteria/formulario-entrega";
     }
 
     @PostMapping("/paquetes/entrega")
     public String registrarEntrega(
-            @Valid @ModelAttribute("entregaForm") RegistroEntregaPaqueteForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("entregaForm") RegistroEntregaPaqueteForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "paqueteria/formulario-entrega";
         }
 
-        gestionPaqueteriaService.registrarEntrega(form);
-        redirectAttributes.addFlashAttribute("successMessage", "Entrega final del paquete registrada.");
+        gestionPaqueteriaService.registrarEntrega(formulario);
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Entrega final del paquete registrada.");
         return "redirect:/paqueteria";
     }
 }

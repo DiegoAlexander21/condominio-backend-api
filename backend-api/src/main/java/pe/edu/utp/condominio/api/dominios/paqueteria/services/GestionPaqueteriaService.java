@@ -30,18 +30,18 @@ public class GestionPaqueteriaService {
     }
 
     @Transactional
-    public synchronized PaqueteResponse registrarRecepcion(PaqueteForm form) {
-        validarPaquete(form);
+    public synchronized PaqueteResponse registrarRecepcion(PaqueteForm formulario) {
+        validarPaquete(formulario);
 
-        Unidad unidad = unidadRepository.findById(form.getUnidadId())
+        Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                 .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
 
         Paquete paquete = new Paquete();
         paquete.setUnidad(unidad);
-        paquete.setRemitente(form.getRemitente().trim());
-        paquete.setDestinatario(form.getDestinatario().trim());
+        paquete.setRemitente(formulario.getRemitente().trim());
+        paquete.setDestinatario(formulario.getDestinatario().trim());
         paquete.setEstado(EstadoPaquete.RECIBIDO);
-        paquete.setObservacion(normalizarTexto(form.getObservacion()));
+        paquete.setObservacion(normalizarTexto(formulario.getObservacion()));
 
         Paquete guardado = paqueteRepository.save(paquete);
 
@@ -59,21 +59,21 @@ public class GestionPaqueteriaService {
     }
 
     @Transactional
-    public synchronized PaqueteResponse registrarEntrega(RegistroEntregaPaqueteForm form) {
-        validarEntrega(form);
+    public synchronized PaqueteResponse registrarEntrega(RegistroEntregaPaqueteForm formulario) {
+        validarEntrega(formulario);
 
-        Paquete paquete = paqueteRepository.findById(form.getPaqueteId())
+        Paquete paquete = paqueteRepository.findById(formulario.getPaqueteId())
                 .orElseThrow(() -> new IllegalArgumentException("El paquete no existe."));
 
         if (paquete.getEstado() == EstadoPaquete.ENTREGADO) {
             throw new IllegalArgumentException("El paquete ya fue entregado.");
         }
 
-        LocalDateTime entrega = form.getFechaEntrega() != null ? form.getFechaEntrega() : LocalDateTime.now();
+        LocalDateTime entrega = formulario.getFechaEntrega() != null ? formulario.getFechaEntrega() : LocalDateTime.now();
         paquete.setFechaEntrega(entrega);
         paquete.setEstado(EstadoPaquete.ENTREGADO);
         paquete.setObservacion(unirObservacion(paquete.getObservacion(),
-                normalizarTexto(form.getObservacion())));
+                normalizarTexto(formulario.getObservacion())));
 
         Paquete actualizado = paqueteRepository.save(paquete);
         return convertirPaqueteResponse(actualizado);
@@ -97,26 +97,26 @@ public class GestionPaqueteriaService {
                 .collect(Collectors.toList());
     }
 
-    private void validarPaquete(PaqueteForm form) {
-        if (form == null) {
+    private void validarPaquete(PaqueteForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario del paquete es obligatorio.");
         }
-        if (form.getUnidadId() == null) {
+        if (formulario.getUnidadId() == null) {
             throw new IllegalArgumentException("La unidad es obligatoria.");
         }
-        if (form.getRemitente() == null || form.getRemitente().isBlank()) {
+        if (formulario.getRemitente() == null || formulario.getRemitente().isBlank()) {
             throw new IllegalArgumentException("El remitente es obligatorio.");
         }
-        if (form.getDestinatario() == null || form.getDestinatario().isBlank()) {
+        if (formulario.getDestinatario() == null || formulario.getDestinatario().isBlank()) {
             throw new IllegalArgumentException("El destinatario es obligatorio.");
         }
     }
 
-    private void validarEntrega(RegistroEntregaPaqueteForm form) {
-        if (form == null) {
+    private void validarEntrega(RegistroEntregaPaqueteForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de entrega es obligatorio.");
         }
-        if (form.getPaqueteId() == null) {
+        if (formulario.getPaqueteId() == null) {
             throw new IllegalArgumentException("El paquete es obligatorio.");
         }
     }

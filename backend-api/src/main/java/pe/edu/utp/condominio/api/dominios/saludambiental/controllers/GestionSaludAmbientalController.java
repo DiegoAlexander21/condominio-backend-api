@@ -27,14 +27,14 @@ public class GestionSaludAmbientalController {
     }
 
     @GetMapping
-    public String mostrarDashboardSalud(Model model) {
+    public String mostrarDashboardSalud(Model modelo) {
         return "salud-ambiental/dashboard";
     }
 
     @GetMapping("/nuevo-checklist")
-    public String mostrarFormularioChecklist(Model model) {
-        if (!model.containsAttribute("checklistForm")) {
-            model.addAttribute("checklistForm", new ChecklistForm());
+    public String mostrarFormularioChecklist(Model modelo) {
+        if (!modelo.containsAttribute("checklistForm")) {
+            modelo.addAttribute("checklistForm", new ChecklistForm());
         }
         return "salud-ambiental/formulario-checklist";
     }
@@ -42,59 +42,59 @@ public class GestionSaludAmbientalController {
     @PostMapping("/checklists")
     public String crearChecklist(
             @Valid @ModelAttribute("checklistForm") ChecklistForm formulario,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "salud-ambiental/formulario-checklist";
         }
 
         saludAmbientalService.crearChecklist(formulario);
-        redirectAttributes.addFlashAttribute("successMessage", "Checklist creado correctamente.");
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Checklist creado correctamente.");
         return "redirect:/salud-ambiental";
     }
 
     @GetMapping("/evaluar/{checklistId}")
-    public String mostrarFormularioEvaluacion(@PathVariable Long checklistId, Model model) {
-        EvaluacionForm form = new EvaluacionForm();
-        form.setChecklistId(checklistId);
-        model.addAttribute("evaluacionForm", form);
+    public String mostrarFormularioEvaluacion(@PathVariable Long checklistId, Model modelo) {
+        EvaluacionForm formulario = new EvaluacionForm();
+        formulario.setChecklistId(checklistId);
+        modelo.addAttribute("evaluacionForm", formulario);
         return "salud-ambiental/formulario-evaluacion";
     }
 
     @PostMapping("/evaluaciones")
     public String registrarEvaluacion(
             @Valid @ModelAttribute("evaluacionForm") EvaluacionForm formulario,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "salud-ambiental/formulario-evaluacion";
         }
 
         saludAmbientalService.evaluarChecklist(formulario);
-        redirectAttributes.addFlashAttribute("successMessage", "Evaluación registrada correctamente.");
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Evaluación registrada correctamente.");
         return "redirect:/salud-ambiental";
     }
 
     @GetMapping("/mantenimiento/nuevo")
-    public String mostrarFormularioMantenimiento(Model model) {
-        model.addAttribute("mantenimientoForm", new MantenimientoAmbientalForm());
+    public String mostrarFormularioMantenimiento(Model modelo) {
+        modelo.addAttribute("mantenimientoForm", new MantenimientoAmbientalForm());
         return "salud-ambiental/formulario-mantenimiento";
     }
 
     @PostMapping("/mantenimientos")
     public String registrarMantenimiento(
             @Valid @ModelAttribute("mantenimientoForm") MantenimientoAmbientalForm formulario,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
         
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             return "salud-ambiental/formulario-mantenimiento";
         }
 
         saludAmbientalService.registrarMantenimiento(formulario);
-        redirectAttributes.addFlashAttribute("successMessage", "Registro de mantenimiento ambiental guardado.");
+        atributosRedireccion.addFlashAttribute("mensajeExito", "Registro de mantenimiento ambiental guardado.");
         return "redirect:/salud-ambiental";
     }
 }

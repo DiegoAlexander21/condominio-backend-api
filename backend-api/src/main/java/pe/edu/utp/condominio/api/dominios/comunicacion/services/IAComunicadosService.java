@@ -29,10 +29,10 @@ public class IAComunicadosService {
         }
 
         try {
-            SystemMessage systemMessage = new SystemMessage(
+            SystemMessage mensajeSistema = new SystemMessage(
                     "Eres un asistente que redacta comunicados formales y claros para un sistema de gestión de condominios.");
 
-            String userTemplate = """
+            String plantillaUsuario = """
                     Por favor, redacta un comunicado formal basado en la siguiente información:
 
                     Título: {titulo}
@@ -41,12 +41,12 @@ public class IAComunicadosService {
                     El comunicado debe ser profesional, empático y fácil de entender para los residentes.
                     """;
 
-            PromptTemplate userPromptTemplate = new PromptTemplate(userTemplate);
-            UserMessage userMessage = (UserMessage) userPromptTemplate.createMessage(Map.of(
+            PromptTemplate plantillaPromptUsuario = new PromptTemplate(plantillaUsuario);
+            UserMessage mensajeUsuario = (UserMessage) plantillaPromptUsuario.createMessage(Map.of(
                     "titulo", titulo,
                     "borrador", borrador));
 
-            Prompt prompt = new Prompt(List.of(systemMessage, userMessage));
+            Prompt prompt = new Prompt(List.of(mensajeSistema, mensajeUsuario));
 
             return chatModel.call(prompt).getResult().getOutput().getContent().trim();
 

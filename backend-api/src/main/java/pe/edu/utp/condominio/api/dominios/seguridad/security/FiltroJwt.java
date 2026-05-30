@@ -25,21 +25,21 @@ public class FiltroJwt extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest solicitud,
+            HttpServletResponse respuesta,
+            FilterChain cadenaFiltros) throws ServletException, IOException {
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            filterChain.doFilter(request, response);
+            cadenaFiltros.doFilter(solicitud, respuesta);
             return;
         }
 
         String token = null;
-        String encabezado = request.getHeader("Authorization");
+        String encabezado = solicitud.getHeader("Authorization");
 
         if (encabezado != null && encabezado.startsWith("Bearer ")) {
             token = encabezado.substring(7);
-        } else if (request.getCookies() != null) {
-            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+        } else if (solicitud.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : solicitud.getCookies()) {
                 if ("tokenAcceso".equals(cookie.getName())) {
                     token = cookie.getValue();
                     break;
@@ -50,18 +50,18 @@ public class FiltroJwt extends OncePerRequestFilter {
         if (token != null && tokenService.esTokenValido(token)) {
             try {
                 Long usuarioId = tokenService.obtenerIdUsuario(token);
-                var userDetails = usuarioService.loadUserById(usuarioId);
+                var detallesUsuario = usuarioService.loadUserById(usuarioId);
 
                 var autenticacion = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                autenticacion.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        detallesUsuario, null, detallesUsuario.getAuthorities());
+                autenticacion.setDetails(new WebAuthenticationDetailsSource().buildDetails(solicitud));
 
                 SecurityContextHolder.getContext().setAuthentication(autenticacion);
-            } catch (Exception e) {
+            } catch (Exception ex) {
                 SecurityContextHolder.clearContext();
             }
         }
 
-        filterChain.doFilter(request, response);
+        cadenaFiltros.doFilter(solicitud, respuesta);
     }
 }

@@ -57,18 +57,18 @@ public class GestionFinanzasController {
     }
 
     @GetMapping("/gastos")
-    public String listarGastos(@RequestParam(value = "tipo", required = false) TipoGasto tipo, Model model) {
+    public String listarGastos(@RequestParam(value = "tipo", required = false) TipoGasto tipo, Model modelo) {
         if (tipo != null) {
-            model.addAttribute("gastos", gestionFinanzasService.listarGastosPorTipo(tipo));
+            modelo.addAttribute("gastos", gestionFinanzasService.listarGastosPorTipo(tipo));
         }
-        model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
+        modelo.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
         return "dominios/finanzas/gastos/lista-gastos";
     }
 
     @GetMapping("/gastos/nuevo")
-    public String mostrarFormularioGasto(Model model) {
-        model.addAttribute("gastoForm", new GastoForm());
-        model.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
+    public String mostrarFormularioGasto(Model modelo) {
+        modelo.addAttribute("gastoForm", new GastoForm());
+        modelo.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
 
         List<Condominio> condominios = gestionCondominioService.obtenerCondominios();
         Map<Long, List<String>> torresPorCondominio = new HashMap<>();
@@ -76,18 +76,18 @@ public class GestionFinanzasController {
             torresPorCondominio.put(c.getId(), gestionUnidadesService.listarTorresPorCondominio(c.getId()));
         }
 
-        model.addAttribute("condominios", condominios);
-        model.addAttribute("torresPorCondominio", torresPorCondominio);
+        modelo.addAttribute("condominios", condominios);
+        modelo.addAttribute("torresPorCondominio", torresPorCondominio);
         return "dominios/finanzas/gastos/formulario-gasto";
     }
 
     @GetMapping("/gastos/{id}/editar")
     public String mostrarFormularioEdicion(@org.springframework.web.bind.annotation.PathVariable("id") Long id,
-            Model model) {
+            Model modelo) {
         try {
-            GastoForm form = gestionFinanzasService.obtenerGastoParaEdicion(id);
-            model.addAttribute("gastoForm", form);
-            model.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
+            GastoForm formulario = gestionFinanzasService.obtenerGastoParaEdicion(id);
+            modelo.addAttribute("gastoForm", formulario);
+            modelo.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
 
             List<Condominio> condominios = gestionCondominioService.obtenerCondominios();
             Map<Long, List<String>> torresPorCondominio = new HashMap<>();
@@ -95,8 +95,8 @@ public class GestionFinanzasController {
                 torresPorCondominio.put(c.getId(), gestionUnidadesService.listarTorresPorCondominio(c.getId()));
             }
 
-            model.addAttribute("condominios", condominios);
-            model.addAttribute("torresPorCondominio", torresPorCondominio);
+            modelo.addAttribute("condominios", condominios);
+            modelo.addAttribute("torresPorCondominio", torresPorCondominio);
             return "dominios/finanzas/gastos/formulario-gasto";
         } catch (IllegalArgumentException e) {
             return "redirect:/finanzas/gastos";
@@ -106,25 +106,25 @@ public class GestionFinanzasController {
     @PostMapping("/gastos/eliminar")
     public String eliminarGasto(@RequestParam("id") Long id,
             @RequestParam(value = "tipoGasto", defaultValue = "FIJO") String tipoGasto,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes atributosRedireccion) {
         try {
             gestionFinanzasService.eliminarGasto(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Gasto eliminado correctamente.");
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Gasto eliminado correctamente.");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            atributosRedireccion.addFlashAttribute("mensajeError", e.getMessage());
         }
         return "redirect:/finanzas/gastos?tipo=" + tipoGasto;
     }
 
     @PostMapping("/gastos")
     public String registrarGasto(
-            @Valid @ModelAttribute("gastoForm") GastoForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            Model model) {
+            @Valid @ModelAttribute("gastoForm") GastoForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion,
+            Model modelo) {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
+        if (resultadoValidacion.hasErrors()) {
+            modelo.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
 
             List<Condominio> condominios = gestionCondominioService.obtenerCondominios();
             Map<Long, List<String>> torresPorCondominio = new HashMap<>();
@@ -132,43 +132,43 @@ public class GestionFinanzasController {
                 torresPorCondominio.put(c.getId(), gestionUnidadesService.listarTorresPorCondominio(c.getId()));
             }
 
-            model.addAttribute("condominios", condominios);
-            model.addAttribute("torresPorCondominio", torresPorCondominio);
+            modelo.addAttribute("condominios", condominios);
+            modelo.addAttribute("torresPorCondominio", torresPorCondominio);
             return "dominios/finanzas/gastos/formulario-gasto";
         }
 
         try {
-            if (form.getId() != null) {
-                gestionFinanzasService.actualizarGasto(form.getId(), form);
-                redirectAttributes.addFlashAttribute("successMessage",
+            if (formulario.getId() != null) {
+                gestionFinanzasService.actualizarGasto(formulario.getId(), formulario);
+                atributosRedireccion.addFlashAttribute("mensajeExito",
                         "Gasto actualizado correctamente. Por favor, vuelva a distribuirlo si corresponde.");
             } else {
-                gestionFinanzasService.registrarGasto(form);
-                redirectAttributes.addFlashAttribute("successMessage", "Gasto registrado correctamente.");
+                gestionFinanzasService.registrarGasto(formulario);
+                atributosRedireccion.addFlashAttribute("mensajeExito", "Gasto registrado correctamente.");
             }
         } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
+            modelo.addAttribute("mensajeError", e.getMessage());
+            modelo.addAttribute("incidencias", gestionIncidenciasService.listarTodas());
             return "dominios/finanzas/gastos/formulario-gasto";
         }
 
-        return "redirect:/finanzas/gastos?tipo=" + form.getTipoGasto();
+        return "redirect:/finanzas/gastos?tipo=" + formulario.getTipoGasto();
     }
 
     @PostMapping("/estados-cuenta/eliminar")
-    public String eliminarEstadoCuenta(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarEstadoCuenta(@RequestParam("id") Long id, RedirectAttributes atributosRedireccion) {
         try {
             gestionFinanzasService.eliminarEstadoCuenta(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Estado de cuenta eliminado.");
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Estado de cuenta eliminado.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            atributosRedireccion.addFlashAttribute("mensajeError", e.getMessage());
         }
         return "redirect:/finanzas/estados-cuenta";
     }
 
     @GetMapping("/pagos")
-    public String listarPagos(@RequestParam("unidadId") Long unidadId, Model model) {
-        model.addAttribute("pagos", gestionFinanzasService.listarPagosPorUnidad(unidadId));
+    public String listarPagos(@RequestParam("unidadId") Long unidadId, Model modelo) {
+        modelo.addAttribute("pagos", gestionFinanzasService.listarPagosPorUnidad(unidadId));
         return "dominios/finanzas/pagos/lista-pagos";
     }
 
@@ -183,105 +183,104 @@ public class GestionFinanzasController {
             @RequestParam("unidadId") Long unidadId,
             @RequestParam(value = "estadoCuentaId", required = false) Long estadoCuentaId,
             @RequestParam(value = "saldo", required = false) Double saldo,
-            Model model) {
-        PagoForm form = new PagoForm();
-        form.setUnidadId(unidadId);
-        form.setEstadoCuentaId(estadoCuentaId);
+            Model modelo) {
+        PagoForm formulario = new PagoForm();
+        formulario.setUnidadId(unidadId);
+        formulario.setEstadoCuentaId(estadoCuentaId);
         if (saldo != null && saldo > 0) {
-            form.setMonto(saldo);
+            formulario.setMonto(saldo);
         }
-        model.addAttribute("pagoForm", form);
-        model.addAttribute("saldoPendiente", saldo);
+        modelo.addAttribute("pagoForm", formulario);
+        modelo.addAttribute("saldoPendiente", saldo);
         return "dominios/finanzas/pagos/formulario-pago";
     }
 
     @PostMapping("/pagos")
     public String registrarPago(
-            @Valid @ModelAttribute("pagoForm") PagoForm form,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("pagoForm") PagoForm formulario,
+            BindingResult resultadoValidacion,
+            Model modelo,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
+        if (resultadoValidacion.hasErrors()) {
             Double saldo = 0.0;
-            if (form.getEstadoCuentaId() != null) {
+            if (formulario.getEstadoCuentaId() != null) {
                 try {
-                    var ec = gestionFinanzasService.obtenerEstadoCuentaResponse(form.getEstadoCuentaId());
+                    var ec = gestionFinanzasService.obtenerEstadoCuentaResponse(formulario.getEstadoCuentaId());
                     saldo = ec.getSaldo();
                 } catch (Exception ex) {
                 }
             }
-            model.addAttribute("saldoPendiente", saldo);
+            modelo.addAttribute("saldoPendiente", saldo);
             return "dominios/finanzas/pagos/formulario-pago";
         }
 
         try {
-            PagoResponse response = gestionFinanzasService.registrarPago(form);
+            PagoResponse respuesta = gestionFinanzasService.registrarPago(formulario);
 
-            if (form.getEvidenciaUrl() != null && !form.getEvidenciaUrl().isBlank()) {
-                String[] enlaces = form.getEvidenciaUrl().split(",");
+            if (formulario.getEvidenciaUrl() != null && !formulario.getEvidenciaUrl().isBlank()) {
+                String[] enlaces = formulario.getEvidenciaUrl().split(",");
                 for (String enlace : enlaces) {
                     if (!enlace.isBlank()) {
-                        EvidenciaPagoForm evidenciaForm = new EvidenciaPagoForm();
-                        evidenciaForm.setPagoId(response.getId());
-                        evidenciaForm.setUrlArchivo(enlace.trim());
-                        gestionFinanzasService.registrarEvidenciaPago(evidenciaForm);
+                        EvidenciaPagoForm formularioEvidencia = new EvidenciaPagoForm();
+                        formularioEvidencia.setPagoId(respuesta.getId());
+                        formularioEvidencia.setUrlArchivo(enlace.trim());
+                        gestionFinanzasService.registrarEvidenciaPago(formularioEvidencia);
                     }
                 }
             }
 
-            redirectAttributes.addFlashAttribute("successMessage", "Pago registrado correctamente.");
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Pago registrado correctamente.");
             return "redirect:/finanzas/estados-cuenta";
         } catch (IllegalArgumentException e) {
             Double saldo = 0.0;
-            if (form.getEstadoCuentaId() != null) {
+            if (formulario.getEstadoCuentaId() != null) {
                 try {
-                    var ec = gestionFinanzasService.obtenerEstadoCuentaResponse(form.getEstadoCuentaId());
+                    var ec = gestionFinanzasService.obtenerEstadoCuentaResponse(formulario.getEstadoCuentaId());
                     saldo = ec.getSaldo();
                 } catch (Exception ex) {
-                    // Ignorar
                 }
             }
-            model.addAttribute("saldoPendiente", saldo);
-            model.addAttribute("errorMessage", e.getMessage());
+            modelo.addAttribute("saldoPendiente", saldo);
+            modelo.addAttribute("mensajeError", e.getMessage());
             return "dominios/finanzas/pagos/formulario-pago";
         }
     }
 
     @PostMapping("/gastos/distribuir")
     public String distribuirGasto(
-            @Valid @ModelAttribute("distribucionForm") DistribucionGastoForm form,
-            BindingResult bindingResult,
+            @Valid @ModelAttribute("distribucionForm") DistribucionGastoForm formulario,
+            BindingResult resultadoValidacion,
             @RequestParam(value = "tipoGastoRedirect", required = false, defaultValue = "FIJO") String tipoGastoRedirect,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Datos inválidos para distribución.");
+        if (resultadoValidacion.hasErrors()) {
+            atributosRedireccion.addFlashAttribute("mensajeError", "Datos inválidos para distribución.");
             return "redirect:/finanzas/gastos?tipo=" + tipoGastoRedirect;
         }
         try {
-            gestionFinanzasService.distribuirGasto(form);
-            redirectAttributes.addFlashAttribute("successMessage", "Gasto distribuido exitosamente.");
+            gestionFinanzasService.distribuirGasto(formulario);
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Gasto distribuido exitosamente.");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            atributosRedireccion.addFlashAttribute("mensajeError", e.getMessage());
         }
         return "redirect:/finanzas/gastos?tipo=" + tipoGastoRedirect;
     }
 
     @GetMapping("/estados-cuenta")
-    public String listarEstadosCuenta(Model model) {
-        model.addAttribute("estados", gestionFinanzasService.listarTodosEstadosCuenta());
-        model.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
-        model.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
-        model.addAttribute("estadoCuentaForm", new EstadoCuentaForm());
+    public String listarEstadosCuenta(Model modelo) {
+        modelo.addAttribute("estados", gestionFinanzasService.listarTodosEstadosCuenta());
+        modelo.addAttribute("unidades", gestionUnidadesService.obtenerUnidades());
+        modelo.addAttribute("condominios", gestionCondominioService.obtenerCondominios());
+        modelo.addAttribute("estadoCuentaForm", new EstadoCuentaForm());
         return "dominios/finanzas/gastos/lista-estados-cuenta";
     }
 
     @GetMapping("/estados-cuenta/desglose")
-    public String verDesglose(@RequestParam("id") Long id, Model model) {
+    public String verDesglose(@RequestParam("id") Long id, Model modelo) {
         try {
-            model.addAttribute("estadoCuenta", gestionFinanzasService.obtenerEstadoCuentaResponse(id));
-            model.addAttribute("desglose", gestionFinanzasService.listarDesgloseEstadoCuenta(id));
+            modelo.addAttribute("estadoCuenta", gestionFinanzasService.obtenerEstadoCuentaResponse(id));
+            modelo.addAttribute("desglose", gestionFinanzasService.listarDesgloseEstadoCuenta(id));
             return "dominios/finanzas/gastos/desglose-estado-cuenta";
         } catch (IllegalArgumentException e) {
             return "redirect:/finanzas/estados-cuenta";
@@ -289,10 +288,10 @@ public class GestionFinanzasController {
     }
 
     @GetMapping("/estados-cuenta/desglose-pagos")
-    public String verDesglosePagos(@RequestParam("id") Long id, Model model) {
+    public String verDesglosePagos(@RequestParam("id") Long id, Model modelo) {
         try {
-            model.addAttribute("estadoCuenta", gestionFinanzasService.obtenerEstadoCuentaResponse(id));
-            model.addAttribute("pagos", gestionFinanzasService.listarPagosPorEstadoCuenta(id));
+            modelo.addAttribute("estadoCuenta", gestionFinanzasService.obtenerEstadoCuentaResponse(id));
+            modelo.addAttribute("pagos", gestionFinanzasService.listarPagosPorEstadoCuenta(id));
             return "dominios/finanzas/pagos/desglose-pagos";
         } catch (IllegalArgumentException e) {
             return "redirect:/finanzas/estados-cuenta";
@@ -301,34 +300,34 @@ public class GestionFinanzasController {
 
     @PostMapping("/estados-cuenta/generar")
     public String generarEstadoCuenta(
-            @Valid @ModelAttribute("estadoCuentaForm") EstadoCuentaForm form,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Valid @ModelAttribute("estadoCuentaForm") EstadoCuentaForm formulario,
+            BindingResult resultadoValidacion,
+            RedirectAttributes atributosRedireccion) {
 
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Datos de formulario inválidos.");
+        if (resultadoValidacion.hasErrors()) {
+            atributosRedireccion.addFlashAttribute("mensajeError", "Datos de formulario inválidos.");
             return "redirect:/finanzas/estados-cuenta";
         }
         try {
-            gestionFinanzasService.generarEstadoCuenta(form);
-            redirectAttributes.addFlashAttribute("successMessage", "Estado de cuenta generado correctamente.");
+            gestionFinanzasService.generarEstadoCuenta(formulario);
+            atributosRedireccion.addFlashAttribute("mensajeExito", "Estado de cuenta generado correctamente.");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            atributosRedireccion.addFlashAttribute("mensajeError", e.getMessage());
         }
         return "redirect:/finanzas/estados-cuenta";
     }
 
     @GetMapping("/mi-estado-cuenta")
-    public String verMiEstadoCuenta(Model model) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Usuario usuario = usuarioRepository.buscarPorIdentificador(username).orElse(null);
+    public String verMiEstadoCuenta(Model modelo) {
+        String nombreUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.buscarPorIdentificador(nombreUsuario).orElse(null);
         if (usuario != null) {
             List<Unidad> unidades = gestionUnidadesService.buscarUnidadesPorDni(usuario.getNumeroDocumento());
             if (!unidades.isEmpty()) {
                 Unidad miUnidad = unidades.get(0);
-                model.addAttribute("miUnidad", miUnidad);
-                model.addAttribute("misEstados", gestionFinanzasService.listarEstadosCuentaPorUnidad(miUnidad.getId()));
-                model.addAttribute("misPagos", gestionFinanzasService.listarPagosPorUnidad(miUnidad.getId()));
+                modelo.addAttribute("miUnidad", miUnidad);
+                modelo.addAttribute("misEstados", gestionFinanzasService.listarEstadosCuentaPorUnidad(miUnidad.getId()));
+                modelo.addAttribute("misPagos", gestionFinanzasService.listarPagosPorUnidad(miUnidad.getId()));
             }
         }
         return "dominios/finanzas/gastos/mi-estado-cuenta";

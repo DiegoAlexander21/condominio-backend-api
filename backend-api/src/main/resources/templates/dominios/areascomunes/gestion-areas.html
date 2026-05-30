@@ -112,12 +112,7 @@
                     >
                     <a
                       th:href="@{/areas-comunes/eliminar-area(id=${area.id})}"
-                      class="boton-secundario btn-tabla btn-eliminar"
-                      onclick="
-                        return confirm(
-                          '¿Estás seguro de que deseas eliminar esta área común? Se eliminarán también todas sus reservas asociadas.',
-                        );
-                      "
+                      class="boton-secundario btn-tabla btn-eliminar confirmacion-eliminar-area"
                       >Eliminar</a
                     >
                   </td>
@@ -132,5 +127,6 @@
       rel="stylesheet"
       th:href="@{/css/dominios/areascomunes/areascomunes.css}"
     />
+    <script th:src="@{/js/dominios/areascomunes/gestion-areas.js}"></script>
   </body>
 </html>

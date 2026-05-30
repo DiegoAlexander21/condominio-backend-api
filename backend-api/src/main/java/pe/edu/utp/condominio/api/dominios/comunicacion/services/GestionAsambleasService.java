@@ -36,39 +36,39 @@ public class GestionAsambleasService {
     private final VotoAsambleaRepository votoAsambleaRepository;
     private final CondominioRepository condominioRepository;
     private final UnidadRepository unidadRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate plantillaMensajeria;
 
     public GestionAsambleasService(AsambleaRepository asambleaRepository,
             OpcionVotacionRepository opcionVotacionRepository,
             VotoAsambleaRepository votoAsambleaRepository,
             CondominioRepository condominioRepository,
             UnidadRepository unidadRepository,
-            SimpMessagingTemplate messagingTemplate) {
+            SimpMessagingTemplate plantillaMensajeria) {
         this.asambleaRepository = asambleaRepository;
         this.opcionVotacionRepository = opcionVotacionRepository;
         this.votoAsambleaRepository = votoAsambleaRepository;
         this.condominioRepository = condominioRepository;
         this.unidadRepository = unidadRepository;
-        this.messagingTemplate = messagingTemplate;
+        this.plantillaMensajeria = plantillaMensajeria;
     }
 
     @Transactional
-    public synchronized AsambleaResponse registrarAsamblea(AsambleaForm form) {
-        validarAsamblea(form);
+    public synchronized AsambleaResponse registrarAsamblea(AsambleaForm formulario) {
+        validarAsamblea(formulario);
 
-        Condominio condominio = condominioRepository.findById(form.getCondominioId())
+        Condominio condominio = condominioRepository.findById(formulario.getCondominioId())
                 .orElseThrow(() -> new IllegalArgumentException("El condominio no existe."));
 
         Asamblea asamblea = new Asamblea();
         asamblea.setCondominio(condominio);
-        asamblea.setTitulo(form.getTitulo().trim());
-        asamblea.setDescripcion(form.getDescripcion().trim());
-        asamblea.setFechaInicio(form.getFechaInicio());
-        asamblea.setFechaFin(form.getFechaFin());
+        asamblea.setTitulo(formulario.getTitulo().trim());
+        asamblea.setDescripcion(formulario.getDescripcion().trim());
+        asamblea.setFechaInicio(formulario.getFechaInicio());
+        asamblea.setFechaFin(formulario.getFechaFin());
         asamblea.setEstado(EstadoAsamblea.ABIERTA);
 
         Asamblea guardada = asambleaRepository.save(asamblea);
-        List<OpcionVotacion> opciones = registrarOpciones(guardada, form.getOpciones());
+        List<OpcionVotacion> opciones = registrarOpciones(guardada, formulario.getOpciones());
         guardada.setOpciones(opciones);
 
         return convertirAsambleaResponse(guardada, opciones);
@@ -95,28 +95,28 @@ public class GestionAsambleasService {
     }
 
     @Transactional
-    public synchronized ResultadoAsambleaResponse registrarVoto(VotoAsambleaForm form) {
-        validarVoto(form);
+    public synchronized ResultadoAsambleaResponse registrarVoto(VotoAsambleaForm formulario) {
+        validarVoto(formulario);
 
-        Asamblea asamblea = asambleaRepository.findById(form.getAsambleaId())
+        Asamblea asamblea = asambleaRepository.findById(formulario.getAsambleaId())
                 .orElseThrow(() -> new IllegalArgumentException("La asamblea no existe."));
 
         if (asamblea.getEstado() != EstadoAsamblea.ABIERTA) {
             throw new IllegalArgumentException("La asamblea no esta abierta.");
         }
 
-        if (votoAsambleaRepository.existePorAsambleaYUnidad(asamblea.getId(), form.getUnidadId())) {
+        if (votoAsambleaRepository.existePorAsambleaYUnidad(asamblea.getId(), formulario.getUnidadId())) {
             throw new IllegalArgumentException("La unidad ya emitio su voto.");
         }
 
-        OpcionVotacion opcion = opcionVotacionRepository.findById(form.getOpcionId())
+        OpcionVotacion opcion = opcionVotacionRepository.findById(formulario.getOpcionId())
                 .orElseThrow(() -> new IllegalArgumentException("La opcion no existe."));
 
         if (!opcion.getAsamblea().getId().equals(asamblea.getId())) {
             throw new IllegalArgumentException("La opcion no pertenece a la asamblea.");
         }
 
-        Unidad unidad = unidadRepository.findById(form.getUnidadId())
+        Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                 .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
 
         VotoAsamblea voto = new VotoAsamblea();
@@ -127,7 +127,7 @@ public class GestionAsambleasService {
         votoAsambleaRepository.save(voto);
 
         ResultadoAsambleaResponse resultado = obtenerResultados(asamblea.getId());
-        messagingTemplate.convertAndSend("/topic/asambleas/" + asamblea.getId(), resultado);
+        plantillaMensajeria.convertAndSend("/topic/asambleas/" + asamblea.getId(), resultado);
         return resultado;
     }
 
@@ -166,41 +166,41 @@ public class GestionAsambleasService {
         return opcionVotacionRepository.saveAll(opciones);
     }
 
-    private void validarAsamblea(AsambleaForm form) {
-        if (form == null) {
+    private void validarAsamblea(AsambleaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de asamblea es obligatorio.");
         }
-        if (form.getCondominioId() == null) {
+        if (formulario.getCondominioId() == null) {
             throw new IllegalArgumentException("El condominio es obligatorio.");
         }
-        if (form.getTitulo() == null || form.getTitulo().isBlank()) {
+        if (formulario.getTitulo() == null || formulario.getTitulo().isBlank()) {
             throw new IllegalArgumentException("El titulo es obligatorio.");
         }
-        if (form.getDescripcion() == null || form.getDescripcion().isBlank()) {
+        if (formulario.getDescripcion() == null || formulario.getDescripcion().isBlank()) {
             throw new IllegalArgumentException("La descripcion es obligatoria.");
         }
-        if (form.getFechaInicio() == null || form.getFechaFin() == null) {
+        if (formulario.getFechaInicio() == null || formulario.getFechaFin() == null) {
             throw new IllegalArgumentException("Debe registrar fecha de inicio y fin.");
         }
-        if (!form.getFechaInicio().isBefore(form.getFechaFin())) {
+        if (!formulario.getFechaInicio().isBefore(formulario.getFechaFin())) {
             throw new IllegalArgumentException("La fecha de inicio debe ser menor que la de fin.");
         }
-        if (form.getOpciones() == null || form.getOpciones().isEmpty()) {
+        if (formulario.getOpciones() == null || formulario.getOpciones().isEmpty()) {
             throw new IllegalArgumentException("Debe registrar opciones de votacion.");
         }
     }
 
-    private void validarVoto(VotoAsambleaForm form) {
-        if (form == null) {
+    private void validarVoto(VotoAsambleaForm formulario) {
+        if (formulario == null) {
             throw new IllegalArgumentException("El formulario de voto es obligatorio.");
         }
-        if (form.getAsambleaId() == null) {
+        if (formulario.getAsambleaId() == null) {
             throw new IllegalArgumentException("La asamblea es obligatoria.");
         }
-        if (form.getOpcionId() == null) {
+        if (formulario.getOpcionId() == null) {
             throw new IllegalArgumentException("La opcion es obligatoria.");
         }
-        if (form.getUnidadId() == null) {
+        if (formulario.getUnidadId() == null) {
             throw new IllegalArgumentException("La unidad es obligatoria.");
         }
     }
