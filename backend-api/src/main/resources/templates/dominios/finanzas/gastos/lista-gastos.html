@@ -76,7 +76,7 @@
                       <br><small th:text="'Torre: ' + ${gasto.torre}"></small>
                     </th:block>
                   </td>
-                  <td class="texto-exito" th:text="'S/ ' + ${gasto.montoTotal}"></td>
+                  <td class="texto-exito sin-salto" th:text="'S/ ' + ${gasto.montoTotal}"></td>
                   <td th:text="${gasto.metodoDistribucionFormateado}"></td>
                   <td>
                     <small>Reg: <span th:text="${#temporals.format(gasto.fechaRegistro, 'dd/MM/yyyy')}"></span></small>
