@@ -16,6 +16,10 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import pe.edu.utp.condominio.api.dominios.seguridad.security.FiltroJwt;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -30,10 +34,11 @@ public class SeguridadWebConfig {
     @Bean
     public SecurityFilterChain cadenaFiltrosSeguridad(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(configuracionCors()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sesion -> sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(autenticacion -> autenticacion
-                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**",
+                        .requestMatchers("/auth/**", "/api/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**", "/webjars/**",
                                 "/error")
                         .permitAll()
                         .anyRequest().hasRole("ADMINISTRADOR"))
@@ -62,5 +67,18 @@ public class SeguridadWebConfig {
     @Bean
     public AuthenticationManager gestorAutenticacion(AuthenticationConfiguration configuracion) throws Exception {
         return configuracion.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource configuracionCors() {
+        CorsConfiguration configuracion = new CorsConfiguration();
+        configuracion.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuracion.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuracion.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuracion.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource origen = new UrlBasedCorsConfigurationSource();
+        origen.registerCorsConfiguration("/**", configuracion);
+        return origen;
     }
 }

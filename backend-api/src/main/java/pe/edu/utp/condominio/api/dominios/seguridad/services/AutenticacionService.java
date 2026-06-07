@@ -61,10 +61,6 @@ public class AutenticacionService {
             throw new IllegalArgumentException("El correo ya esta registrado.");
         }
 
-        if (usuarioRepository.existsByNombresAndApellidos(peticion.getNombres(), peticion.getApellidos())) {
-            throw new IllegalArgumentException("Ya existe un usuario registrado con ese nombre y apellido.");
-        }
-
         if (!peticion.getTelefono().trim().matches("\\d{9}")) {
             throw new IllegalArgumentException("El teléfono debe tener 9 dígitos numéricos.");
         }
