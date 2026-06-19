@@ -9,7 +9,7 @@ public class CondominioForm {
     private Long id;
 
     @NotBlank(message = "El nombre del condominio es obligatorio.")
-    @Size(min = 2, max = 80, message = "El nombre debe tener entre 2 y 80 caracteres.")
+    @Size(min = 2, max = 25, message = "El nombre debe tener entre 2 y 25 caracteres.")
     private String nombre;
 
     @Min(value = 1, message = "El numero de torres debe ser mayor a cero.")

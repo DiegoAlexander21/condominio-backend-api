@@ -25,16 +25,16 @@ public class Residente {
     @JoinColumn(name = "unidad_id", nullable = false, unique = true)
     private Unidad unidad;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, length = 15)
     private String nombre;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 8)
     private String dni;
 
-    @Column(length = 150)
+    @Column(length = 20)
     private String email;
 
-    @Column(length = 80)
+    @Column(length = 15)
     private String parentesco;
 
     @Column(nullable = false)

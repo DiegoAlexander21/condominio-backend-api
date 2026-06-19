@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UnidadRepository extends JpaRepository<Unidad, Long> {
 
@@ -16,6 +18,10 @@ public interface UnidadRepository extends JpaRepository<Unidad, Long> {
 
     @Query("select u from Unidad u join fetch u.condominio order by upper(u.condominio.nombre), upper(u.torre), upper(u.numeroUnidad)")
     List<Unidad> listarTodosConCondominioOrdenado();
+
+    @Query(value = "select u from Unidad u join fetch u.condominio", 
+           countQuery = "select count(u) from Unidad u")
+    Page<Unidad> listarTodosConCondominioPaginado(Pageable pageable);
 
     @Query("select u from Unidad u left join u.propietario p left join u.residente r where p.dni = :dni or r.dni = :dni")
     List<Unidad> buscarPorDniOcupante(@Param("dni") String dni);

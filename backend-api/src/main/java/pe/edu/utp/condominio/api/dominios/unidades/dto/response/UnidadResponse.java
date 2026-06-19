@@ -14,6 +14,7 @@ public class UnidadResponse {
     private String nombreResidente;
     private String emailResidente;
     private boolean residenteActivo;
+    private String estado;
 
     public UnidadResponse() {
     }
@@ -130,5 +131,13 @@ public class UnidadResponse {
 
     public void setResidenteActivo(boolean residenteActivo) {
         this.residenteActivo = residenteActivo;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

@@ -1,6 +1,7 @@
 package pe.edu.utp.condominio.api.dominios.unidades.dto.request;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +30,7 @@ public class UnidadForm {
 
     @NotNull(message = "El area es obligatoria.")
     @DecimalMin(value = "1.0", message = "El area debe ser mayor a cero.")
+    @Digits(integer = 8, fraction = 2, message = "El area solo permite hasta 2 decimales.")
     private Double area;
 
     public UnidadForm() {

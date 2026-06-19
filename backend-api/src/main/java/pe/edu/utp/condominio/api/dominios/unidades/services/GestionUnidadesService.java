@@ -3,6 +3,8 @@ package pe.edu.utp.condominio.api.dominios.unidades.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +55,10 @@ public class GestionUnidadesService {
 
         return existente.map(unidad -> actualizarUnidadExistente(unidad, formulario))
                 .orElseGet(() -> crearNuevaUnidad(formulario));
+    }
+
+    public synchronized Page<Unidad> obtenerUnidadesPaginadas(Pageable pageable) {
+        return unidadRepository.listarTodosConCondominioPaginado(pageable);
     }
 
     public synchronized List<Unidad> obtenerUnidades() {
@@ -256,30 +262,55 @@ public class GestionUnidadesService {
         }
 
         if (tieneNombrePropietario) {
+            if (dniPropietarioForm.isEmpty() || !dniPropietarioForm.matches("^[0-9]{8}$")) {
+                throw new IllegalArgumentException("El DNI del propietario es obligatorio y debe tener exactamente 8 dígitos.");
+            }
+            if (emailPropietarioForm.isEmpty() || !emailPropietarioForm.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                throw new IllegalArgumentException("El correo del propietario es obligatorio y debe tener un formato válido.");
+            }
+            String telefonoPropietarioForm = formulario.getTelefonoPropietario() != null ? formulario.getTelefonoPropietario().trim() : "";
+            if (telefonoPropietarioForm.isEmpty() || !telefonoPropietarioForm.matches("^[0-9]{9}$")) {
+                throw new IllegalArgumentException("El teléfono del propietario es obligatorio y debe tener 9 dígitos.");
+            }
+
             Propietario propietario = unidad.getPropietario() != null ? unidad.getPropietario() : new Propietario();
             propietario.setUnidad(unidad);
             propietario.setNombre(formulario.getNombrePropietario().trim());
             propietario.setDni(dniPropietarioForm);
-            propietario.setEmail(emailPropietarioForm.isEmpty() ? null : emailPropietarioForm);
-            propietario.setTelefono(formulario.getTelefonoPropietario() != null ? formulario.getTelefonoPropietario().trim() : null);
+            propietario.setEmail(emailPropietarioForm);
+            propietario.setTelefono(telefonoPropietarioForm);
             unidad.setPropietario(propietario);
         } else {
             unidad.setPropietario(null);
         }
 
         if (tieneNombreResidente) {
+            if (dniResidenteForm.isEmpty() || !dniResidenteForm.matches("^[0-9]{8}$")) {
+                throw new IllegalArgumentException("El DNI del residente es obligatorio y debe tener exactamente 8 dígitos.");
+            }
+            if (emailResidenteForm.isEmpty() || !emailResidenteForm.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                throw new IllegalArgumentException("El correo del residente es obligatorio y debe tener un formato válido.");
+            }
+            String parentescoForm = formulario.getParentesco() != null ? formulario.getParentesco().trim() : "";
+            if (parentescoForm.isEmpty()) {
+                throw new IllegalArgumentException("El parentesco del residente es obligatorio.");
+            }
+
             Residente residente = unidad.getResidente() != null ? unidad.getResidente() : new Residente();
             residente.setUnidad(unidad);
             residente.setNombre(formulario.getNombreResidente().trim());
             residente.setDni(dniResidenteForm);
-            residente.setEmail(emailResidenteForm.isEmpty() ? null : emailResidenteForm);
-            residente.setParentesco(formulario.getParentesco() != null ? formulario.getParentesco().trim() : null);
+            residente.setEmail(emailResidenteForm);
+            residente.setParentesco(parentescoForm);
             residente.setActivo(formulario.isResidenteActivo());
             unidad.setResidente(residente);
         } else {
             unidad.setResidente(null);
         }
-
-        return unidadRepository.save(unidad);
+        Unidad unidadGuardada = unidadRepository.save(unidad);
+        if (unidadGuardada.getCondominio() != null) {
+            unidadGuardada.getCondominio().getNombre();
+        }
+        return unidadGuardada;
     }
 }

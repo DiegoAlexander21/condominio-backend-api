@@ -1,25 +1,36 @@
 package pe.edu.utp.condominio.api.dominios.unidades.dto.request;
 
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class AsignarOcupantesForm {
 
     private Long id;
 
-    @Size(max = 100, message = "El nombre no debe exceder los 100 caracteres.")
+    @Size(max = 15, message = "El nombre no debe exceder los 15 caracteres.")
     private String nombrePropietario;
 
-    @Size(max = 8, message = "El DNI no debe exceder los 8 digitos.")
+    @Pattern(regexp = "^([0-9]{8})?$", message = "El DNI del propietario debe tener exactamente 8 digitos.")
     private String dniPropietario;
 
+    @Size(max = 20, message = "El correo no debe exceder los 20 caracteres.")
     private String emailPropietario;
 
+    @Size(max = 9, message = "El telefono no debe exceder los 9 digitos.")
     private String telefonoPropietario;
 
+    @Size(max = 15, message = "El nombre del residente no debe exceder los 15 caracteres.")
     private String nombreResidente;
+
+    @Size(max = 20, message = "El correo del residente no debe exceder los 20 caracteres.")
     private String emailResidente;
+
+    @Pattern(regexp = "^([0-9]{8})?$", message = "El DNI del residente debe tener exactamente 8 digitos.")
     private String dniResidente;
+
+    @Size(max = 15, message = "El parentesco no debe exceder los 15 caracteres.")
     private String parentesco;
+
     private boolean residenteActivo;
 
     public AsignarOcupantesForm() {

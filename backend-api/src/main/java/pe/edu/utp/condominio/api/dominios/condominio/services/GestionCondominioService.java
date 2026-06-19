@@ -1,6 +1,7 @@
 package pe.edu.utp.condominio.api.dominios.condominio.services;
-
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import pe.edu.utp.condominio.api.dominios.condominio.dto.request.CondominioForm;
 import pe.edu.utp.condominio.api.dominios.condominio.models.Condominio;
 import pe.edu.utp.condominio.api.dominios.condominio.repositories.CondominioRepository;
@@ -56,6 +57,10 @@ public class GestionCondominioService {
         formulario.setTorres(condominio.getTorres());
         formulario.setPisosPorTorre(condominio.getPisosPorTorre());
         return formulario;
+    }
+
+    public synchronized Page<Condominio> obtenerCondominiosPaginados(Pageable pageable) {
+        return condominioRepository.findAll(pageable);
     }
 
     public synchronized List<Condominio> obtenerCondominios() {
