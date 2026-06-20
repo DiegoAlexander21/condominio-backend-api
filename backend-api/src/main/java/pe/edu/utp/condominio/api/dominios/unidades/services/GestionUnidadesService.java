@@ -243,7 +243,12 @@ public class GestionUnidadesService {
         }
 
         String dniActualPropietario = unidad.getPropietario() != null ? unidad.getPropietario().getDni().trim() : "";
-        boolean cambioDePropietario = !dniActualPropietario.equalsIgnoreCase(dniPropietarioForm);
+        String nombreActualPropietario = unidad.getPropietario() != null ? unidad.getPropietario().getNombre().trim() : "";
+
+        boolean cambioDeDni = !dniActualPropietario.equalsIgnoreCase(dniPropietarioForm);
+        boolean cambioDeNombre = !nombreActualPropietario.equalsIgnoreCase(formulario.getNombrePropietario() != null ? formulario.getNombrePropietario().trim() : "");
+
+        boolean cambioDePropietario = cambioDeDni || cambioDeNombre;
 
         if (cambioDePropietario) {
             String nuevoPropietarioNombre = tieneNombrePropietario ? formulario.getNombrePropietario().trim() : "Sin propietario";
@@ -258,6 +263,11 @@ public class GestionUnidadesService {
             historial.setUnidad(unidad);
             historial.setPropietarioAnterior(viejoPropietarioNombre);
             historial.setNuevoPropietario(nuevoPropietarioNombre);
+            
+            if (unidad.getHistorialTitularidad() != null) {
+                unidad.getHistorialTitularidad().add(historial);
+            }
+            
             historialTitularidadRepository.save(historial);
         }
 
