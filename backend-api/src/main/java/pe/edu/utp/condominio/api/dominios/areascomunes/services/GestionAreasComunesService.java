@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.condominio.api.dominios.areascomunes.dto.request.AreaComunForm;
@@ -71,10 +73,23 @@ public class GestionAreasComunesService {
                 .collect(Collectors.toList());
     }
 
+    public synchronized Page<AreaComunResponse> listarPorCondominioPaginado(Long condominioId, Pageable pageable) {
+        if (condominioId == null) {
+            throw new IllegalArgumentException("Debe seleccionar un condominio valido.");
+        }
+        return areaComunRepository.listarPorCondominioPaginado(condominioId, pageable)
+                .map(this::convertirAreaResponse);
+    }
+
     public synchronized List<AreaComunResponse> obtenerTodasLasAreasComunes() {
         return areaComunRepository.listarTodosConCondominio().stream()
                 .map(this::convertirAreaResponse)
                 .collect(Collectors.toList());
+    }
+
+    public synchronized Page<AreaComunResponse> obtenerTodasLasAreasComunesPaginado(Pageable pageable) {
+        return areaComunRepository.listarTodosConCondominioPaginado(pageable)
+                .map(this::convertirAreaResponse);
     }
 
     @Transactional
@@ -217,9 +232,6 @@ public class GestionAreasComunesService {
         if (formulario.getHoraInicio() == null || formulario.getHoraFin() == null) {
             throw new IllegalArgumentException("Debe indicar el horario disponible.");
         }
-        if (!formulario.getHoraInicio().isBefore(formulario.getHoraFin())) {
-            throw new IllegalArgumentException("La hora de inicio debe ser menor que la hora de fin.");
-        }
     }
 
     private void validarReserva(ReservaAreaComunForm formulario) {
@@ -237,9 +249,6 @@ public class GestionAreasComunesService {
         }
         if (formulario.getHoraInicio() == null || formulario.getHoraFin() == null) {
             throw new IllegalArgumentException("Debe indicar el horario de la reserva.");
-        }
-        if (!formulario.getHoraInicio().isBefore(formulario.getHoraFin())) {
-            throw new IllegalArgumentException("La hora de inicio debe ser menor que la hora de fin.");
         }
         if (formulario.getResponsableNombre() == null || formulario.getResponsableNombre().isBlank()) {
             throw new IllegalArgumentException("El responsable es obligatorio.");
