@@ -2,6 +2,8 @@ package pe.edu.utp.condominio.api.dominios.incidencias.services;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.condominio.api.dominios.areascomunes.models.AreaComun;
@@ -65,6 +67,7 @@ public class GestionIncidenciasService {
         incidencia.setGravedad(formulario.getGravedad());
         incidencia.setCausa(formulario.getCausa());
         incidencia.setEstado(EstadoIncidencia.REGISTRADO);
+        incidencia.setReportadoPorUnidadId(formulario.getUnidadIdReporta());
         incidencia.setResponsableAtencion("Sin asignar");
 
         Incidencia guardada = incidenciaRepository.save(incidencia);
@@ -86,13 +89,40 @@ public class GestionIncidenciasService {
     }
 
     @Transactional(readOnly = true)
+    public synchronized Page<IncidenciaResponse> listarPorEstado(EstadoIncidencia estado, Pageable pageable) {
+        if (estado == null) {
+            throw new IllegalArgumentException("Debe seleccionar un estado.");
+        }
+        return incidenciaRepository.listarPorEstado(estado, pageable).map(this::convertirIncidenciaResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public synchronized Page<IncidenciaResponse> listarPorUnidadYEstado(Long unidadId, EstadoIncidencia estado, Pageable pageable) {
+        if (unidadId == null) {
+            throw new IllegalArgumentException("Debe seleccionar una unidad.");
+        }
+        if (estado == null) {
+            return incidenciaRepository.listarPorUnidad(unidadId, pageable).map(this::convertirIncidenciaResponse);
+        } else {
+            return incidenciaRepository.listarPorUnidadYEstado(unidadId, estado, pageable).map(this::convertirIncidenciaResponse);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public synchronized List<IncidenciaResponse> listarPorEstado(EstadoIncidencia estado) {
         if (estado == null) {
             throw new IllegalArgumentException("Debe seleccionar un estado.");
         }
-        return incidenciaRepository.listarPorEstado(estado).stream()
+
+        return incidenciaRepository.findAll().stream()
+                .filter(i -> i.getEstado() == estado)
                 .map(this::convertirIncidenciaResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public synchronized Page<IncidenciaResponse> listarTodas(Pageable pageable) {
+        return incidenciaRepository.findAll(pageable).map(this::convertirIncidenciaResponse);
     }
 
     @Transactional(readOnly = true)
@@ -183,19 +213,25 @@ public class GestionIncidenciasService {
 
         if (incidencia instanceof IncidenciaAreaComun area) {
             areaComunId = area.getAreaComun() != null ? area.getAreaComun().getId() : null;
-            lugarAfectado = area.getAreaComun() != null ? "Área Común: " + area.getAreaComun().getNombre() : "Área Común";
-            condominioId = area.getAreaComun() != null && area.getAreaComun().getCondominio() != null 
-                            ? area.getAreaComun().getCondominio().getId() : null;
+            lugarAfectado = area.getAreaComun() != null ? "Área Común: " + area.getAreaComun().getNombre()
+                    : "Área Común";
+            condominioId = area.getAreaComun() != null && area.getAreaComun().getCondominio() != null
+                    ? area.getAreaComun().getCondominio().getId()
+                    : null;
         } else if (incidencia instanceof IncidenciaUnidad unidad) {
             unidadId = unidad.getUnidad() != null ? unidad.getUnidad().getId() : null;
             if (unidad.getUnidad() != null) {
-                String condNombre = (unidad.getUnidad().getCondominio() != null) ? unidad.getUnidad().getCondominio().getNombre() : "-";
-                lugarAfectado = condNombre + " - " + unidad.getUnidad().getTorre() + " - Piso " + unidad.getUnidad().getPiso() + " - Unidad " + unidad.getUnidad().getNumeroUnidad();
+                String condNombre = (unidad.getUnidad().getCondominio() != null)
+                        ? unidad.getUnidad().getCondominio().getNombre()
+                        : "-";
+                lugarAfectado = condNombre + " - " + unidad.getUnidad().getTorre() + " - Piso "
+                        + unidad.getUnidad().getPiso() + " - Unidad " + unidad.getUnidad().getNumeroUnidad();
             } else {
                 lugarAfectado = "Unidad";
             }
-            condominioId = unidad.getUnidad() != null && unidad.getUnidad().getCondominio() != null 
-                            ? unidad.getUnidad().getCondominio().getId() : null;
+            condominioId = unidad.getUnidad() != null && unidad.getUnidad().getCondominio() != null
+                    ? unidad.getUnidad().getCondominio().getId()
+                    : null;
             torre = unidad.getUnidad() != null ? unidad.getUnidad().getTorre() : null;
         }
 
@@ -229,4 +265,3 @@ public class GestionIncidenciasService {
         return limpio.isEmpty() ? null : limpio;
     }
 }
-

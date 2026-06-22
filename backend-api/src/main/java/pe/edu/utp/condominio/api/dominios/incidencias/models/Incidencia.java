@@ -58,6 +58,9 @@ public abstract class Incidencia {
     @OneToMany(mappedBy = "incidencia", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EvidenciaIncidencia> evidencias = new ArrayList<>();
 
+    @Column(name = "reportado_por_unidad_id")
+    private Long reportadoPorUnidadId;
+
     public Incidencia() {
     }
 
@@ -143,5 +146,13 @@ public abstract class Incidencia {
 
     public void setEvidencias(List<EvidenciaIncidencia> evidencias) {
         this.evidencias = evidencias;
+    }
+
+    public Long getReportadoPorUnidadId() {
+        return reportadoPorUnidadId;
+    }
+
+    public void setReportadoPorUnidadId(Long reportadoPorUnidadId) {
+        this.reportadoPorUnidadId = reportadoPorUnidadId;
     }
 }

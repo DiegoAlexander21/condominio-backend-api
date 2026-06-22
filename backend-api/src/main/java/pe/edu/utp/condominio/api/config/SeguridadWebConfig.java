@@ -41,7 +41,7 @@ public class SeguridadWebConfig {
                                 "/webjars/**",
                                 "/error")
                         .permitAll()
-                        .requestMatchers("/api/usuarios/**", "/api/condominios/**", "/api/unidades/**", "/api/areas-comunes/**", "/api/reservas-areas/**").hasAnyRole("ADMINISTRADOR", "RESIDENTE")
+                        .requestMatchers("/api/usuarios/**", "/api/condominios/**", "/api/unidades/**", "/api/areas-comunes/**", "/api/reservas-areas/**", "/api/incidencias/**").hasAnyRole("ADMINISTRADOR", "RESIDENTE")
                         .anyRequest().hasRole("ADMINISTRADOR"))
                 .exceptionHandling(excepcion -> excepcion
                         .authenticationEntryPoint((solicitud, respuesta, excepcionAutenticacion) -> {

@@ -10,6 +10,7 @@ public class IncidenciaForm {
 
     private Long areaComunId;
     private Long unidadId;
+    private Long unidadIdReporta;
 
     @NotBlank(message = "La descripcion es obligatoria.")
     @Size(min = 10, max = 1000, message = "La descripcion debe tener entre 10 y 1000 caracteres.")
@@ -72,5 +73,13 @@ public class IncidenciaForm {
 
     public void setEvidenciaUrl(String evidenciaUrl) {
         this.evidenciaUrl = evidenciaUrl;
+    }
+
+    public Long getUnidadIdReporta() {
+        return unidadIdReporta;
+    }
+
+    public void setUnidadIdReporta(Long unidadIdReporta) {
+        this.unidadIdReporta = unidadIdReporta;
     }
 }
