@@ -50,6 +50,9 @@ public class ReservaAreaComun {
     @Column(nullable = false)
     private LocalDateTime fechaRegistro;
 
+    @Column(length = 20, columnDefinition = "varchar(20) default 'ACTIVA'")
+    private String estado = "ACTIVA";
+
     public ReservaAreaComun() {
     }
 
@@ -120,5 +123,13 @@ public class ReservaAreaComun {
 
     public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

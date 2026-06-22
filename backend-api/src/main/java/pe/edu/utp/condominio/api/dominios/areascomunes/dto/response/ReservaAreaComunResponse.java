@@ -15,13 +15,14 @@ public class ReservaAreaComunResponse {
     private LocalTime horaFin;
     private String responsableNombre;
     private LocalDateTime fechaRegistro;
+    private String estado;
 
     public ReservaAreaComunResponse() {
     }
 
     public ReservaAreaComunResponse(Long id, Long areaComunId, Long unidadId, LocalDate fechaReserva,
             LocalTime horaInicio, LocalTime horaFin, String responsableNombre,
-            LocalDateTime fechaRegistro) {
+            LocalDateTime fechaRegistro, String estado) {
         this.id = id;
         this.areaComunId = areaComunId;
         this.unidadId = unidadId;
@@ -30,6 +31,7 @@ public class ReservaAreaComunResponse {
         this.horaFin = horaFin;
         this.responsableNombre = responsableNombre;
         this.fechaRegistro = fechaRegistro;
+        this.estado = estado;
     }
 
     public Long getId() {
@@ -102,5 +104,13 @@ public class ReservaAreaComunResponse {
 
     public void setUnidadNumero(String unidadNumero) {
         this.unidadNumero = unidadNumero;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

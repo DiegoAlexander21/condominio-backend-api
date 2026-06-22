@@ -139,6 +139,27 @@ public class GestionAreasComunesService {
         return convertirReservaResponse(guardada);
     }
 
+    @Transactional
+    public synchronized void cancelarReserva(Long id) {
+        ReservaAreaComun reserva = reservaAreaComunRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("La reserva no existe."));
+        reserva.setEstado("CANCELADA");
+        reservaAreaComunRepository.save(reserva);
+    }
+
+    @Transactional(readOnly = true)
+    public synchronized Page<ReservaAreaComunResponse> listarReservasPaginado(Long areaComunId, LocalDate fecha, Pageable pageable) {
+        if (areaComunId == null) {
+            throw new IllegalArgumentException("Debe seleccionar un area comun valida.");
+        }
+        if (fecha == null) {
+            return reservaAreaComunRepository.listarPorAreaPaginado(areaComunId, pageable)
+                    .map(this::convertirReservaResponse);
+        }
+        return reservaAreaComunRepository.listarPorAreaYFechaPaginado(areaComunId, fecha, pageable)
+                .map(this::convertirReservaResponse);
+    }
+
     @Transactional(readOnly = true)
     public synchronized List<ReservaAreaComunResponse> listarReservas(Long areaComunId, LocalDate fecha) {
         if (areaComunId == null) {
@@ -201,7 +222,8 @@ public class GestionAreasComunesService {
                 reserva.getHoraInicio(),
                 reserva.getHoraFin(),
                 reserva.getResponsableNombre(),
-                reserva.getFechaRegistro());
+                reserva.getFechaRegistro(),
+                reserva.getEstado());
         if (reserva.getUnidad() != null) {
             respuesta.setUnidadNumero(reserva.getUnidad().getNumeroUnidad());
         }
