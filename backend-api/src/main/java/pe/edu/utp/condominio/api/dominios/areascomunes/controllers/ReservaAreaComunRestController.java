@@ -22,10 +22,15 @@ import pe.edu.utp.condominio.api.dominios.areascomunes.dto.request.ReservaAreaCo
 import pe.edu.utp.condominio.api.dominios.areascomunes.dto.response.ReservaAreaComunResponse;
 import pe.edu.utp.condominio.api.dominios.areascomunes.services.GestionAreasComunesService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/reservas-areas")
 @Validated
 public class ReservaAreaComunRestController {
+
+    private static final Logger log = LoggerFactory.getLogger(ReservaAreaComunRestController.class);
 
     private final GestionAreasComunesService gestionAreasComunesService;
 
@@ -37,10 +42,15 @@ public class ReservaAreaComunRestController {
     public ResponseEntity<RespuestaPaginada<ReservaAreaComunResponse>> listarReservas(
             @RequestParam("areaComunId") Long areaComunId,
             @RequestParam(value = "fecha", required = false) LocalDate fecha,
+            @RequestParam(value = "unidadId", required = false) Long unidadId,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
+        
+        log.info("Llamando a listarReservas con: areaComunId={}, fecha={}, unidadId={}, pagina={}, tamano={}", 
+                 areaComunId, fecha, unidadId, pagina, tamano);
+                 
         Pageable pageable = PageRequest.of(pagina, tamano);
-        Page<ReservaAreaComunResponse> paginaReservas = gestionAreasComunesService.listarReservasPaginado(areaComunId, fecha, pageable);
+        Page<ReservaAreaComunResponse> paginaReservas = gestionAreasComunesService.listarReservasPaginado(areaComunId, fecha, unidadId, pageable);
         return ResponseEntity.ok(new RespuestaPaginada<>(paginaReservas));
     }
 

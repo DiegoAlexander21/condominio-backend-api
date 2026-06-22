@@ -3,6 +3,7 @@ package pe.edu.utp.condominio.api.dominios.unidades.dto.response;
 public class UnidadResponse {
 
     private Long id;
+    private Long condominioId;
     private String nombreCondominio;
     private String numeroUnidad;
     private String torre;
@@ -19,11 +20,12 @@ public class UnidadResponse {
     public UnidadResponse() {
     }
 
-    public UnidadResponse(Long id, String nombreCondominio, String numeroUnidad, String torre,
+    public UnidadResponse(Long id, Long condominioId, String nombreCondominio, String numeroUnidad, String torre,
             int piso, double area, String nombrePropietario, String dniPropietario,
             String telefonoPropietario, String nombreResidente, String emailResidente,
             boolean residenteActivo) {
         this.id = id;
+        this.condominioId = condominioId;
         this.nombreCondominio = nombreCondominio;
         this.numeroUnidad = numeroUnidad;
         this.torre = torre;
@@ -43,6 +45,14 @@ public class UnidadResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCondominioId() {
+        return condominioId;
+    }
+
+    public void setCondominioId(Long condominioId) {
+        this.condominioId = condominioId;
     }
 
     public String getNombreCondominio() {

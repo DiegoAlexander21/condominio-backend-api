@@ -125,6 +125,7 @@ public class UnidadRestController {
     private UnidadResponse mapearAUnidadResponse(Unidad unidad) {
         UnidadResponse response = new UnidadResponse();
         response.setId(unidad.getId());
+        response.setCondominioId(unidad.getCondominio() != null ? unidad.getCondominio().getId() : null);
         response.setNombreCondominio(unidad.getCondominio() != null ? unidad.getCondominio().getNombre() : null);
         response.setNumeroUnidad(unidad.getNumeroUnidad());
         response.setTorre(unidad.getTorre());

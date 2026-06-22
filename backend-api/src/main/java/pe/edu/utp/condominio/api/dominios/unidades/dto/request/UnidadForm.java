@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 public class UnidadForm {
 
     private Long id;
+    private Long condominioId;
 
     @NotBlank(message = "Debe seleccionar un condominio.")
     private String nombreCondominio;
@@ -42,6 +43,14 @@ public class UnidadForm {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCondominioId() {
+        return condominioId;
+    }
+
+    public void setCondominioId(Long condominioId) {
+        this.condominioId = condominioId;
     }
 
     public String getNombreCondominio() {

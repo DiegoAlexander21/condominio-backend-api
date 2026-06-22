@@ -148,16 +148,23 @@ public class GestionAreasComunesService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized Page<ReservaAreaComunResponse> listarReservasPaginado(Long areaComunId, LocalDate fecha, Pageable pageable) {
+    public synchronized Page<ReservaAreaComunResponse> listarReservasPaginado(Long areaComunId, LocalDate fecha, Long unidadId, Pageable pageable) {
         if (areaComunId == null) {
             throw new IllegalArgumentException("Debe seleccionar un area comun valida.");
         }
-        if (fecha == null) {
-            return reservaAreaComunRepository.listarPorAreaPaginado(areaComunId, pageable)
-                    .map(this::convertirReservaResponse);
+        
+        Page<ReservaAreaComun> pagina;
+        if (fecha == null && unidadId == null) {
+            pagina = reservaAreaComunRepository.listarPorAreaPaginado(areaComunId, pageable);
+        } else if (fecha != null && unidadId == null) {
+            pagina = reservaAreaComunRepository.listarPorAreaYFechaPaginado(areaComunId, fecha, pageable);
+        } else if (fecha == null && unidadId != null) {
+            pagina = reservaAreaComunRepository.listarPorAreaYUnidadPaginado(areaComunId, unidadId, pageable);
+        } else {
+            pagina = reservaAreaComunRepository.listarPorAreaFechaYUnidadPaginado(areaComunId, fecha, unidadId, pageable);
         }
-        return reservaAreaComunRepository.listarPorAreaYFechaPaginado(areaComunId, fecha, pageable)
-                .map(this::convertirReservaResponse);
+        
+        return pagina.map(this::convertirReservaResponse);
     }
 
     @Transactional(readOnly = true)

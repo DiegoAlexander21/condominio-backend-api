@@ -108,7 +108,10 @@ public class GestionUnidadesService {
     public UnidadForm convertirAForm(Unidad unidad) {
         UnidadForm formulario = new UnidadForm();
         formulario.setId(unidad.getId());
-        formulario.setNombreCondominio(unidad.getCondominio() != null ? unidad.getCondominio().getNombre() : null);
+        if (unidad.getCondominio() != null) {
+            formulario.setNombreCondominio(unidad.getCondominio().getNombre());
+            formulario.setCondominioId(unidad.getCondominio().getId());
+        }
         formulario.setNumeroUnidad(unidad.getNumeroUnidad());
         formulario.setTorre(unidad.getTorre());
         formulario.setPiso(unidad.getPiso());

@@ -13,16 +13,21 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.condominio.api.dominios.seguridad.config.JwtProperties;
 import pe.edu.utp.condominio.api.dominios.seguridad.models.Usuario;
+import pe.edu.utp.condominio.api.dominios.unidades.models.Residente;
+import pe.edu.utp.condominio.api.dominios.unidades.repositories.ResidenteRepository;
+import java.util.Optional;
 
 @Service
 public class TokenService {
 
     private final JwtProperties propiedadesJwt;
+    private final ResidenteRepository residenteRepository;
     private Key clave;
     private long expiracionMillis;
 
-    public TokenService(JwtProperties propiedadesJwt) {
+    public TokenService(JwtProperties propiedadesJwt, ResidenteRepository residenteRepository) {
         this.propiedadesJwt = propiedadesJwt;
+        this.residenteRepository = residenteRepository;
     }
 
     @PostConstruct
@@ -39,13 +44,24 @@ public class TokenService {
         Date ahora = new Date();
         Date expiracion = new Date(ahora.getTime() + expiracionMillis);
 
-        return Jwts.builder()
+        Optional<Residente> residenteOpt = residenteRepository.findByDni(usuario.getNumeroDocumento());
+        Long unidadId = residenteOpt
+                .filter(Residente::isActivo)
+                .map(r -> r.getUnidad().getId())
+                .orElse(null);
+
+        var builder = Jwts.builder()
                 .setSubject(String.valueOf(usuario.getId()))
                 .claim("roles", roles)
                 .setIssuedAt(ahora)
                 .setExpiration(expiracion)
-                .signWith(clave, SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(clave, SignatureAlgorithm.HS256);
+                
+        if (unidadId != null) {
+            builder.claim("unidadId", unidadId);
+        }
+
+        return builder.compact();
     }
 
     public Long obtenerIdUsuario(String token) {
