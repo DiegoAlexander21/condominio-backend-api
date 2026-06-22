@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
@@ -18,9 +18,9 @@ spring:
           starttls:
             enable: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/condominio_db
-    username: postgres
-    password: 12345
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/condominio_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:12345}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
