@@ -41,7 +41,9 @@ public class SeguridadWebConfig {
                                 "/webjars/**",
                                 "/error")
                         .permitAll()
-                        .requestMatchers("/api/usuarios/**", "/api/condominios/**", "/api/unidades/**", "/api/areas-comunes/**", "/api/reservas-areas/**", "/api/incidencias/**").hasAnyRole("ADMINISTRADOR", "RESIDENTE")
+                        .requestMatchers("/api/usuarios/**", "/api/condominios/**", "/api/unidades/**",
+                                "/api/areas-comunes/**", "/api/reservas-areas/**", "/api/incidencias/**")
+                        .hasAnyRole("ADMINISTRADOR", "RESIDENTE")
                         .anyRequest().hasRole("ADMINISTRADOR"))
                 .exceptionHandling(excepcion -> excepcion
                         .authenticationEntryPoint((solicitud, respuesta, excepcionAutenticacion) -> {
@@ -72,7 +74,8 @@ public class SeguridadWebConfig {
     @Bean
     public CorsConfigurationSource configuracionCors() {
         CorsConfiguration configuracion = new CorsConfiguration();
-        configuracion.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuracion.setAllowedOrigins(
+                Arrays.asList("http://localhost:4200", "https://condominio-frontend-app.vercel.app"));
         configuracion.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuracion.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuracion.setAllowCredentials(true);
