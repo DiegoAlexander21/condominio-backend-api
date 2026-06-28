@@ -26,7 +26,7 @@ import pe.edu.utp.condominio.api.dominios.finanzas.services.PagoService;
 import pe.edu.utp.condominio.api.dominios.seguridad.models.Usuario;
 import pe.edu.utp.condominio.api.dominios.seguridad.repositories.UsuarioRepository;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
-import pe.edu.utp.condominio.api.dominios.unidades.services.GestionUnidadesService;
+import pe.edu.utp.condominio.api.dominios.unidades.services.OcupanteService;
 
 @RestController
 @RequestMapping("/api/finanzas/estados-cuenta")
@@ -35,18 +35,18 @@ public class EstadoCuentaRestController {
     private final EstadoCuentaService estadoCuentaService;
     private final GeneradorEstadoCuentaService generadorEstadoCuentaService;
     private final PagoService pagoService;
-    private final GestionUnidadesService gestionUnidadesService;
+    private final OcupanteService ocupanteService;
     private final UsuarioRepository usuarioRepository;
 
     public EstadoCuentaRestController(EstadoCuentaService estadoCuentaService,
             GeneradorEstadoCuentaService generadorEstadoCuentaService,
             PagoService pagoService,
-            GestionUnidadesService gestionUnidadesService,
+            OcupanteService ocupanteService,
             UsuarioRepository usuarioRepository) {
         this.estadoCuentaService = estadoCuentaService;
         this.generadorEstadoCuentaService = generadorEstadoCuentaService;
         this.pagoService = pagoService;
-        this.gestionUnidadesService = gestionUnidadesService;
+        this.ocupanteService = ocupanteService;
         this.usuarioRepository = usuarioRepository;
     }
 
@@ -101,7 +101,7 @@ public class EstadoCuentaRestController {
         String nombreUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioRepository.buscarPorIdentificador(nombreUsuario).orElse(null);
         if (usuario != null) {
-            List<Unidad> unidades = gestionUnidadesService.buscarUnidadesPorDni(usuario.getNumeroDocumento());
+            List<Unidad> unidades = ocupanteService.buscarUnidadesPorDni(usuario.getNumeroDocumento());
             if (!unidades.isEmpty()) {
                 Unidad miUnidad = unidades.get(0);
 
