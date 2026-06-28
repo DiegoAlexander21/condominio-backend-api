@@ -25,11 +25,11 @@ public interface ReservaAreaComunRepository extends JpaRepository<ReservaAreaCom
         @Query("select r from ReservaAreaComun r where r.areaComun.id = :areaComunId and r.estado = 'ACTIVA' order by r.fechaReserva desc, r.horaInicio asc")
         List<ReservaAreaComun> listarPorArea(@Param("areaComunId") Long areaComunId);
 
-        @Query("select r from ReservaAreaComun r where r.areaComun.id = :areaComunId and r.unidad.id = :unidadId and r.estado = 'ACTIVA'")
+        @Query("select r from ReservaAreaComun r where r.areaComun.id = :areaComunId and r.unidad.id = :unidadId and r.estado = 'ACTIVA' order by r.id desc")
         Page<ReservaAreaComun> listarPorAreaYUnidadPaginado(@Param("areaComunId") Long areaComunId,
                         @Param("unidadId") Long unidadId, Pageable pageable);
 
-        @Query("select r from ReservaAreaComun r where r.areaComun.id = :areaComunId and r.fechaReserva = :fecha and r.unidad.id = :unidadId and r.estado = 'ACTIVA'")
+        @Query("select r from ReservaAreaComun r where r.areaComun.id = :areaComunId and r.fechaReserva = :fecha and r.unidad.id = :unidadId and r.estado = 'ACTIVA' order by r.id desc")
         Page<ReservaAreaComun> listarPorAreaFechaYUnidadPaginado(@Param("areaComunId") Long areaComunId,
                         @Param("fecha") LocalDate fecha, @Param("unidadId") Long unidadId, Pageable pageable);
 }

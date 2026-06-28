@@ -107,6 +107,7 @@ public class CondominioRestController {
         response.setNombre(condominio.getNombre());
         response.setTorres(condominio.getTorres());
         response.setPisosPorTorre(condominio.getPisosPorTorre());
+        response.setFechaRegistro(condominio.getFechaRegistro());
         return response;
     }
 }

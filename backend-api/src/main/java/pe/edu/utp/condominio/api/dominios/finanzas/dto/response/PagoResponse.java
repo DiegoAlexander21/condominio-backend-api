@@ -13,13 +13,14 @@ public class PagoResponse {
     private Double monto;
     private LocalDateTime fechaPago;
     private String observacion;
+    private String estado;
     private List<EvidenciaPagoResponse> evidencias = new ArrayList<>();
 
     public PagoResponse() {
     }
 
     public PagoResponse(Long id, Long unidadId, String unidadDetalles, Long estadoCuentaId, Double monto,
-            LocalDateTime fechaPago, String observacion, List<EvidenciaPagoResponse> evidencias) {
+            LocalDateTime fechaPago, String observacion, String estado, List<EvidenciaPagoResponse> evidencias) {
         this.id = id;
         this.unidadId = unidadId;
         this.unidadDetalles = unidadDetalles;
@@ -27,6 +28,7 @@ public class PagoResponse {
         this.monto = monto;
         this.fechaPago = fechaPago;
         this.observacion = observacion;
+        this.estado = estado;
         this.evidencias = evidencias;
     }
 
@@ -84,6 +86,14 @@ public class PagoResponse {
 
     public void setObservacion(String observacion) {
         this.observacion = observacion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public List<EvidenciaPagoResponse> getEvidencias() {

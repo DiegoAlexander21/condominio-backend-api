@@ -41,8 +41,13 @@ public class SeguridadWebConfig {
                                 "/webjars/**",
                                 "/error")
                         .permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/finanzas/pagos")
+                        .hasAnyRole("ADMINISTRADOR", "RESIDENTE")
                         .requestMatchers("/api/usuarios/**", "/api/condominios/**", "/api/unidades/**",
-                                "/api/areas-comunes/**", "/api/reservas-areas/**", "/api/incidencias/**")
+                                "/api/areas-comunes/**", "/api/reservas-areas/**", "/api/incidencias/**",
+                                "/api/finanzas/estados-cuenta/mis-estados", 
+                                "/api/finanzas/pagos/unidad/**", "/api/finanzas/estados-cuenta/*/desglose", 
+                                "/api/finanzas/estados-cuenta/*/pagos")
                         .hasAnyRole("ADMINISTRADOR", "RESIDENTE")
                         .anyRequest().hasRole("ADMINISTRADOR"))
                 .exceptionHandling(excepcion -> excepcion

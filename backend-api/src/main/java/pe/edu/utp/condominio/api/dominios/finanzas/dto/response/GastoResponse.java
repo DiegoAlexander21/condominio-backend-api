@@ -21,6 +21,7 @@ public class GastoResponse {
     private Long condominioId;
     private String condominioNombre;
     private String torre;
+    private String nombreUnidadCausante;
 
     public GastoResponse() {
     }
@@ -162,5 +163,13 @@ public class GastoResponse {
 
     public void setTorre(String torre) {
         this.torre = torre;
+    }
+
+    public String getNombreUnidadCausante() {
+        return nombreUnidadCausante;
+    }
+
+    public void setNombreUnidadCausante(String nombreUnidadCausante) {
+        this.nombreUnidadCausante = nombreUnidadCausante;
     }
 }
