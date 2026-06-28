@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class GestionCondominioService {
+public class CondominioService {
 
     private final CondominioRepository condominioRepository;
 
-    public GestionCondominioService(CondominioRepository condominioRepository) {
+    public CondominioService(CondominioRepository condominioRepository) {
         this.condominioRepository = condominioRepository;
     }
 
@@ -44,6 +44,7 @@ public class GestionCondominioService {
         }
     }
 
+    @Transactional
     public synchronized void eliminarCondominio(Long id) {
         condominioRepository.deleteById(id);
     }
@@ -107,4 +108,3 @@ public class GestionCondominioService {
         }
     }
 }
-

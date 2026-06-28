@@ -13,13 +13,13 @@ import pe.edu.utp.condominio.api.dominios.condominio.models.Condominio;
 import pe.edu.utp.condominio.api.dominios.condominio.repositories.CondominioRepository;
 
 @Service
-public class GestionComunicadosService {
+public class ComunicadoService {
 
     private final ComunicadoRepository comunicadoRepository;
     private final CondominioRepository condominioRepository;
     private final IAComunicadosService servicioIAComunicados;
 
-    public GestionComunicadosService(ComunicadoRepository comunicadoRepository,
+    public ComunicadoService(ComunicadoRepository comunicadoRepository,
             CondominioRepository condominioRepository,
             IAComunicadosService servicioIAComunicados) {
         this.comunicadoRepository = comunicadoRepository;
@@ -108,4 +108,3 @@ public class GestionComunicadosService {
                 comunicado.getFechaPublicacion());
     }
 }
-

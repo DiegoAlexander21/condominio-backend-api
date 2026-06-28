@@ -1,7 +1,6 @@
 package pe.edu.utp.condominio.api.dominios.condominio.controllers;
 
 import java.util.Map;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,26 +11,26 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.validation.Valid;
 import pe.edu.utp.condominio.api.compartido.dto.RespuestaPaginada;
 import pe.edu.utp.condominio.api.dominios.condominio.dto.request.CondominioForm;
 import pe.edu.utp.condominio.api.dominios.condominio.dto.response.CondominioResponse;
 import pe.edu.utp.condominio.api.dominios.condominio.models.Condominio;
-import pe.edu.utp.condominio.api.dominios.condominio.services.GestionCondominioService;
+import pe.edu.utp.condominio.api.dominios.condominio.services.CondominioService;
 
 @RestController
 @RequestMapping("/api/condominios")
 public class CondominioRestController {
 
-    private final GestionCondominioService gestionCondominioService;
+    private final CondominioService condominioService;
 
-    public CondominioRestController(GestionCondominioService gestionCondominioService) {
-        this.gestionCondominioService = gestionCondominioService;
+    public CondominioRestController(CondominioService condominioService) {
+        this.condominioService = condominioService;
     }
 
     @GetMapping
@@ -40,7 +39,7 @@ public class CondominioRestController {
             @RequestParam(defaultValue = "10") int tamano) {
 
         Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("id").descending());
-        Page<Condominio> paginaCondominios = gestionCondominioService.obtenerCondominiosPaginados(pageable);
+        Page<Condominio> paginaCondominios = condominioService.obtenerCondominiosPaginados(pageable);
 
         Page<CondominioResponse> paginaRespuesta = paginaCondominios.map(this::mapearAcondominioResponse);
         return ResponseEntity.ok(new RespuestaPaginada<>(paginaRespuesta));
@@ -49,7 +48,7 @@ public class CondominioRestController {
     @PostMapping
     public ResponseEntity<?> registrarCondominio(@Valid @RequestBody CondominioForm peticion) {
         try {
-            Condominio condominioGuardado = gestionCondominioService.registrarOActualizarCondominio(peticion);
+            Condominio condominioGuardado = condominioService.registrarOActualizarCondominio(peticion);
             CondominioResponse respuesta = mapearAcondominioResponse(condominioGuardado);
             return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
         } catch (IllegalArgumentException ex) {
@@ -60,11 +59,11 @@ public class CondominioRestController {
         }
     }
 
-    @org.springframework.web.bind.annotation.PutMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> actualizarCondominio(@PathVariable Long id, @Valid @RequestBody CondominioForm peticion) {
         try {
             peticion.setId(id);
-            Condominio condominioActualizado = gestionCondominioService.registrarOActualizarCondominio(peticion);
+            Condominio condominioActualizado = condominioService.registrarOActualizarCondominio(peticion);
             CondominioResponse respuesta = mapearAcondominioResponse(condominioActualizado);
             return ResponseEntity.ok(respuesta);
         } catch (IllegalArgumentException ex) {
@@ -77,7 +76,7 @@ public class CondominioRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerCondominio(@PathVariable Long id) {
-        CondominioForm formulario = gestionCondominioService.obtenerFormCondominio(id);
+        CondominioForm formulario = condominioService.obtenerFormCondominio(id);
         if (formulario == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Condominio no encontrado."));
         }
@@ -87,7 +86,7 @@ public class CondominioRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarCondominio(@PathVariable Long id) {
         try {
-            gestionCondominioService.eliminarCondominio(id);
+            condominioService.eliminarCondominio(id);
             return ResponseEntity.ok(Map.of("mensaje", "Condominio eliminado correctamente."));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error al eliminar el condominio."));
@@ -97,8 +96,8 @@ public class CondominioRestController {
     @GetMapping("/estadisticas")
     public ResponseEntity<?> obtenerEstadisticas() {
         return ResponseEntity.ok(Map.of(
-                "totalTorres", gestionCondominioService.obtenerTotalTorres(),
-                "totalPisos", gestionCondominioService.obtenerTotalPisos()));
+                "totalTorres", condominioService.obtenerTotalTorres(),
+                "totalPisos", condominioService.obtenerTotalPisos()));
     }
 
     private CondominioResponse mapearAcondominioResponse(Condominio condominio) {
