@@ -16,12 +16,12 @@ import pe.edu.utp.condominio.api.dominios.visitas.models.Visita;
 import pe.edu.utp.condominio.api.dominios.visitas.repositories.VisitaRepository;
 
 @Service
-public class GestionVisitasService {
+public class VisitaService {
 
     private final VisitaRepository visitaRepository;
     private final UnidadRepository unidadRepository;
 
-    public GestionVisitasService(VisitaRepository visitaRepository, UnidadRepository unidadRepository) {
+    public VisitaService(VisitaRepository visitaRepository, UnidadRepository unidadRepository) {
         this.visitaRepository = visitaRepository;
         this.unidadRepository = unidadRepository;
     }
@@ -160,4 +160,3 @@ public class GestionVisitasService {
                 visita.getFechaRegistro());
     }
 }
-
