@@ -16,6 +16,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import pe.edu.utp.condominio.api.dominios.finanzas.enums.EstadoPago;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 
 @Entity
@@ -42,6 +45,10 @@ public class Pago {
 
     @Column(length = 1000)
     private String observacion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoPago estado = EstadoPago.PENDIENTE;
 
     @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EvidenciaPago> evidencias = new ArrayList<>();
@@ -108,5 +115,13 @@ public class Pago {
 
     public void setEvidencias(List<EvidenciaPago> evidencias) {
         this.evidencias = evidencias;
+    }
+
+    public EstadoPago getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoPago estado) {
+        this.estado = estado;
     }
 }

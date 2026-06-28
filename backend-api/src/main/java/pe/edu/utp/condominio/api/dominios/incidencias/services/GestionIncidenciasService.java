@@ -162,6 +162,13 @@ public class GestionIncidenciasService {
         return incidenciaRepository.findById(incidenciaId).orElse(null);
     }
 
+    @Transactional(readOnly = true)
+    public synchronized IncidenciaResponse obtenerRespuestaPorId(Long incidenciaId) {
+        Incidencia incidencia = incidenciaRepository.findById(incidenciaId).orElse(null);
+        if (incidencia == null) return null;
+        return convertirIncidenciaResponse(incidencia);
+    }
+
     private void validarIncidencia(IncidenciaForm formulario) {
         if (formulario == null) {
             throw new IllegalArgumentException("El formulario de incidencia es obligatorio.");

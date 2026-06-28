@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.condominio.api.dominios.finanzas.dto.request.DistribucionGastoForm;
@@ -15,6 +17,7 @@ import pe.edu.utp.condominio.api.dominios.finanzas.dto.response.DetalleGastoUnid
 import pe.edu.utp.condominio.api.dominios.finanzas.dto.response.EstadoCuentaResponse;
 import pe.edu.utp.condominio.api.dominios.finanzas.dto.response.GastoResponse;
 import pe.edu.utp.condominio.api.dominios.finanzas.dto.response.PagoResponse;
+import pe.edu.utp.condominio.api.dominios.finanzas.enums.EstadoPago;
 import pe.edu.utp.condominio.api.dominios.finanzas.enums.MetodoDistribucion;
 import pe.edu.utp.condominio.api.dominios.finanzas.enums.TipoGasto;
 import pe.edu.utp.condominio.api.dominios.finanzas.models.DetalleGastoUnidad;
@@ -157,14 +160,15 @@ public class GestionFinanzasService {
         Gasto guardado = gastoRepository.save(gasto);
         return convertirGastoResponse(guardado);
     }
+
     @Transactional(readOnly = true)
-    public synchronized List<GastoResponse> listarGastosPorTipo(TipoGasto tipo) {
+    public synchronized Page<GastoResponse> listarGastosPorTipo(TipoGasto tipo, Pageable pageable) {
         if (tipo == null) {
-            throw new IllegalArgumentException("Debe seleccionar un tipo de gasto.");
+            return gastoRepository.findAll(pageable)
+                    .map(this::convertirGastoResponse);
         }
-        return gastoRepository.listarPorTipo(tipo).stream()
-                .map(this::convertirGastoResponse)
-                .collect(Collectors.toList());
+        return gastoRepository.listarPorTipo(tipo, pageable)
+                .map(this::convertirGastoResponse);
     }
 
     @Transactional
@@ -231,7 +235,7 @@ public class GestionFinanzasService {
 
         for (DetalleGastoUnidad detalle : detalles) {
             LocalDate fechaRegistroGasto = normalizarPeriodo(detalle.getFechaRegistro().toLocalDate());
-            
+
             boolean esValido = false;
             if (detalle.getGasto().getTipoGasto() == TipoGasto.FIJO) {
                 if (!periodo.isBefore(fechaRegistroGasto)) {
@@ -282,6 +286,7 @@ public class GestionFinanzasService {
         EstadoCuenta guardado = estadoCuentaRepository.save(estadoCuenta);
         return convertirEstadoCuentaResponse(guardado);
     }
+
     @Transactional(readOnly = true)
     public synchronized EstadoCuentaResponse obtenerEstadoCuentaResponse(Long id) {
         EstadoCuenta estadoCuenta = estadoCuentaRepository.findById(id)
@@ -294,12 +299,13 @@ public class GestionFinanzasService {
         EstadoCuenta estadoCuenta = estadoCuentaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Estado de cuenta no existe."));
 
-        List<DetalleGastoUnidad> detalles = detalleGastoUnidadRepository.listarPorUnidad(estadoCuenta.getUnidad().getId());
+        List<DetalleGastoUnidad> detalles = detalleGastoUnidadRepository
+                .listarPorUnidad(estadoCuenta.getUnidad().getId());
         List<DetalleGastoUnidad> aplicables = new ArrayList<>();
 
         for (DetalleGastoUnidad detalle : detalles) {
             LocalDate fechaRegistroGasto = normalizarPeriodo(detalle.getFechaRegistro().toLocalDate());
-            
+
             if (detalle.getGasto().getTipoGasto() == TipoGasto.FIJO) {
                 if (!estadoCuenta.getPeriodo().isBefore(fechaRegistroGasto)) {
                     aplicables.add(detalle);
@@ -361,19 +367,71 @@ public class GestionFinanzasService {
 
             double saldoPendiente = estadoCuenta.getSaldo();
             if (formulario.getMonto() > saldoPendiente) {
-                throw new IllegalArgumentException(String.format("El monto del pago (S/ %.2f) no puede ser mayor al saldo pendiente (S/ %.2f).", formulario.getMonto(), saldoPendiente));
+                throw new IllegalArgumentException(
+                        String.format("El monto del pago (S/ %.2f) no puede ser mayor al saldo pendiente (S/ %.2f).",
+                                formulario.getMonto(), saldoPendiente));
             }
 
             pago.setEstadoCuenta(estadoCuenta);
+        }
 
-            estadoCuenta.setTotalPagado(estadoCuenta.getTotalPagado() + formulario.getMonto());
-            estadoCuenta.setSaldo(estadoCuenta.getTotalCuotas() + estadoCuenta.getTotalExtraordinarios()
-                    - estadoCuenta.getTotalPagado());
-            estadoCuentaRepository.save(estadoCuenta);
+        Pago guardado = pagoRepository.save(pago);
+
+        if (formulario.getEvidenciaUrl() != null && !formulario.getEvidenciaUrl().trim().isEmpty()) {
+            EvidenciaPago evidencia = new EvidenciaPago();
+            evidencia.setPago(guardado);
+            evidencia.setUrlArchivo(formulario.getEvidenciaUrl().trim());
+            evidenciaPagoRepository.save(evidencia);
+        }
+
+        return convertirPagoResponse(guardado);
+    }
+
+    @Transactional
+    public synchronized PagoResponse aprobarPago(Long pagoId, boolean aprobar, String observacionAdmin) {
+        Pago pago = pagoRepository.findById(pagoId)
+                .orElseThrow(() -> new IllegalArgumentException("El pago no existe."));
+
+        if (pago.getEstado() != EstadoPago.PENDIENTE) {
+            throw new IllegalArgumentException("El pago ya ha sido procesado (aprobado o rechazado).");
+        }
+
+        if (aprobar) {
+            pago.setEstado(EstadoPago.APROBADO);
+            if (pago.getEstadoCuenta() != null) {
+                EstadoCuenta estadoCuenta = pago.getEstadoCuenta();
+                estadoCuenta.setTotalPagado(estadoCuenta.getTotalPagado() + pago.getMonto());
+                estadoCuenta.setSaldo(estadoCuenta.getTotalCuotas() + estadoCuenta.getTotalExtraordinarios()
+                        - estadoCuenta.getTotalPagado());
+                estadoCuentaRepository.save(estadoCuenta);
+            }
+        } else {
+            pago.setEstado(EstadoPago.RECHAZADO);
+        }
+
+        if (observacionAdmin != null && !observacionAdmin.isBlank()) {
+            pago.setObservacion(pago.getObservacion() + " | Admin: " + observacionAdmin);
         }
 
         Pago guardado = pagoRepository.save(pago);
         return convertirPagoResponse(guardado);
+    }
+
+    @Transactional(readOnly = true)
+    public synchronized List<PagoResponse> listarPagosPendientes() {
+        return pagoRepository.findByEstadoOrderByFechaPagoDesc(EstadoPago.PENDIENTE).stream()
+                .map(this::convertirPagoResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public synchronized Page<PagoResponse> listarPagos(EstadoPago estado, Pageable pageable) {
+        if (estado != null) {
+            return pagoRepository.findByEstado(estado, pageable)
+                    .map(this::convertirPagoResponse);
+        }
+        return pagoRepository.findAll(pageable)
+                .map(this::convertirPagoResponse);
     }
 
     @Transactional
@@ -436,9 +494,11 @@ public class GestionFinanzasService {
 
         List<Unidad> unidades;
         if (!gasto.getTorres().isEmpty()) {
-            unidades = unidadRepository.listarPorCondominioYTorre(gasto.getCondominio().getId(), gasto.getTorres().get(0));
+            unidades = unidadRepository.listarPorCondominioYTorre(gasto.getCondominio().getId(),
+                    gasto.getTorres().get(0));
             if (unidades.isEmpty()) {
-                throw new IllegalArgumentException("No existen unidades registradas en la torre especificada para este condominio.");
+                throw new IllegalArgumentException(
+                        "No existen unidades registradas en la torre especificada para este condominio.");
             }
         } else {
             unidades = unidadRepository.listarPorCondominio(gasto.getCondominio().getId());
@@ -491,10 +551,12 @@ public class GestionFinanzasService {
     }
 
     private double calcularPagosPeriodo(Long unidadId, LocalDate periodo) {
-        return pagoRepository.listarPorUnidad(unidadId).stream()
-                .filter(pago -> esMismoPeriodo(pago.getFechaPago().toLocalDate(), periodo))
-                .mapToDouble(Pago::getMonto)
-                .sum();
+        return estadoCuentaRepository.buscarPorUnidadYPeriodo(unidadId, periodo)
+                .map(ec -> pagoRepository.listarPorEstadoCuenta(ec.getId()).stream()
+                        .filter(p -> p.getEstado() == EstadoPago.APROBADO)
+                        .mapToDouble(Pago::getMonto)
+                        .sum())
+                .orElse(0.0);
     }
 
     private boolean esMismoPeriodo(LocalDate fecha, LocalDate periodo) {
@@ -574,18 +636,29 @@ public class GestionFinanzasService {
                 gasto.getCondominio() != null ? gasto.getCondominio().getId() : null,
                 gasto.getCondominio() != null ? gasto.getCondominio().getNombre() : null,
                 gasto.getTorres().isEmpty() ? null : gasto.getTorres().get(0));
-        
+
         if (gasto.getIncidencia() != null) {
             Incidencia incidenciaReal = (Incidencia) Hibernate.unproxy(gasto.getIncidencia());
             if (incidenciaReal instanceof IncidenciaUnidad) {
                 IncidenciaUnidad incidenciaUnidadLocal = (IncidenciaUnidad) incidenciaReal;
-                respuesta.setUnidadIdCausante(incidenciaUnidadLocal.getUnidad().getId());
+                Unidad u = incidenciaUnidadLocal.getUnidad();
+                respuesta.setUnidadIdCausante(u.getId());
+                respuesta.setNombreUnidadCausante(
+                        "Unidad N° " + u.getNumeroUnidad() + (u.getTorre() != null ? " (" + u.getTorre() + ")" : ""));
             }
         }
-        
-        boolean distribuido = !detalleGastoUnidadRepository.listarPorGasto(gasto.getId()).isEmpty();
+
+        List<DetalleGastoUnidad> detalles = detalleGastoUnidadRepository.listarPorGasto(gasto.getId());
+        boolean distribuido = !detalles.isEmpty();
         respuesta.setDistribuido(distribuido);
-        
+
+        if (gasto.getMetodoDistribucion() == MetodoDistribucion.COBRO_DIRECTO && distribuido) {
+            Unidad u = detalles.get(0).getUnidad();
+            respuesta.setUnidadIdCausante(u.getId());
+            respuesta.setNombreUnidadCausante(
+                    "Unidad N° " + u.getNumeroUnidad() + (u.getTorre() != null ? " (" + u.getTorre() + ")" : ""));
+        }
+
         return respuesta;
     }
 
@@ -604,9 +677,9 @@ public class GestionFinanzasService {
         String unidadDetalles = null;
         if (estadoCuenta.getUnidad() != null) {
             unidadDetalles = estadoCuenta.getUnidad().getCondominio().getNombre() + " - " +
-                             estadoCuenta.getUnidad().getTorre() + " - Piso " +
-                             estadoCuenta.getUnidad().getPiso() + " - Unidad " +
-                             estadoCuenta.getUnidad().getNumeroUnidad();
+                    estadoCuenta.getUnidad().getTorre() + " - Piso " +
+                    estadoCuenta.getUnidad().getPiso() + " - Unidad " +
+                    estadoCuenta.getUnidad().getNumeroUnidad();
         }
 
         return new EstadoCuentaResponse(estadoCuenta.getId(),
@@ -634,6 +707,7 @@ public class GestionFinanzasService {
                 pago.getMonto(),
                 pago.getFechaPago(),
                 pago.getObservacion(),
+                pago.getEstado().name(),
                 respuestasEvidencias);
     }
 
@@ -642,8 +716,7 @@ public class GestionFinanzasService {
                 evidencia.getId(),
                 evidencia.getPago() != null ? evidencia.getPago().getId() : null,
                 evidencia.getUrlArchivo(),
-                evidencia.getFechaRegistro()
-        );
+                evidencia.getFechaRegistro());
     }
 
     private String normalizarTexto(String texto) {
@@ -654,4 +727,3 @@ public class GestionFinanzasService {
         return limpio.isEmpty() ? null : limpio;
     }
 }
-

@@ -45,7 +45,7 @@ public class IncidenciaRestController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
 
-        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("fechaReporte").descending());
+        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("id").descending());
 
         Page<IncidenciaResponse> paginaRespuesta;
         if (unidadId != null) {
@@ -63,7 +63,11 @@ public class IncidenciaRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerIncidencia(@PathVariable Long id) {
-        return ResponseEntity.ok(gestionIncidenciasService.obtenerPorId(id));
+        IncidenciaResponse respuesta = gestionIncidenciasService.obtenerRespuestaPorId(id);
+        if (respuesta == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(respuesta);
     }
 
     @GetMapping("/{id}/evidencias")
