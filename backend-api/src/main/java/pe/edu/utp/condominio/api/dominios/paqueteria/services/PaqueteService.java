@@ -15,13 +15,13 @@ import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 import pe.edu.utp.condominio.api.dominios.unidades.repositories.UnidadRepository;
 
 @Service
-public class GestionPaqueteriaService {
+public class PaqueteService {
 
     private final PaqueteRepository paqueteRepository;
     private final UnidadRepository unidadRepository;
     private final NotificacionPaqueteriaService notificacionPaqueteriaService;
 
-    public GestionPaqueteriaService(PaqueteRepository paqueteRepository,
+    public PaqueteService(PaqueteRepository paqueteRepository,
             UnidadRepository unidadRepository,
             NotificacionPaqueteriaService notificacionPaqueteriaService) {
         this.paqueteRepository = paqueteRepository;
@@ -97,6 +97,12 @@ public class GestionPaqueteriaService {
                 .collect(Collectors.toList());
     }
 
+    public synchronized List<PaqueteResponse> listarTodos() {
+        return paqueteRepository.findAll().stream()
+                .map(this::convertirPaqueteResponse)
+                .collect(Collectors.toList());
+    }
+
     private void validarPaquete(PaqueteForm formulario) {
         if (formulario == null) {
             throw new IllegalArgumentException("El formulario del paquete es obligatorio.");
@@ -150,4 +156,3 @@ public class GestionPaqueteriaService {
         return base + " | " + extra;
     }
 }
-
