@@ -26,16 +26,20 @@ import pe.edu.utp.condominio.api.dominios.incidencias.dto.request.EvidenciaIncid
 import pe.edu.utp.condominio.api.dominios.incidencias.dto.request.IncidenciaForm;
 import pe.edu.utp.condominio.api.dominios.incidencias.dto.response.IncidenciaResponse;
 import pe.edu.utp.condominio.api.dominios.incidencias.enums.EstadoIncidencia;
-import pe.edu.utp.condominio.api.dominios.incidencias.services.GestionIncidenciasService;
+import pe.edu.utp.condominio.api.dominios.incidencias.services.EvidenciaIncidenciaService;
+import pe.edu.utp.condominio.api.dominios.incidencias.services.IncidenciaService;
 
 @RestController
 @RequestMapping("/api/incidencias")
 public class IncidenciaRestController {
 
-    private final GestionIncidenciasService gestionIncidenciasService;
+    private final IncidenciaService incidenciaService;
+    private final EvidenciaIncidenciaService evidenciaIncidenciaService;
 
-    public IncidenciaRestController(GestionIncidenciasService gestionIncidenciasService) {
-        this.gestionIncidenciasService = gestionIncidenciasService;
+    public IncidenciaRestController(IncidenciaService incidenciaService,
+            EvidenciaIncidenciaService evidenciaIncidenciaService) {
+        this.incidenciaService = incidenciaService;
+        this.evidenciaIncidenciaService = evidenciaIncidenciaService;
     }
 
     @GetMapping
@@ -49,12 +53,12 @@ public class IncidenciaRestController {
 
         Page<IncidenciaResponse> paginaRespuesta;
         if (unidadId != null) {
-            paginaRespuesta = gestionIncidenciasService.listarPorUnidadYEstado(unidadId, estado, pageable);
+            paginaRespuesta = incidenciaService.listarPorUnidadYEstado(unidadId, estado, pageable);
         } else {
             if (estado == null) {
-                paginaRespuesta = gestionIncidenciasService.listarTodas(pageable);
+                paginaRespuesta = incidenciaService.listarTodas(pageable);
             } else {
-                paginaRespuesta = gestionIncidenciasService.listarPorEstado(estado, pageable);
+                paginaRespuesta = incidenciaService.listarPorEstado(estado, pageable);
             }
         }
 
@@ -63,7 +67,7 @@ public class IncidenciaRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerIncidencia(@PathVariable Long id) {
-        IncidenciaResponse respuesta = gestionIncidenciasService.obtenerRespuestaPorId(id);
+        IncidenciaResponse respuesta = incidenciaService.obtenerRespuestaPorId(id);
         if (respuesta == null) {
             return ResponseEntity.notFound().build();
         }
@@ -72,7 +76,7 @@ public class IncidenciaRestController {
 
     @GetMapping("/{id}/evidencias")
     public ResponseEntity<List<String>> obtenerEvidencias(@PathVariable Long id) {
-        List<String> urls = gestionIncidenciasService.listarEvidencias(id).stream()
+        List<String> urls = evidenciaIncidenciaService.listarEvidencias(id).stream()
                 .map(e -> e.getUrlArchivo())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(urls);
@@ -80,7 +84,7 @@ public class IncidenciaRestController {
 
     @PostMapping("/area")
     public ResponseEntity<?> registrarIncidenciaArea(@Valid @RequestBody IncidenciaForm peticion) {
-        IncidenciaResponse respuesta = gestionIncidenciasService.registrarIncidencia(peticion);
+        IncidenciaResponse respuesta = incidenciaService.registrarIncidencia(peticion);
 
         if (peticion.getEvidenciaUrl() != null && !peticion.getEvidenciaUrl().isBlank()) {
             String[] enlaces = peticion.getEvidenciaUrl().split(",");
@@ -89,7 +93,7 @@ public class IncidenciaRestController {
                     EvidenciaIncidenciaForm formularioEvidencia = new EvidenciaIncidenciaForm();
                     formularioEvidencia.setIncidenciaId(respuesta.getId());
                     formularioEvidencia.setUrlArchivo(enlace.trim());
-                    gestionIncidenciasService.registrarEvidencia(formularioEvidencia);
+                    evidenciaIncidenciaService.registrarEvidencia(formularioEvidencia);
                 }
             }
         }
@@ -98,7 +102,7 @@ public class IncidenciaRestController {
 
     @PostMapping("/unidad")
     public ResponseEntity<?> registrarIncidenciaUnidad(@Valid @RequestBody IncidenciaForm peticion) {
-        IncidenciaResponse respuesta = gestionIncidenciasService.registrarIncidencia(peticion);
+        IncidenciaResponse respuesta = incidenciaService.registrarIncidencia(peticion);
 
         if (peticion.getEvidenciaUrl() != null && !peticion.getEvidenciaUrl().isBlank()) {
             String[] enlaces = peticion.getEvidenciaUrl().split(",");
@@ -107,7 +111,7 @@ public class IncidenciaRestController {
                     EvidenciaIncidenciaForm formularioEvidencia = new EvidenciaIncidenciaForm();
                     formularioEvidencia.setIncidenciaId(respuesta.getId());
                     formularioEvidencia.setUrlArchivo(enlace.trim());
-                    gestionIncidenciasService.registrarEvidencia(formularioEvidencia);
+                    evidenciaIncidenciaService.registrarEvidencia(formularioEvidencia);
                 }
             }
         }
@@ -118,7 +122,7 @@ public class IncidenciaRestController {
     public ResponseEntity<?> actualizarEstado(@PathVariable Long id,
             @Valid @RequestBody ActualizacionIncidenciaForm peticion) {
         peticion.setIncidenciaId(id);
-        gestionIncidenciasService.actualizarEstado(peticion);
+        incidenciaService.actualizarEstado(peticion);
         return ResponseEntity.ok(Map.of("mensaje", "Estado de la incidencia actualizado exitosamente"));
     }
 }
