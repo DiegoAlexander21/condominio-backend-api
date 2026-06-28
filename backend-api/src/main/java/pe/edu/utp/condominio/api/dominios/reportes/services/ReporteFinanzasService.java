@@ -14,69 +14,28 @@ import pe.edu.utp.condominio.api.dominios.finanzas.models.Gasto;
 import pe.edu.utp.condominio.api.dominios.finanzas.models.EstadoCuenta;
 import pe.edu.utp.condominio.api.dominios.finanzas.repositories.EstadoCuentaRepository;
 import pe.edu.utp.condominio.api.dominios.finanzas.repositories.GastoRepository;
-import pe.edu.utp.condominio.api.dominios.incidencias.models.Incidencia;
 import pe.edu.utp.condominio.api.dominios.incidencias.models.IncidenciaAreaComun;
-import pe.edu.utp.condominio.api.dominios.incidencias.repositories.IncidenciaRepository;
 import pe.edu.utp.condominio.api.dominios.reportes.dto.response.AreaGastoResponse;
-import pe.edu.utp.condominio.api.dominios.reportes.dto.response.IncidenciaFrecuenteResponse;
-import pe.edu.utp.condominio.api.dominios.reportes.dto.response.ReporteDashboardResponse;
 import pe.edu.utp.condominio.api.dominios.reportes.dto.response.UnidadMorosaResponse;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 
 @Service
-public class ReportesDashboardService {
+public class ReporteFinanzasService {
 
-    private final IncidenciaRepository incidenciaRepository;
-    private final AreaComunRepository areaComunRepository;
     private final GastoRepository gastoRepository;
     private final EstadoCuentaRepository estadoCuentaRepository;
+    private final AreaComunRepository areaComunRepository;
 
-    public ReportesDashboardService(IncidenciaRepository incidenciaRepository,
-            AreaComunRepository areaComunRepository,
-            GastoRepository gastoRepository,
-            EstadoCuentaRepository estadoCuentaRepository) {
-        this.incidenciaRepository = incidenciaRepository;
-        this.areaComunRepository = areaComunRepository;
+    public ReporteFinanzasService(GastoRepository gastoRepository,
+            EstadoCuentaRepository estadoCuentaRepository,
+            AreaComunRepository areaComunRepository) {
         this.gastoRepository = gastoRepository;
         this.estadoCuentaRepository = estadoCuentaRepository;
+        this.areaComunRepository = areaComunRepository;
     }
 
     @Transactional(readOnly = true)
-    public ReporteDashboardResponse generarReporte(int limite) {
-        int limiteSeguro = limite > 0 ? limite : 5;
-        List<IncidenciaFrecuenteResponse> incidenciasFrecuentes = obtenerIncidenciasFrecuentes(limiteSeguro);
-        List<AreaGastoResponse> areasConMayorGasto = obtenerAreasConMayorGasto(limiteSeguro);
-        List<UnidadMorosaResponse> unidadesMorosas = obtenerUnidadesMorosas(limiteSeguro);
-        List<UnidadMorosaResponse> unidadesConMayorDeuda = obtenerUnidadesConMayorDeuda(limiteSeguro);
-
-        return new ReporteDashboardResponse(incidenciasFrecuentes, areasConMayorGasto, unidadesMorosas, unidadesConMayorDeuda);
-    }
-
-    private List<IncidenciaFrecuenteResponse> obtenerIncidenciasFrecuentes(int limite) {
-        Map<Long, AreaComun> areas = areaComunRepository.findAll().stream()
-                .collect(Collectors.toMap(AreaComun::getId, area -> area));
-
-        Map<Long, Long> conteo = new HashMap<>();
-        for (Incidencia incidencia : incidenciaRepository.findAll()) {
-            if (!(incidencia instanceof IncidenciaAreaComun incidenciaArea)) {
-                continue;
-            }
-            Long areaId = incidenciaArea.getAreaComun().getId();
-            conteo.put(areaId, conteo.getOrDefault(areaId, 0L) + 1);
-        }
-
-        return conteo.entrySet().stream()
-                .map(entrada -> {
-                    AreaComun area = areas.get(entrada.getKey());
-                    String nombre = area != null ? area.getNombre() : "Area sin nombre";
-                    return new IncidenciaFrecuenteResponse(entrada.getKey(), nombre, entrada.getValue());
-                })
-                .sorted(Comparator.comparingLong(IncidenciaFrecuenteResponse::getTotalIncidencias).reversed())
-                .limit(limite)
-                .collect(Collectors.toList());
-    }
-
-    private List<AreaGastoResponse> obtenerAreasConMayorGasto(int limite) {
+    public List<AreaGastoResponse> obtenerAreasConMayorGasto(int limite) {
         Map<Long, AreaComun> areas = areaComunRepository.findAll().stream()
                 .collect(Collectors.toMap(AreaComun::getId, area -> area));
 
@@ -104,7 +63,8 @@ public class ReportesDashboardService {
                 .collect(Collectors.toList());
     }
 
-    private List<UnidadMorosaResponse> obtenerUnidadesMorosas(int limite) {
+    @Transactional(readOnly = true)
+    public List<UnidadMorosaResponse> obtenerUnidadesMorosas(int limite) {
         LocalDate hoy = LocalDate.now();
         Map<Long, List<EstadoCuenta>> estadosPorUnidad = estadoCuentaRepository.findAll().stream()
                 .filter(estado -> estado.getUnidad() != null && estado.getSaldo() > 0 &&
@@ -130,7 +90,8 @@ public class ReportesDashboardService {
                 .collect(Collectors.toList());
     }
 
-    private List<UnidadMorosaResponse> obtenerUnidadesConMayorDeuda(int limite) {
+    @Transactional(readOnly = true)
+    public List<UnidadMorosaResponse> obtenerUnidadesConMayorDeuda(int limite) {
         Map<Long, List<EstadoCuenta>> estadosPorUnidad = estadoCuentaRepository.findAll().stream()
                 .filter(estado -> estado.getUnidad() != null && estado.getSaldo() > 0)
                 .collect(Collectors.groupingBy(estado -> estado.getUnidad().getId()));
@@ -172,4 +133,3 @@ public class ReportesDashboardService {
         return nombreTorre + " - " + numero;
     }
 }
-
