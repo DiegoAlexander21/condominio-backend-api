@@ -1,4 +1,4 @@
-package pe.edu.utp.condominio.api.dominios.historial.dto;
+package pe.edu.utp.condominio.api.dominios.historial.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
