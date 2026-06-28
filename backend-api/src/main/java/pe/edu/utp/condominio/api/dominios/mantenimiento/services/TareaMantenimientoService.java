@@ -12,54 +12,38 @@ import pe.edu.utp.condominio.api.dominios.finanzas.enums.MetodoDistribucion;
 import pe.edu.utp.condominio.api.dominios.finanzas.enums.TipoGasto;
 import pe.edu.utp.condominio.api.dominios.finanzas.models.Gasto;
 import pe.edu.utp.condominio.api.dominios.finanzas.repositories.GastoRepository;
-import pe.edu.utp.condominio.api.dominios.mantenimiento.dto.request.InsumoForm;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.dto.request.TareaMantenimientoForm;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.dto.request.UsoInsumoForm;
-import pe.edu.utp.condominio.api.dominios.mantenimiento.dto.response.InsumoResponse;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.dto.response.TareaMantenimientoResponse;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.dto.response.UsoInsumoResponse;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.models.InsumoMantenimiento;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.models.TareaMantenimiento;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.models.UsoInsumo;
-import pe.edu.utp.condominio.api.dominios.mantenimiento.repositories.InsumoMantenimientoRepository;
 import pe.edu.utp.condominio.api.dominios.mantenimiento.repositories.TareaMantenimientoRepository;
 
 @Service
-public class GestionMantenimientoService {
+public class TareaMantenimientoService {
 
-    private final InsumoMantenimientoRepository insumoRepository;
     private final TareaMantenimientoRepository tareaRepository;
     private final AreaComunRepository areaComunRepository;
     private final GastoRepository gastoRepository;
+    private final InsumoService insumoService;
 
-    public GestionMantenimientoService(
-            InsumoMantenimientoRepository insumoRepository,
+    public TareaMantenimientoService(
             TareaMantenimientoRepository tareaRepository,
             AreaComunRepository areaComunRepository,
-            GastoRepository gastoRepository) {
-        this.insumoRepository = insumoRepository;
+            GastoRepository gastoRepository,
+            InsumoService insumoService) {
         this.tareaRepository = tareaRepository;
         this.areaComunRepository = areaComunRepository;
         this.gastoRepository = gastoRepository;
+        this.insumoService = insumoService;
     }
 
     @Transactional
-    public InsumoResponse registrarInsumo(InsumoForm formulario) {
-        InsumoMantenimiento insumo = new InsumoMantenimiento();
-        insumo.setNombre(formulario.getNombre());
-        insumo.setUnidadMedida(formulario.getUnidadMedida());
-        insumo.setStockActual(formulario.getStockActual());
-        insumo.setStockMinimo(formulario.getStockMinimo());
-        insumo.setPrecioUnitario(formulario.getPrecioUnitario());
-
-        InsumoMantenimiento guardado = insumoRepository.save(insumo);
-        return mapearInsumoAResponse(guardado);
-    }
-
-    @Transactional
-    public TareaMantenimientoResponse registrarTareaConInsumos(TareaMantenimientoForm formulario) {
+    public synchronized TareaMantenimientoResponse registrarTareaConInsumos(TareaMantenimientoForm formulario) {
         AreaComun area = areaComunRepository.findById(formulario.getAreaComunId())
-                .orElseThrow(() -> new RuntimeException("Ãrea comÃºn no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Area comun no encontrada"));
 
         TareaMantenimiento tarea = new TareaMantenimiento();
         tarea.setAreaComun(area);
@@ -70,14 +54,7 @@ public class GestionMantenimientoService {
 
         if (formulario.getUsosInsumos() != null) {
             for (UsoInsumoForm formularioUso : formulario.getUsosInsumos()) {
-                InsumoMantenimiento insumo = insumoRepository.findById(formularioUso.getInsumoId())
-                        .orElseThrow(() -> new RuntimeException("Insumo no encontrado: " + formularioUso.getInsumoId()));
-
-                if (insumo.getStockActual() < formularioUso.getCantidadUsada()) {
-                    throw new RuntimeException("Stock insuficiente para el insumo: " + insumo.getNombre());
-                }
-                insumo.setStockActual(insumo.getStockActual() - formularioUso.getCantidadUsada());
-                insumoRepository.save(insumo);
+                InsumoMantenimiento insumo = insumoService.reducirStock(formularioUso.getInsumoId(), formularioUso.getCantidadUsada());
 
                 UsoInsumo uso = new UsoInsumo();
                 uso.setTarea(tarea);
@@ -100,29 +77,6 @@ public class GestionMantenimientoService {
         }
 
         return mapearTareaAResponse(guardada);
-    }
-
-    public List<InsumoResponse> listarInsumos() {
-        return insumoRepository.findAll().stream()
-                .map(this::mapearInsumoAResponse)
-                .collect(Collectors.toList());
-    }
-
-    public List<InsumoResponse> listarInsumosCriticos() {
-        return insumoRepository.listarCriticos().stream()
-                .map(this::mapearInsumoAResponse)
-                .collect(Collectors.toList());
-    }
-
-    private InsumoResponse mapearInsumoAResponse(InsumoMantenimiento entidad) {
-        return new InsumoResponse(
-                entidad.getId(),
-                entidad.getNombre(),
-                entidad.getUnidadMedida(),
-                entidad.getStockActual(),
-                entidad.getStockMinimo(),
-                entidad.getPrecioUnitario(),
-                entidad.getFechaActualizacion());
     }
 
     private TareaMantenimientoResponse mapearTareaAResponse(TareaMantenimiento entidad) {
@@ -151,4 +105,3 @@ public class GestionMantenimientoService {
                 costoTotal);
     }
 }
-
