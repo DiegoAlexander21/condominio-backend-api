@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class FinanzasExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+    public ResponseEntity<Map<String, String>> manejarExcepcionesDeValidacion(MethodArgumentNotValidException ex) {
+        String mensajeError = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .findFirst()
                 .orElse("Datos inválidos.");
-        return ResponseEntity.badRequest().body(Map.of("error", errorMessage));
+        return ResponseEntity.badRequest().body(Map.of("error", mensajeError));
     }
 }
