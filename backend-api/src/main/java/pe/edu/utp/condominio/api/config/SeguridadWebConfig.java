@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,7 +42,7 @@ public class SeguridadWebConfig {
                                 "/webjars/**",
                                 "/error")
                         .permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/finanzas/pagos")
+                        .requestMatchers(HttpMethod.POST, "/api/finanzas/pagos")
                         .hasAnyRole("ADMINISTRADOR", "RESIDENTE")
                         .requestMatchers("/api/usuarios/**", "/api/condominios/**", "/api/unidades/**",
                                 "/api/areas-comunes/**", "/api/reservas-areas/**", "/api/incidencias/**",
