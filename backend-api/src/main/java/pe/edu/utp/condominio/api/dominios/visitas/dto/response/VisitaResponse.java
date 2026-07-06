@@ -14,13 +14,15 @@ public class VisitaResponse {
     private LocalDateTime fechaSalida;
     private EstadoVisita estado;
     private LocalDateTime fechaRegistro;
+    private String torre;
+    private String numeroUnidad;
 
     public VisitaResponse() {
     }
 
     public VisitaResponse(Long id, Long unidadId, String nombreVisitante, String documentoVisitante,
             LocalDateTime fechaVisitaProgramada, LocalDateTime fechaIngreso, LocalDateTime fechaSalida,
-            EstadoVisita estado, LocalDateTime fechaRegistro) {
+            EstadoVisita estado, LocalDateTime fechaRegistro, String torre, String numeroUnidad) {
         this.id = id;
         this.unidadId = unidadId;
         this.nombreVisitante = nombreVisitante;
@@ -30,6 +32,8 @@ public class VisitaResponse {
         this.fechaSalida = fechaSalida;
         this.estado = estado;
         this.fechaRegistro = fechaRegistro;
+        this.torre = torre;
+        this.numeroUnidad = numeroUnidad;
     }
 
     public Long getId() {
@@ -102,5 +106,21 @@ public class VisitaResponse {
 
     public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public String getTorre() {
+        return torre;
+    }
+
+    public void setTorre(String torre) {
+        this.torre = torre;
+    }
+
+    public String getNumeroUnidad() {
+        return numeroUnidad;
+    }
+
+    public void setNumeroUnidad(String numeroUnidad) {
+        this.numeroUnidad = numeroUnidad;
     }
 }

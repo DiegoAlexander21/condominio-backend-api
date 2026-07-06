@@ -1,5 +1,6 @@
 package pe.edu.utp.condominio.api.dominios.seguridad.dto.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import pe.edu.utp.condominio.api.dominios.seguridad.enums.NombreRol;
@@ -23,7 +24,7 @@ public class RegistroUsuarioRequest {
     private String telefono;
 
     @NotBlank
-    @jakarta.validation.constraints.Email
+    @Email
     private String correo;
 
     @NotBlank

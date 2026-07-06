@@ -82,6 +82,7 @@ public class VisitaService {
         return convertirVisitaResponse(actualizada);
     }
 
+    @Transactional(readOnly = true)
     public synchronized List<VisitaResponse> listarPorUnidad(Long unidadId) {
         if (unidadId == null) {
             throw new IllegalArgumentException("Debe seleccionar una unidad valida.");
@@ -91,6 +92,14 @@ public class VisitaService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public synchronized List<VisitaResponse> listarTodas() {
+        return visitaRepository.findAll().stream()
+                .map(this::convertirVisitaResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public synchronized List<VisitaResponse> listarPorEstado(EstadoVisita estado) {
         if (estado == null) {
             throw new IllegalArgumentException("Debe seleccionar un estado.");
@@ -100,6 +109,7 @@ public class VisitaService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public synchronized List<VisitaResponse> listarPorRango(LocalDateTime inicio, LocalDateTime fin) {
         if (inicio == null || fin == null) {
             throw new IllegalArgumentException("Debe indicar el rango de fechas.");
@@ -157,6 +167,8 @@ public class VisitaService {
                 visita.getFechaIngreso(),
                 visita.getFechaSalida(),
                 visita.getEstado(),
-                visita.getFechaRegistro());
+                visita.getFechaRegistro(),
+                visita.getUnidad() != null ? visita.getUnidad().getTorre() : null,
+                visita.getUnidad() != null ? visita.getUnidad().getNumeroUnidad() : null);
     }
 }

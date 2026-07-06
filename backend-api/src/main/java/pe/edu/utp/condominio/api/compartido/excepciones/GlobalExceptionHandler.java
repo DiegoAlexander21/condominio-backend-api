@@ -14,14 +14,14 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<?> manejarExcepcionArgumentoIlegal(IllegalArgumentException ex) {
         log.warn("GlobalExceptionHandler capturó IllegalArgumentException: {}", ex.getMessage());
-        return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage(), "error", ex.getMessage()));
+        return ResponseEntity.badRequest().body(Map.of("mensaje", ex.getMessage(), "error", ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleAllExceptions(Exception ex) {
+    public ResponseEntity<?> manejarTodasLasExcepciones(Exception ex) {
         log.error("GlobalExceptionHandler capturó un error: ", ex);
-        return ResponseEntity.internalServerError().body(Map.of("message", "Error interno: " + ex.getMessage(), "error", "Error interno: " + ex.getMessage()));
+        return ResponseEntity.internalServerError().body(Map.of("mensaje", "Error interno: " + ex.getMessage(), "error", "Error interno: " + ex.getMessage()));
     }
 }

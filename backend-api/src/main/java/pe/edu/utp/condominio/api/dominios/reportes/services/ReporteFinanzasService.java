@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.Hibernate;
 import pe.edu.utp.condominio.api.dominios.areascomunes.models.AreaComun;
 import pe.edu.utp.condominio.api.dominios.areascomunes.repositories.AreaComunRepository;
 import pe.edu.utp.condominio.api.dominios.finanzas.models.Gasto;
@@ -44,7 +45,9 @@ public class ReporteFinanzasService {
             if (gasto.getIncidencia() == null) {
                 continue;
             }
-            if (!(gasto.getIncidencia() instanceof IncidenciaAreaComun incidenciaArea)) {
+            
+            Object incidenciaReal = Hibernate.unproxy(gasto.getIncidencia());
+            if (!(incidenciaReal instanceof IncidenciaAreaComun incidenciaArea)) {
                 continue;
             }
             Long areaId = incidenciaArea.getAreaComun().getId();
