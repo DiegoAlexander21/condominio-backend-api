@@ -76,7 +76,7 @@ public class VisitaRestController {
         if (estado != null) {
             return ResponseEntity.ok(visitaService.listarPorEstado(estado));
         }
-        return ResponseEntity.ok(List.of());
+        return ResponseEntity.ok(visitaService.listarTodas());
     }
 
     @GetMapping("/unidad/{unidadId}")

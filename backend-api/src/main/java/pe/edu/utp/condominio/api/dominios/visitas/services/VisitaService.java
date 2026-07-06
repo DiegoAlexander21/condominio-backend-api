@@ -91,6 +91,12 @@ public class VisitaService {
                 .collect(Collectors.toList());
     }
 
+    public synchronized List<VisitaResponse> listarTodas() {
+        return visitaRepository.findAll().stream()
+                .map(this::convertirVisitaResponse)
+                .collect(Collectors.toList());
+    }
+
     public synchronized List<VisitaResponse> listarPorEstado(EstadoVisita estado) {
         if (estado == null) {
             throw new IllegalArgumentException("Debe seleccionar un estado.");
