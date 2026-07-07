@@ -16,7 +16,6 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import pe.edu.utp.condominio.api.dominios.areascomunes.models.AreaComun;
 import pe.edu.utp.condominio.api.dominios.comunicacion.models.Asamblea;
-import pe.edu.utp.condominio.api.dominios.comunicacion.models.Comunicado;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 
 @Entity
@@ -47,9 +46,6 @@ public class Condominio {
 
     @OneToMany(mappedBy = "condominio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AreaComun> areasComunes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "condominio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comunicado> comunicados = new ArrayList<>();
 
     @OneToMany(mappedBy = "condominio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asamblea> asambleas = new ArrayList<>();
@@ -131,14 +127,6 @@ public class Condominio {
 
     public void setAreasComunes(List<AreaComun> areasComunes) {
         this.areasComunes = areasComunes;
-    }
-
-    public List<Comunicado> getComunicados() {
-        return comunicados;
-    }
-
-    public void setComunicados(List<Comunicado> comunicados) {
-        this.comunicados = comunicados;
     }
 
     public List<Asamblea> getAsambleas() {
