@@ -3,6 +3,7 @@ package pe.edu.utp.condominio.api.dominios.paqueteria.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.condominio.api.dominios.paqueteria.dto.request.PaqueteForm;
@@ -53,6 +54,10 @@ public class PaqueteService {
             guardado.setObservacion(unirObservacion(guardado.getObservacion(),
                     "Notificacion pendiente: " + ex.getMessage()));
             guardado = paqueteRepository.save(guardado);
+        } catch (MailException ex) {
+            guardado.setObservacion(unirObservacion(guardado.getObservacion(),
+                    "Fallo al enviar correo: Verifique credenciales."));
+            guardado = paqueteRepository.save(guardado);
         }
 
         return convertirPaqueteResponse(guardado);
@@ -79,6 +84,7 @@ public class PaqueteService {
         return convertirPaqueteResponse(actualizado);
     }
 
+    @Transactional(readOnly = true)
     public synchronized List<PaqueteResponse> listarPorUnidad(Long unidadId) {
         if (unidadId == null) {
             throw new IllegalArgumentException("Debe seleccionar una unidad valida.");
@@ -88,17 +94,25 @@ public class PaqueteService {
                 .collect(Collectors.toList());
     }
 
-    public synchronized List<PaqueteResponse> listarPorEstado(EstadoPaquete estado) {
+    @Transactional(readOnly = true)
+    public synchronized List<PaqueteResponse> listarPorCondominioYEstado(Long condominioId, EstadoPaquete estado) {
+        if (condominioId == null) {
+            throw new IllegalArgumentException("Debe proporcionar el identificador del condominio.");
+        }
         if (estado == null) {
             throw new IllegalArgumentException("Debe seleccionar un estado.");
         }
-        return paqueteRepository.listarPorEstado(estado).stream()
+        return paqueteRepository.listarPorCondominioYEstado(condominioId, estado).stream()
                 .map(this::convertirPaqueteResponse)
                 .collect(Collectors.toList());
     }
 
-    public synchronized List<PaqueteResponse> listarTodos() {
-        return paqueteRepository.findAll().stream()
+    @Transactional(readOnly = true)
+    public synchronized List<PaqueteResponse> listarPorCondominio(Long condominioId) {
+        if (condominioId == null) {
+            throw new IllegalArgumentException("Debe proporcionar el identificador del condominio.");
+        }
+        return paqueteRepository.listarPorCondominio(condominioId).stream()
                 .map(this::convertirPaqueteResponse)
                 .collect(Collectors.toList());
     }
@@ -130,6 +144,8 @@ public class PaqueteService {
     private PaqueteResponse convertirPaqueteResponse(Paquete paquete) {
         return new PaqueteResponse(paquete.getId(),
                 paquete.getUnidad() != null ? paquete.getUnidad().getId() : null,
+                paquete.getUnidad() != null ? paquete.getUnidad().getNumeroUnidad() : null,
+                paquete.getUnidad() != null ? paquete.getUnidad().getTorre() : null,
                 paquete.getRemitente(),
                 paquete.getDestinatario(),
                 paquete.getEstado(),

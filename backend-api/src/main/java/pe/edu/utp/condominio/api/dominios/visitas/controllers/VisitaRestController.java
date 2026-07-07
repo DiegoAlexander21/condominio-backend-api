@@ -20,15 +20,32 @@ import pe.edu.utp.condominio.api.dominios.visitas.dto.request.VisitaForm;
 import pe.edu.utp.condominio.api.dominios.visitas.dto.response.VisitaResponse;
 import pe.edu.utp.condominio.api.dominios.visitas.enums.EstadoVisita;
 import pe.edu.utp.condominio.api.dominios.visitas.services.VisitaService;
+import pe.edu.utp.condominio.api.dominios.seguridad.services.TokenService;
+import pe.edu.utp.condominio.api.dominios.seguridad.services.UsuarioService;
+import pe.edu.utp.condominio.api.dominios.seguridad.dto.response.UsuarioPerfilResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/visitas")
 public class VisitaRestController {
 
     private final VisitaService visitaService;
+    private final UsuarioService usuarioService;
+    private final TokenService tokenService;
 
-    public VisitaRestController(VisitaService visitaService) {
+    public VisitaRestController(VisitaService visitaService, UsuarioService usuarioService, TokenService tokenService) {
         this.visitaService = visitaService;
+        this.usuarioService = usuarioService;
+        this.tokenService = tokenService;
+    }
+
+    private Long obtenerIdUsuarioDeRequest(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token inválido o ausente.");
+        }
+        String token = authHeader.substring(7);
+        return tokenService.obtenerIdUsuario(token);
     }
 
     @PostMapping
@@ -72,11 +89,24 @@ public class VisitaRestController {
 
     @GetMapping
     public ResponseEntity<List<VisitaResponse>> listarVisitas(
-            @RequestParam(value = "estado", required = false) EstadoVisita estado) {
-        if (estado != null) {
-            return ResponseEntity.ok(visitaService.listarPorEstado(estado));
+            @RequestParam(value = "estado", required = false) EstadoVisita estado,
+            HttpServletRequest request) {
+        Long usuarioId = obtenerIdUsuarioDeRequest(request);
+        UsuarioPerfilResponse perfil = usuarioService.obtenerMiPerfil(usuarioId);
+
+        if ("ADMINISTRADOR".equals(perfil.getRol())) {
+            if (estado != null) {
+                return ResponseEntity.ok(visitaService.listarTodas(estado));
+            }
+            return ResponseEntity.ok(visitaService.listarTodas());
         }
-        return ResponseEntity.ok(visitaService.listarTodas());
+
+        Long condominioId = usuarioService.obtenerCondominioIdDeUsuario(usuarioId);
+
+        if (estado != null) {
+            return ResponseEntity.ok(visitaService.listarPorCondominioYEstado(condominioId, estado));
+        }
+        return ResponseEntity.ok(visitaService.listarPorCondominio(condominioId));
     }
 
     @GetMapping("/unidad/{unidadId}")

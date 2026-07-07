@@ -100,11 +100,34 @@ public class VisitaService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized List<VisitaResponse> listarPorEstado(EstadoVisita estado) {
+    public synchronized List<VisitaResponse> listarTodas(EstadoVisita estado) {
         if (estado == null) {
             throw new IllegalArgumentException("Debe seleccionar un estado.");
         }
         return visitaRepository.listarPorEstado(estado).stream()
+                .map(this::convertirVisitaResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public synchronized List<VisitaResponse> listarPorCondominio(Long condominioId) {
+        if (condominioId == null) {
+            throw new IllegalArgumentException("Debe proporcionar el identificador del condominio.");
+        }
+        return visitaRepository.listarPorCondominio(condominioId).stream()
+                .map(this::convertirVisitaResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public synchronized List<VisitaResponse> listarPorCondominioYEstado(Long condominioId, EstadoVisita estado) {
+        if (condominioId == null) {
+            throw new IllegalArgumentException("Debe proporcionar el identificador del condominio.");
+        }
+        if (estado == null) {
+            throw new IllegalArgumentException("Debe seleccionar un estado.");
+        }
+        return visitaRepository.listarPorCondominioYEstado(condominioId, estado).stream()
                 .map(this::convertirVisitaResponse)
                 .collect(Collectors.toList());
     }

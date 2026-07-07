@@ -19,5 +19,11 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
     @Query("select v from Visita v where v.fechaVisitaProgramada between :inicio and :fin order by v.fechaVisitaProgramada")
     List<Visita> listarPorRango(@Param("inicio") LocalDateTime inicio,
             @Param("fin") LocalDateTime fin);
+
+    @Query("select v from Visita v where v.unidad.condominio.id = :condominioId order by v.fechaVisitaProgramada desc")
+    List<Visita> listarPorCondominio(@Param("condominioId") Long condominioId);
+
+    @Query("select v from Visita v where v.unidad.condominio.id = :condominioId and v.estado = :estado order by v.fechaVisitaProgramada desc")
+    List<Visita> listarPorCondominioYEstado(@Param("condominioId") Long condominioId, @Param("estado") EstadoVisita estado);
 }
 

@@ -17,24 +17,44 @@ import pe.edu.utp.condominio.api.dominios.paqueteria.dto.request.RegistroEntrega
 import pe.edu.utp.condominio.api.dominios.paqueteria.dto.response.PaqueteResponse;
 import pe.edu.utp.condominio.api.dominios.paqueteria.enums.EstadoPaquete;
 import pe.edu.utp.condominio.api.dominios.paqueteria.services.PaqueteService;
+import pe.edu.utp.condominio.api.dominios.seguridad.services.TokenService;
+import pe.edu.utp.condominio.api.dominios.seguridad.services.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/paqueteria")
 public class PaqueteRestController {
 
     private final PaqueteService paqueteService;
+    private final UsuarioService usuarioService;
+    private final TokenService tokenService;
 
-    public PaqueteRestController(PaqueteService paqueteService) {
+    public PaqueteRestController(PaqueteService paqueteService, UsuarioService usuarioService, TokenService tokenService) {
         this.paqueteService = paqueteService;
+        this.usuarioService = usuarioService;
+        this.tokenService = tokenService;
+    }
+
+    private Long obtenerIdUsuarioDeRequest(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token inválido o ausente.");
+        }
+        String token = authHeader.substring(7);
+        return tokenService.obtenerIdUsuario(token);
     }
 
     @GetMapping
     public ResponseEntity<List<PaqueteResponse>> listarPaquetes(
-            @RequestParam(value = "estado", required = false) EstadoPaquete estado) {
+            @RequestParam(value = "estado", required = false) EstadoPaquete estado,
+            HttpServletRequest request) {
+        Long usuarioId = obtenerIdUsuarioDeRequest(request);
+        Long condominioId = usuarioService.obtenerCondominioIdDeUsuario(usuarioId);
+        
         if (estado != null) {
-            return ResponseEntity.ok(paqueteService.listarPorEstado(estado));
+            return ResponseEntity.ok(paqueteService.listarPorCondominioYEstado(condominioId, estado));
         }
-        return ResponseEntity.ok(paqueteService.listarTodos());
+        return ResponseEntity.ok(paqueteService.listarPorCondominio(condominioId));
     }
 
     @GetMapping("/unidad/{unidadId}")

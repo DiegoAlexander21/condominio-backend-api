@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import java.time.format.DateTimeFormatter;
 import pe.edu.utp.condominio.api.dominios.paqueteria.models.Paquete;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 
@@ -30,7 +31,7 @@ public class NotificacionPaqueteriaService {
             mensaje.setFrom(correoOrigen);
         }
         mensaje.setTo(destino);
-        mensaje.setSubject("Notificacion de paquete recibido");
+        mensaje.setSubject("Notificación de Paquete Recibido");
         mensaje.setText(construirMensaje(paquete, unidad));
 
         enviadorCorreo.send(mensaje);
@@ -54,9 +55,12 @@ public class NotificacionPaqueteriaService {
             unidadTexto = "Torre " + unidad.getTorre() + " - Unidad " + unidad.getNumeroUnidad();
         }
 
+        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String fechaFormateada = paquete.getFechaRecepcion().format(formatoFecha);
+
         return "Se registro un paquete para " + unidadTexto + ".\n"
                 + "Remitente: " + paquete.getRemitente() + "\n"
                 + "Destinatario: " + paquete.getDestinatario() + "\n"
-                + "Fecha de recepcion: " + paquete.getFechaRecepcion();
+                + "Fecha de recepcion: " + fechaFormateada;
     }
 }
