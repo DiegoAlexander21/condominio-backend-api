@@ -7,6 +7,7 @@ public class UsuarioPerfilResponse {
     private String correo;
     private String rol;
     private Long unidadId;
+    private Long condominioId;
     private String nombreCondominio;
     private String torre;
     private Integer piso;
@@ -16,13 +17,14 @@ public class UsuarioPerfilResponse {
     }
 
     public UsuarioPerfilResponse(String nombres, String apellidos, String numeroDocumento, String correo, String rol,
-            Long unidadId, String nombreCondominio, String torre, Integer piso, String numeroUnidad) {
+            Long unidadId, Long condominioId, String nombreCondominio, String torre, Integer piso, String numeroUnidad) {
         this.nombres = nombres;
         this.apellidos = apellidos;
         this.numeroDocumento = numeroDocumento;
         this.correo = correo;
         this.rol = rol;
         this.unidadId = unidadId;
+        this.condominioId = condominioId;
         this.nombreCondominio = nombreCondominio;
         this.torre = torre;
         this.piso = piso;
@@ -75,6 +77,14 @@ public class UsuarioPerfilResponse {
 
     public void setUnidadId(Long unidadId) {
         this.unidadId = unidadId;
+    }
+
+    public Long getCondominioId() {
+        return condominioId;
+    }
+
+    public void setCondominioId(Long condominioId) {
+        this.condominioId = condominioId;
     }
 
     public String getNombreCondominio() {

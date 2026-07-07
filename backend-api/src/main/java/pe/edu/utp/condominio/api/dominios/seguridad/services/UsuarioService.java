@@ -95,9 +95,12 @@ public class UsuarioService implements UserDetailsService {
         Integer piso = null;
         String numeroUnidad = null;
 
+        Long condominioId = null;
+
         if (unidadId != null) {
             pe.edu.utp.condominio.api.dominios.unidades.models.Unidad unidad = residenteOpt.get().getUnidad();
             if (unidad.getCondominio() != null) {
+                condominioId = unidad.getCondominio().getId();
                 nombreCondominio = unidad.getCondominio().getNombre();
             }
             torre = unidad.getTorre();
@@ -107,9 +110,12 @@ public class UsuarioService implements UserDetailsService {
             Optional<Conserje> conserjeOpt = conserjeRepository.findByDni(usuario.getNumeroDocumento());
             if (conserjeOpt.isPresent() && conserjeOpt.get().isActivo()) {
                 Condominio condominio = conserjeOpt.get().getCondominio();
+                condominioId = condominio.getId();
                 nombreCondominio = condominio.getNombre();
                 unidadId = condominio.getId();
             }
+        } else if (rol.equals("ADMINISTRADOR")) {
+            condominioId = condominioRepository.findAll().stream().findFirst().map(Condominio::getId).orElse(null);
         }
 
         return new UsuarioPerfilResponse(
@@ -119,6 +125,7 @@ public class UsuarioService implements UserDetailsService {
                 usuario.getCorreo(),
                 rol,
                 unidadId,
+                condominioId,
                 nombreCondominio,
                 torre,
                 piso,
