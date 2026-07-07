@@ -55,4 +55,16 @@ public class UsuarioRestController {
             return ResponseEntity.internalServerError().body("{\"error\":\"Error interno al vincular la unidad.\"}");
         }
     }
+    @PutMapping("/me/vincular-conserje")
+    public ResponseEntity<?> vincularConserje(@RequestParam("condominioId") Long condominioId, HttpServletRequest request) {
+        try {
+            Long usuarioId = obtenerIdUsuarioDeRequest(request);
+            usuarioService.vincularConserje(usuarioId, condominioId);
+            return ResponseEntity.ok().body("{\"mensaje\":\"Condominio vinculado exitosamente.\"}");
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body("{\"error\":\"" + ex.getMessage() + "\"}");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("{\"error\":\"Error interno al vincular el condominio.\"}");
+        }
+    }
 }

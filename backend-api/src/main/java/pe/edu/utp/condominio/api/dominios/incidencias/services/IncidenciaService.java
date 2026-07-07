@@ -94,10 +94,17 @@ public class IncidenciaService {
         if (unidadId == null) {
             throw new IllegalArgumentException("Debe seleccionar una unidad.");
         }
+        Unidad unidad = unidadRepository.findById(unidadId).orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
+        Long condominioId = unidad.getCondominio() != null ? unidad.getCondominio().getId() : null;
+        
+        if (condominioId == null) {
+            return Page.empty(pageable);
+        }
+
         if (estado == null) {
-            return incidenciaRepository.listarPorUnidad(unidadId, pageable).map(this::convertirIncidenciaResponse);
+            return incidenciaRepository.listarPorCondominio(condominioId, pageable).map(this::convertirIncidenciaResponse);
         } else {
-            return incidenciaRepository.listarPorUnidadYEstado(unidadId, estado, pageable).map(this::convertirIncidenciaResponse);
+            return incidenciaRepository.listarPorCondominioYEstado(condominioId, estado, pageable).map(this::convertirIncidenciaResponse);
         }
     }
 

@@ -18,6 +18,10 @@ import pe.edu.utp.condominio.api.dominios.unidades.repositories.ResidenteReposit
 import pe.edu.utp.condominio.api.dominios.unidades.repositories.UnidadRepository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
+import pe.edu.utp.condominio.api.dominios.condominio.models.Conserje;
+import pe.edu.utp.condominio.api.dominios.condominio.repositories.ConserjeRepository;
+import pe.edu.utp.condominio.api.dominios.condominio.models.Condominio;
+import pe.edu.utp.condominio.api.dominios.condominio.repositories.CondominioRepository;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -25,13 +29,19 @@ public class UsuarioService implements UserDetailsService {
     private final UsuarioRepository usuarioRepository;
     private final UnidadRepository unidadRepository;
     private final ResidenteRepository residenteRepository;
+    private final ConserjeRepository conserjeRepository;
+    private final CondominioRepository condominioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, 
-                          UnidadRepository unidadRepository, 
-                          ResidenteRepository residenteRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+            UnidadRepository unidadRepository,
+            ResidenteRepository residenteRepository,
+            ConserjeRepository conserjeRepository,
+            CondominioRepository condominioRepository) {
         this.usuarioRepository = usuarioRepository;
         this.unidadRepository = unidadRepository;
         this.residenteRepository = residenteRepository;
+        this.conserjeRepository = conserjeRepository;
+        this.condominioRepository = condominioRepository;
     }
 
     @Override
@@ -93,6 +103,13 @@ public class UsuarioService implements UserDetailsService {
             torre = unidad.getTorre();
             piso = unidad.getPiso();
             numeroUnidad = unidad.getNumeroUnidad();
+        } else if (rol.startsWith("CONSERJERIA")) {
+            Optional<Conserje> conserjeOpt = conserjeRepository.findByDni(usuario.getNumeroDocumento());
+            if (conserjeOpt.isPresent() && conserjeOpt.get().isActivo()) {
+                Condominio condominio = conserjeOpt.get().getCondominio();
+                nombreCondominio = condominio.getNombre();
+                unidadId = condominio.getId();
+            }
         }
 
         return new UsuarioPerfilResponse(
@@ -105,8 +122,7 @@ public class UsuarioService implements UserDetailsService {
                 nombreCondominio,
                 torre,
                 piso,
-                numeroUnidad
-        );
+                numeroUnidad);
     }
 
     @Transactional
@@ -123,7 +139,8 @@ public class UsuarioService implements UserDetailsService {
                 .orElseThrow(() -> new IllegalArgumentException("Unidad no encontrada"));
 
         if (unidad.getResidente() != null && unidad.getResidente().isActivo()) {
-            throw new IllegalArgumentException("La unidad seleccionada ya se encuentra ocupada por un residente activo. Por favor, contacte al Administrador.");
+            throw new IllegalArgumentException(
+                    "La unidad seleccionada ya se encuentra ocupada por un residente activo. Por favor, contacte al Administrador.");
         }
 
         Residente residente = new Residente();
@@ -136,5 +153,52 @@ public class UsuarioService implements UserDetailsService {
 
         residenteRepository.save(residente);
     }
-}
 
+    @Transactional
+    public void vincularConserje(Long usuarioId, Long condominioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        Optional<Conserje> conserjeOpt = conserjeRepository.findByDni(usuario.getNumeroDocumento());
+        if (conserjeOpt.isPresent()) {
+            throw new IllegalArgumentException("El usuario ya está vinculado a un condominio como conserje.");
+        }
+
+        Condominio condominio = condominioRepository.findById(condominioId)
+                .orElseThrow(() -> new IllegalArgumentException("Condominio no encontrado"));
+
+        Conserje conserje = new Conserje();
+        conserje.setCondominio(condominio);
+        conserje.setNombre(usuario.getNombres() + " " + usuario.getApellidos());
+        conserje.setDni(usuario.getNumeroDocumento());
+        conserje.setActivo(true);
+
+        conserjeRepository.save(conserje);
+    }
+
+    @Transactional(readOnly = true)
+    public Long obtenerCondominioIdDeUsuario(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        String rol = usuario.getRoles().stream().map(r -> r.getNombre().name()).findFirst().orElse("");
+
+        if (rol.equals("ADMINISTRADOR")) {
+            return condominioRepository.findAll().stream()
+                    .findFirst()
+                    .map(Condominio::getId)
+                    .orElseThrow(() -> new IllegalArgumentException("No hay condominios registrados en el sistema."));
+        } else if (rol.startsWith("CONSERJERIA")) {
+            return conserjeRepository.findByDni(usuario.getNumeroDocumento())
+                    .filter(Conserje::isActivo)
+                    .map(c -> c.getCondominio().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("El conserje no tiene un condominio vinculado."));
+        } else {
+            return residenteRepository.findByDni(usuario.getNumeroDocumento())
+                    .filter(Residente::isActivo)
+                    .map(r -> r.getUnidad().getCondominio().getId())
+                    .orElseThrow(
+                            () -> new IllegalArgumentException("El usuario no tiene una unidad/condominio vinculado."));
+        }
+    }
+}

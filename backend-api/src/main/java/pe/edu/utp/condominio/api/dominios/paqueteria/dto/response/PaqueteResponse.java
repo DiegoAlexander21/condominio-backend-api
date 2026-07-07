@@ -7,6 +7,8 @@ public class PaqueteResponse {
 
     private Long id;
     private Long unidadId;
+    private String unidadNumero;
+    private String unidadTorre;
     private String remitente;
     private String destinatario;
     private EstadoPaquete estado;
@@ -17,11 +19,13 @@ public class PaqueteResponse {
     public PaqueteResponse() {
     }
 
-    public PaqueteResponse(Long id, Long unidadId, String remitente, String destinatario,
+    public PaqueteResponse(Long id, Long unidadId, String unidadNumero, String unidadTorre, String remitente, String destinatario,
             EstadoPaquete estado, LocalDateTime fechaRecepcion, LocalDateTime fechaEntrega,
             String observacion) {
         this.id = id;
         this.unidadId = unidadId;
+        this.unidadNumero = unidadNumero;
+        this.unidadTorre = unidadTorre;
         this.remitente = remitente;
         this.destinatario = destinatario;
         this.estado = estado;
@@ -44,6 +48,22 @@ public class PaqueteResponse {
 
     public void setUnidadId(Long unidadId) {
         this.unidadId = unidadId;
+    }
+
+    public String getUnidadNumero() {
+        return unidadNumero;
+    }
+
+    public void setUnidadNumero(String unidadNumero) {
+        this.unidadNumero = unidadNumero;
+    }
+
+    public String getUnidadTorre() {
+        return unidadTorre;
+    }
+
+    public void setUnidadTorre(String unidadTorre) {
+        this.unidadTorre = unidadTorre;
     }
 
     public String getRemitente() {
