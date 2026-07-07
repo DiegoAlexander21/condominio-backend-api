@@ -1,7 +1,7 @@
 package pe.edu.utp.condominio.api.dominios.unidades.controllers;
 
 import java.util.Map;
-
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -95,6 +95,25 @@ public class UnidadRestController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error al eliminar la unidad."));
         }
+    }
+
+    @PostMapping("/busqueda/torres")
+    public ResponseEntity<List<pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto>> buscarTorres(@RequestBody List<Long> condominioIds) {
+        return ResponseEntity.ok(unidadService.buscarTorresPorCondominios(condominioIds));
+    }
+
+    @PostMapping("/busqueda/viviendas")
+    public ResponseEntity<List<UnidadResponse>> buscarViviendas(@RequestBody List<pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto> torresDto) {
+        if (torresDto == null || torresDto.isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<Long> condominioIds = torresDto.stream().map(pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto::getCondominioId).collect(java.util.stream.Collectors.toList());
+        List<String> torres = torresDto.stream().map(pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto::getTorre).collect(java.util.stream.Collectors.toList());
+        
+        List<UnidadResponse> respuestas = unidadService.buscarUnidadesPorTorres(condominioIds, torres).stream()
+            .map(this::mapearAUnidadResponse)
+            .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(respuestas);
     }
 
     private UnidadResponse mapearAUnidadResponse(Unidad unidad) {
