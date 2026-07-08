@@ -3,6 +3,8 @@ package pe.edu.utp.condominio.api.dominios.mantenimiento.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +79,11 @@ public class TareaMantenimientoService {
         }
 
         return mapearTareaAResponse(guardada);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TareaMantenimientoResponse> obtenerHistorialTareas(Pageable pageable) {
+        return tareaRepository.findAll(pageable).map(this::mapearTareaAResponse);
     }
 
     private TareaMantenimientoResponse mapearTareaAResponse(TareaMantenimiento entidad) {
