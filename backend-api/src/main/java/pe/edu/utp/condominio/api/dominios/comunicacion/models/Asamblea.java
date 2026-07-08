@@ -14,13 +14,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import pe.edu.utp.condominio.api.dominios.comunicacion.enums.AlcanceComunicado;
 import pe.edu.utp.condominio.api.dominios.comunicacion.enums.EstadoAsamblea;
 import pe.edu.utp.condominio.api.dominios.condominio.models.Condominio;
+import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 
 @Entity
 @Table(name = "asambleas")
@@ -30,10 +35,32 @@ public class Asamblea {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "condominio_id", nullable = false)
-    private Condominio condominio;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'GLOBAL'")
+    private AlcanceComunicado alcance;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "asamblea_condominios",
+        joinColumns = @JoinColumn(name = "asamblea_id"),
+        inverseJoinColumns = @JoinColumn(name = "condominio_id")
+    )
+    private List<Condominio> condominiosDestino = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+        name = "asamblea_torres",
+        joinColumns = @JoinColumn(name = "asamblea_id")
+    )
+    private List<AsambleaTorre> torresDestino = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "asamblea_unidades",
+        joinColumns = @JoinColumn(name = "asamblea_id"),
+        inverseJoinColumns = @JoinColumn(name = "unidad_id")
+    )
+    private List<Unidad> unidadesDestino = new ArrayList<>();
     @Column(nullable = false, length = 200)
     private String titulo;
 
@@ -85,12 +112,36 @@ public class Asamblea {
         this.id = id;
     }
 
-    public Condominio getCondominio() {
-        return condominio;
+    public AlcanceComunicado getAlcance() {
+        return alcance;
     }
 
-    public void setCondominio(Condominio condominio) {
-        this.condominio = condominio;
+    public void setAlcance(AlcanceComunicado alcance) {
+        this.alcance = alcance;
+    }
+
+    public List<Condominio> getCondominiosDestino() {
+        return condominiosDestino;
+    }
+
+    public void setCondominiosDestino(List<Condominio> condominiosDestino) {
+        this.condominiosDestino = condominiosDestino;
+    }
+
+    public List<AsambleaTorre> getTorresDestino() {
+        return torresDestino;
+    }
+
+    public void setTorresDestino(List<AsambleaTorre> torresDestino) {
+        this.torresDestino = torresDestino;
+    }
+
+    public List<Unidad> getUnidadesDestino() {
+        return unidadesDestino;
+    }
+
+    public void setUnidadesDestino(List<Unidad> unidadesDestino) {
+        this.unidadesDestino = unidadesDestino;
     }
 
     public String getTitulo() {

@@ -2,12 +2,17 @@ package pe.edu.utp.condominio.api.dominios.comunicacion.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import pe.edu.utp.condominio.api.dominios.comunicacion.enums.AlcanceComunicado;
+import pe.edu.utp.condominio.api.dominios.comunicacion.dto.ComunicadoTorreDto;
 import pe.edu.utp.condominio.api.dominios.comunicacion.enums.EstadoAsamblea;
 
 public class AsambleaResponse {
 
     private Long id;
-    private Long condominioId;
+    private List<Long> condominioIds;
+    private AlcanceComunicado alcance;
+    private List<ComunicadoTorreDto> torres;
+    private List<Long> unidadIds;
     private String titulo;
     private String descripcion;
     private LocalDateTime fechaInicio;
@@ -18,11 +23,15 @@ public class AsambleaResponse {
     public AsambleaResponse() {
     }
 
-    public AsambleaResponse(Long id, Long condominioId, String titulo, String descripcion,
+    public AsambleaResponse(Long id, List<Long> condominioIds, AlcanceComunicado alcance,
+            List<ComunicadoTorreDto> torres, List<Long> unidadIds, String titulo, String descripcion,
             LocalDateTime fechaInicio, LocalDateTime fechaFin, EstadoAsamblea estado,
             List<OpcionVotacionResponse> opciones) {
         this.id = id;
-        this.condominioId = condominioId;
+        this.condominioIds = condominioIds;
+        this.alcance = alcance;
+        this.torres = torres;
+        this.unidadIds = unidadIds;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaInicio = fechaInicio;
@@ -39,12 +48,36 @@ public class AsambleaResponse {
         this.id = id;
     }
 
-    public Long getCondominioId() {
-        return condominioId;
+    public List<Long> getCondominioIds() {
+        return condominioIds;
     }
 
-    public void setCondominioId(Long condominioId) {
-        this.condominioId = condominioId;
+    public void setCondominioIds(List<Long> condominioIds) {
+        this.condominioIds = condominioIds;
+    }
+
+    public AlcanceComunicado getAlcance() {
+        return alcance;
+    }
+
+    public void setAlcance(AlcanceComunicado alcance) {
+        this.alcance = alcance;
+    }
+
+    public List<ComunicadoTorreDto> getTorres() {
+        return torres;
+    }
+
+    public void setTorres(List<ComunicadoTorreDto> torres) {
+        this.torres = torres;
+    }
+
+    public List<Long> getUnidadIds() {
+        return unidadIds;
+    }
+
+    public void setUnidadIds(List<Long> unidadIds) {
+        this.unidadIds = unidadIds;
     }
 
     public String getTitulo() {

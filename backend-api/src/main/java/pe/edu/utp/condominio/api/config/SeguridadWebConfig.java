@@ -39,7 +39,7 @@ public class SeguridadWebConfig {
                 .sessionManagement(sesion -> sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(autenticacion -> autenticacion
                         .requestMatchers("/auth/**", "/api/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**",
-                                "/webjars/**",
+                                "/webjars/**", "/ws/**",
                                 "/error")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/finanzas/pagos")
@@ -49,7 +49,7 @@ public class SeguridadWebConfig {
                         .requestMatchers("/api/condominios/**", "/api/unidades/**")
                         .hasAnyRole("ADMINISTRADOR", "RESIDENTE", "CONSERJERIA")
                         .requestMatchers("/api/areas-comunes/**", "/api/incidencias/**",
-                                "/api/comunicados/**",
+                                "/api/comunicados/**", "/api/asambleas/**",
                                 "/api/finanzas/estados-cuenta/mis-estados", 
                                 "/api/finanzas/pagos/unidad/**", "/api/finanzas/estados-cuenta/*/desglose", 
                                 "/api/finanzas/estados-cuenta/*/pagos")

@@ -54,10 +54,6 @@ public class VotacionAsambleaService {
             throw new IllegalArgumentException("La asamblea no esta abierta.");
         }
 
-        if (votoAsambleaRepository.existePorAsambleaYUnidad(asamblea.getId(), formulario.getUnidadId())) {
-            throw new IllegalArgumentException("La unidad ya emitio su voto.");
-        }
-
         OpcionVotacion opcion = opcionVotacionRepository.findById(formulario.getOpcionId())
                 .orElseThrow(() -> new IllegalArgumentException("La opcion no existe."));
 
@@ -68,11 +64,15 @@ public class VotacionAsambleaService {
         Unidad unidad = unidadRepository.findById(formulario.getUnidadId())
                 .orElseThrow(() -> new IllegalArgumentException("La unidad no existe."));
 
-        VotoAsamblea voto = new VotoAsamblea();
-        voto.setAsamblea(asamblea);
+        VotoAsamblea voto = votoAsambleaRepository.obtenerPorAsambleaYUnidad(asamblea.getId(), formulario.getUnidadId())
+                .orElseGet(() -> {
+                    VotoAsamblea nuevoVoto = new VotoAsamblea();
+                    nuevoVoto.setAsamblea(asamblea);
+                    nuevoVoto.setUnidad(unidad);
+                    return nuevoVoto;
+                });
+                
         voto.setOpcion(opcion);
-        voto.setUnidad(unidad);
-
         votoAsambleaRepository.save(voto);
 
         ResultadoAsambleaResponse resultado = obtenerResultados(asamblea.getId());
@@ -84,6 +84,9 @@ public class VotacionAsambleaService {
         if (asambleaId == null) {
             throw new IllegalArgumentException("La asamblea es obligatoria.");
         }
+
+        Asamblea asamblea = asambleaRepository.findById(asambleaId)
+                .orElseThrow(() -> new IllegalArgumentException("La asamblea no existe."));
 
         List<OpcionVotacion> opciones = opcionVotacionRepository.listarPorAsamblea(asambleaId);
         Map<Long, Long> conteo = new HashMap<>();
@@ -101,7 +104,19 @@ public class VotacionAsambleaService {
             resultados.add(new OpcionResultadoResponse(opcion.getId(), opcion.getTexto(), votos));
         }
 
-        return new ResultadoAsambleaResponse(asambleaId, total, resultados);
+        return new ResultadoAsambleaResponse(asambleaId, total, asamblea.getEstado().name(), resultados);
+    }
+
+    public void notificarResultados(Long asambleaId) {
+        ResultadoAsambleaResponse resultado = obtenerResultados(asambleaId);
+        plantillaMensajeria.convertAndSend("/topic/asambleas/" + asambleaId, resultado);
+    }
+
+    public synchronized boolean tieneVotoRegistrado(Long asambleaId, Long unidadId) {
+        if (asambleaId == null || unidadId == null) {
+            throw new IllegalArgumentException("Asamblea y Unidad son obligatorios.");
+        }
+        return votoAsambleaRepository.existePorAsambleaYUnidad(asambleaId, unidadId);
     }
 
     private void validarVoto(VotoAsambleaForm formulario) {

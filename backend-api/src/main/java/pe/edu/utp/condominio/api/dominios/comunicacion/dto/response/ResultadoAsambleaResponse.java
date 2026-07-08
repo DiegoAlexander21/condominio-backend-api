@@ -6,15 +6,17 @@ public class ResultadoAsambleaResponse {
 
     private Long asambleaId;
     private long totalVotos;
+    private String estado;
     private List<OpcionResultadoResponse> resultados;
 
     public ResultadoAsambleaResponse() {
     }
 
-    public ResultadoAsambleaResponse(Long asambleaId, long totalVotos,
+    public ResultadoAsambleaResponse(Long asambleaId, long totalVotos, String estado,
             List<OpcionResultadoResponse> resultados) {
         this.asambleaId = asambleaId;
         this.totalVotos = totalVotos;
+        this.estado = estado;
         this.resultados = resultados;
     }
 
@@ -24,6 +26,14 @@ public class ResultadoAsambleaResponse {
 
     public void setAsambleaId(Long asambleaId) {
         this.asambleaId = asambleaId;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public long getTotalVotos() {

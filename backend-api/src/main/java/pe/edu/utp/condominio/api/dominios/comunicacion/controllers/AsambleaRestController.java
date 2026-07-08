@@ -38,6 +38,29 @@ public class AsambleaRestController {
         return ResponseEntity.ok(asambleaService.listarPorCondominio(condominioId));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<AsambleaResponse> obtenerAsambleaPorId(@org.springframework.web.bind.annotation.PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(asambleaService.obtenerPorId(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @org.springframework.web.bind.annotation.PutMapping("/{id}/terminar")
+    public ResponseEntity<?> terminarAsamblea(@org.springframework.web.bind.annotation.PathVariable("id") Long id) {
+        try {
+            asambleaService.terminarAsamblea(id);
+            Map<String, String> respuesta = new HashMap<>();
+            respuesta.put("mensaje", "Asamblea terminada correctamente.");
+            return ResponseEntity.ok(respuesta);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> registrarAsamblea(@Valid @RequestBody AsambleaForm formulario) {
         try {
@@ -69,5 +92,13 @@ public class AsambleaRestController {
     @GetMapping("/resultados")
     public ResponseEntity<ResultadoAsambleaResponse> obtenerResultados(@RequestParam("asambleaId") Long asambleaId) {
         return ResponseEntity.ok(votacionAsambleaService.obtenerResultados(asambleaId));
+    }
+
+    @GetMapping("/{id}/voto")
+    public ResponseEntity<Map<String, Boolean>> verificarVoto(@org.springframework.web.bind.annotation.PathVariable("id") Long id, @RequestParam("unidadId") Long unidadId) {
+        boolean tieneVoto = votacionAsambleaService.tieneVotoRegistrado(id, unidadId);
+        Map<String, Boolean> respuesta = new HashMap<>();
+        respuesta.put("votoRegistrado", tieneVoto);
+        return ResponseEntity.ok(respuesta);
     }
 }
