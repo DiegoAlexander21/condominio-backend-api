@@ -44,6 +44,8 @@ public class SeguridadWebConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/finanzas/pagos")
                         .hasAnyRole("ADMINISTRADOR", "RESIDENTE")
+                        .requestMatchers(HttpMethod.GET, "/api/salud-ambiental/checklists/area/**", "/api/salud-ambiental/mantenimientos/area/**")
+                        .hasAnyRole("ADMINISTRADOR", "RESIDENTE")
                         .requestMatchers("/api/usuarios/**", "/api/visitas/**", "/api/paqueteria/**")
                         .hasAnyRole("ADMINISTRADOR", "RESIDENTE", "CONSERJERIA")
                         .requestMatchers("/api/condominios/**", "/api/unidades/**")
