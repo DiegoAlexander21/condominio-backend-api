@@ -17,5 +17,9 @@ public interface VotoAsambleaRepository extends JpaRepository<VotoAsamblea, Long
     @Query("select count(v) > 0 from VotoAsamblea v where v.asamblea.id = :asambleaId and v.unidad.id = :unidadId")
     boolean existePorAsambleaYUnidad(@Param("asambleaId") Long asambleaId,
             @Param("unidadId") Long unidadId);
+
+    @Query("select v from VotoAsamblea v where v.asamblea.id = :asambleaId and v.unidad.id = :unidadId")
+    java.util.Optional<VotoAsamblea> obtenerPorAsambleaYUnidad(@Param("asambleaId") Long asambleaId,
+            @Param("unidadId") Long unidadId);
 }
 

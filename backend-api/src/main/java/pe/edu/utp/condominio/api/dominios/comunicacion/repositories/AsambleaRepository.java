@@ -9,7 +9,7 @@ import pe.edu.utp.condominio.api.dominios.comunicacion.enums.EstadoAsamblea;
 
 public interface AsambleaRepository extends JpaRepository<Asamblea, Long> {
 
-    @Query("select a from Asamblea a where a.condominio.id = :condominioId order by a.fechaInicio desc")
+    @Query("select distinct a from Asamblea a join a.condominiosDestino cd where cd.id = :condominioId order by a.fechaInicio desc")
     List<Asamblea> listarPorCondominio(@Param("condominioId") Long condominioId);
 
     @Query("select a from Asamblea a where a.estado = :estado order by a.fechaInicio desc")
