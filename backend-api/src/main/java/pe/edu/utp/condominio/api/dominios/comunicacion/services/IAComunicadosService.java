@@ -38,7 +38,13 @@ public class IAComunicadosService {
                     Título: {titulo}
                     Borrador/Ideas: {borrador}
 
-                    El comunicado debe ser profesional, empático y fácil de entender para los residentes.
+                    REGLAS OBLIGATORIAS DE FORMATO:
+                    - Devuelve ÚNICAMENTE el texto final del comunicado en texto plano.
+                    - NO incluyas el título en el texto generado (el sistema ya lo maneja por separado).
+                    - NO uses ningún tipo de formato Markdown (prohibido usar asteriscos **, guiones ---, o numerales #).
+                    - NO uses frases introductorias ni de despedida conversacionales (ej. "Aquí tienes", "Claro").
+                    - El comunicado debe ser profesional, empático y directo.
+                    - Si falta información como fechas exactas o nombres, evítalos para que el texto sea publicable inmediatamente sin que el usuario tenga que rellenar corchetes [ ].
                     """;
 
             PromptTemplate plantillaPromptUsuario = new PromptTemplate(plantillaUsuario);
@@ -51,7 +57,8 @@ public class IAComunicadosService {
             return chatModel.call(prompt).getResult().getOutput().getContent().trim();
 
         } catch (Exception ex) {
-            return generarBasico(titulo, borrador);
+            ex.printStackTrace();
+            return "ERROR IA: " + ex.getMessage() + "\n\n" + generarBasico(titulo, borrador);
         }
     }
 

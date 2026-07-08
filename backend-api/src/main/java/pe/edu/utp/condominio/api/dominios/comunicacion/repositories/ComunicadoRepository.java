@@ -8,7 +8,7 @@ import pe.edu.utp.condominio.api.dominios.comunicacion.models.Comunicado;
 
 public interface ComunicadoRepository extends JpaRepository<Comunicado, Long> {
 
-    @Query("select c from Comunicado c where c.condominio.id = :condominioId order by c.fechaPublicacion desc")
+    @Query("select distinct c from Comunicado c join c.condominiosDestino cd where cd.id = :condominioId order by c.fechaPublicacion desc")
     List<Comunicado> listarPorCondominio(@Param("condominioId") Long condominioId);
 }
 

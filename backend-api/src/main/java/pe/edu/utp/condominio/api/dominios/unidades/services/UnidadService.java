@@ -62,6 +62,16 @@ public class UnidadService {
         return unidadRepository.listarTorresPorCondominio(condominioId);
     }
 
+    public synchronized List<pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto> buscarTorresPorCondominios(List<Long> condominioIds) {
+        if (condominioIds == null || condominioIds.isEmpty()) return List.of();
+        return unidadRepository.listarTorresPorCondominios(condominioIds);
+    }
+
+    public synchronized List<Unidad> buscarUnidadesPorTorres(List<Long> condominioIds, List<String> torres) {
+        if (condominioIds == null || condominioIds.isEmpty() || torres == null || torres.isEmpty()) return List.of();
+        return unidadRepository.listarUnidadesPorTorres(condominioIds, torres);
+    }
+
     public synchronized Unidad buscarPorId(Long id) {
         return unidadRepository.findById(id).orElse(null);
     }

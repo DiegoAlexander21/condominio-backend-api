@@ -32,11 +32,13 @@ spring:
     open-in-view: false
   ai:
     openai:
-      api-key: "${OPENAI_API_KEY:}"
+      api-key: "AQ.Ab8RN6KKGn_QyNy1oNS1_3ksfvinAP0KLbHpPxvQ5M-7_B2oqA"
+      base-url: "https://generativelanguage.googleapis.com/v1beta/openai/"
       chat:
         options:
-          model: gpt-4o-mini
+          model: gemini-2.5-flash
           temperature: 0.4
+
 
 seguridad:
   jwt:

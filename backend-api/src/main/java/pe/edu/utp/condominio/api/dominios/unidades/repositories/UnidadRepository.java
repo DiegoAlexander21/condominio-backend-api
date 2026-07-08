@@ -34,4 +34,11 @@ public interface UnidadRepository extends JpaRepository<Unidad, Long> {
 
     @Query("select distinct u.torre from Unidad u where u.condominio.id = :condominioId order by u.torre")
     List<String> listarTorresPorCondominio(@Param("condominioId") Long condominioId);
+
+    @Query("select new pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto(u.condominio.id, u.torre) " +
+           "from Unidad u where u.condominio.id in :condominioIds group by u.condominio.id, u.torre order by u.condominio.id, u.torre")
+    List<pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto> listarTorresPorCondominios(@Param("condominioIds") List<Long> condominioIds);
+
+    @Query("select u from Unidad u join fetch u.condominio where u.condominio.id in :condominioIds and u.torre in :torres order by upper(u.condominio.nombre), upper(u.torre), upper(u.numeroUnidad)")
+    List<Unidad> listarUnidadesPorTorres(@Param("condominioIds") List<Long> condominioIds, @Param("torres") List<String> torres);
 }
