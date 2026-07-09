@@ -31,9 +31,9 @@ public class HistorialTitularidadRestController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
 
-        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("id").descending());
+        Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by("id").descending());
         String terminoBusqueda = (termino == null) ? "" : termino;
-        Page<HistorialTitularidad> paginaHistorial = historialService.obtenerHistorialPaginado(terminoBusqueda, pageable);
+        Page<HistorialTitularidad> paginaHistorial = historialService.obtenerHistorialPaginado(terminoBusqueda, paginacion);
 
         Page<HistorialTitularidadResponse> paginaRespuesta = paginaHistorial.map(this::mapearAHistorialResponse);
         return ResponseEntity.ok(new RespuestaPaginada<>(paginaRespuesta));

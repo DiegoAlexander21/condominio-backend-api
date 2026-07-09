@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.condominio.api.dominios.condominio.models.Condominio;
 import pe.edu.utp.condominio.api.dominios.condominio.repositories.CondominioRepository;
 import pe.edu.utp.condominio.api.dominios.unidades.dto.request.UnidadForm;
+import pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 import pe.edu.utp.condominio.api.dominios.unidades.repositories.UnidadRepository;
 
@@ -49,8 +50,8 @@ public class UnidadService {
                 .orElseGet(() -> crearNuevaUnidad(formulario));
     }
 
-    public synchronized Page<Unidad> obtenerUnidadesPaginadas(Pageable pageable) {
-        return unidadRepository.listarTodosConCondominioPaginado(pageable);
+    public synchronized Page<Unidad> obtenerUnidadesPaginadas(Pageable paginacion) {
+        return unidadRepository.listarTodosConCondominioPaginado(paginacion);
     }
 
     public synchronized List<Unidad> obtenerUnidades() {
@@ -62,7 +63,7 @@ public class UnidadService {
         return unidadRepository.listarTorresPorCondominio(condominioId);
     }
 
-    public synchronized List<pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto> buscarTorresPorCondominios(List<Long> condominioIds) {
+    public synchronized List<TorreDto> buscarTorresPorCondominios(List<Long> condominioIds) {
         if (condominioIds == null || condominioIds.isEmpty()) return List.of();
         return unidadRepository.listarTorresPorCondominios(condominioIds);
     }

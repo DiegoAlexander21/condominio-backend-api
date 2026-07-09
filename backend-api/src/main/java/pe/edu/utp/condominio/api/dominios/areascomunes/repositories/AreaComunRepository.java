@@ -20,9 +20,9 @@ public interface AreaComunRepository extends JpaRepository<AreaComun, Long> {
     List<AreaComun> listarTodosConCondominio();
 
     @Query(value = "select a from AreaComun a join fetch a.condominio where a.condominio.id = :condominioId order by a.id desc", countQuery = "select count(a) from AreaComun a where a.condominio.id = :condominioId")
-    Page<AreaComun> listarPorCondominioPaginado(@Param("condominioId") Long condominioId, Pageable pageable);
+    Page<AreaComun> listarPorCondominioPaginado(@Param("condominioId") Long condominioId, Pageable paginacion);
 
     @Query(value = "select a from AreaComun a join fetch a.condominio order by a.id desc", countQuery = "select count(a) from AreaComun a")
-    Page<AreaComun> listarTodosConCondominioPaginado(Pageable pageable);
+    Page<AreaComun> listarTodosConCondominioPaginado(Pageable paginacion);
 }
 

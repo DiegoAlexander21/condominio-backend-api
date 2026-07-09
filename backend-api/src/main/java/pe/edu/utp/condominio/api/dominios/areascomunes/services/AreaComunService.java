@@ -59,11 +59,11 @@ public class AreaComunService {
                 .collect(Collectors.toList());
     }
 
-    public synchronized Page<AreaComunResponse> listarPorCondominioPaginado(Long condominioId, Pageable pageable) {
+    public synchronized Page<AreaComunResponse> listarPorCondominioPaginado(Long condominioId, Pageable paginacion) {
         if (condominioId == null) {
             throw new IllegalArgumentException("Debe seleccionar un condominio valido.");
         }
-        return areaComunRepository.listarPorCondominioPaginado(condominioId, pageable)
+        return areaComunRepository.listarPorCondominioPaginado(condominioId, paginacion)
                 .map(this::convertirAreaResponse);
     }
 
@@ -73,8 +73,8 @@ public class AreaComunService {
                 .collect(Collectors.toList());
     }
 
-    public synchronized Page<AreaComunResponse> obtenerTodasLasAreasComunesPaginado(Pageable pageable) {
-        return areaComunRepository.listarTodosConCondominioPaginado(pageable)
+    public synchronized Page<AreaComunResponse> obtenerTodasLasAreasComunesPaginado(Pageable paginacion) {
+        return areaComunRepository.listarTodosConCondominioPaginado(paginacion)
                 .map(this::convertirAreaResponse);
     }
 

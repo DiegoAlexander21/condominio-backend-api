@@ -21,7 +21,7 @@ public interface UnidadRepository extends JpaRepository<Unidad, Long> {
 
     @Query(value = "select u from Unidad u join fetch u.condominio", 
            countQuery = "select count(u) from Unidad u")
-    Page<Unidad> listarTodosConCondominioPaginado(Pageable pageable);
+    Page<Unidad> listarTodosConCondominioPaginado(Pageable paginacion);
 
     @Query("select u from Unidad u left join u.propietario p left join u.residente r where p.dni = :dni or r.dni = :dni")
     List<Unidad> buscarPorDniOcupante(@Param("dni") String dni);

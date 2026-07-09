@@ -40,13 +40,13 @@ public class AreaComunRestController {
             @RequestParam(defaultValue = "10") int tamano,
             @RequestParam(required = false) Long condominioId) {
 
-        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("nombre").ascending());
+        Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by("nombre").ascending());
         Page<AreaComunResponse> paginaAreas;
 
         if (condominioId != null) {
-            paginaAreas = areaComunService.listarPorCondominioPaginado(condominioId, pageable);
+            paginaAreas = areaComunService.listarPorCondominioPaginado(condominioId, paginacion);
         } else {
-            paginaAreas = areaComunService.obtenerTodasLasAreasComunesPaginado(pageable);
+            paginaAreas = areaComunService.obtenerTodasLasAreasComunesPaginado(paginacion);
         }
 
         return ResponseEntity.ok(new RespuestaPaginada<>(paginaAreas));
@@ -102,11 +102,11 @@ public class AreaComunRestController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+    public ResponseEntity<Map<String, String>> manejarExcepcionesDeValidacion(MethodArgumentNotValidException ex) {
+        String mensajeError = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .findFirst()
                 .orElse("Datos inválidos.");
-        return ResponseEntity.badRequest().body(Map.of("error", errorMessage));
+        return ResponseEntity.badRequest().body(Map.of("error", mensajeError));
     }
 }

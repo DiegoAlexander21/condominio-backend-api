@@ -82,8 +82,8 @@ public class TareaMantenimientoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TareaMantenimientoResponse> obtenerHistorialTareas(Pageable pageable) {
-        return tareaRepository.findAll(pageable).map(this::mapearTareaAResponse);
+    public Page<TareaMantenimientoResponse> obtenerHistorialTareas(Pageable paginacion) {
+        return tareaRepository.findAll(paginacion).map(this::mapearTareaAResponse);
     }
 
     private TareaMantenimientoResponse mapearTareaAResponse(TareaMantenimiento entidad) {

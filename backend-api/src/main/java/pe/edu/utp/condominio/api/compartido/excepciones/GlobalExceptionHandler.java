@@ -15,13 +15,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> manejarExcepcionArgumentoIlegal(IllegalArgumentException ex) {
-        log.warn("GlobalExceptionHandler capturó IllegalArgumentException: {}", ex.getMessage());
+        log.warn("Excepcion capturada por argumento ilegal: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(Map.of("mensaje", ex.getMessage(), "error", ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> manejarTodasLasExcepciones(Exception ex) {
-        log.error("GlobalExceptionHandler capturó un error: ", ex);
+        log.error("Excepcion general capturada: ", ex);
         return ResponseEntity.internalServerError().body(Map.of("mensaje", "Error interno: " + ex.getMessage(), "error", "Error interno: " + ex.getMessage()));
     }
 }

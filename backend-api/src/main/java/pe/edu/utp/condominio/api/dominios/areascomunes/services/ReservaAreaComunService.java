@@ -65,20 +65,20 @@ public class ReservaAreaComunService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized Page<ReservaAreaComunResponse> listarReservasPaginado(Long areaComunId, LocalDate fecha, Long unidadId, Pageable pageable) {
+    public synchronized Page<ReservaAreaComunResponse> listarReservasPaginado(Long areaComunId, LocalDate fecha, Long unidadId, Pageable paginacion) {
         if (areaComunId == null) {
             throw new IllegalArgumentException("Debe seleccionar un area comun valida.");
         }
         
         Page<ReservaAreaComun> pagina;
         if (fecha == null && unidadId == null) {
-            pagina = reservaAreaComunRepository.listarPorAreaPaginado(areaComunId, pageable);
+            pagina = reservaAreaComunRepository.listarPorAreaPaginado(areaComunId, paginacion);
         } else if (fecha != null && unidadId == null) {
-            pagina = reservaAreaComunRepository.listarPorAreaYFechaPaginado(areaComunId, fecha, pageable);
+            pagina = reservaAreaComunRepository.listarPorAreaYFechaPaginado(areaComunId, fecha, paginacion);
         } else if (fecha == null && unidadId != null) {
-            pagina = reservaAreaComunRepository.listarPorAreaYUnidadPaginado(areaComunId, unidadId, pageable);
+            pagina = reservaAreaComunRepository.listarPorAreaYUnidadPaginado(areaComunId, unidadId, paginacion);
         } else {
-            pagina = reservaAreaComunRepository.listarPorAreaFechaYUnidadPaginado(areaComunId, fecha, unidadId, pageable);
+            pagina = reservaAreaComunRepository.listarPorAreaFechaYUnidadPaginado(areaComunId, fecha, unidadId, paginacion);
         }
         
         return pagina.map(this::convertirReservaResponse);

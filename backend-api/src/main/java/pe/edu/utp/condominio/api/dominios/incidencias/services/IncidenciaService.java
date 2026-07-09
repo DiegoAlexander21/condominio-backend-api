@@ -82,15 +82,15 @@ public class IncidenciaService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized Page<IncidenciaResponse> listarPorEstado(EstadoIncidencia estado, Pageable pageable) {
+    public synchronized Page<IncidenciaResponse> listarPorEstado(EstadoIncidencia estado, Pageable paginacion) {
         if (estado == null) {
             throw new IllegalArgumentException("Debe seleccionar un estado.");
         }
-        return incidenciaRepository.listarPorEstado(estado, pageable).map(this::convertirIncidenciaResponse);
+        return incidenciaRepository.listarPorEstado(estado, paginacion).map(this::convertirIncidenciaResponse);
     }
 
     @Transactional(readOnly = true)
-    public synchronized Page<IncidenciaResponse> listarPorUnidadYEstado(Long unidadId, EstadoIncidencia estado, Pageable pageable) {
+    public synchronized Page<IncidenciaResponse> listarPorUnidadYEstado(Long unidadId, EstadoIncidencia estado, Pageable paginacion) {
         if (unidadId == null) {
             throw new IllegalArgumentException("Debe seleccionar una unidad.");
         }
@@ -98,13 +98,13 @@ public class IncidenciaService {
         Long condominioId = unidad.getCondominio() != null ? unidad.getCondominio().getId() : null;
         
         if (condominioId == null) {
-            return Page.empty(pageable);
+            return Page.empty(paginacion);
         }
 
         if (estado == null) {
-            return incidenciaRepository.listarPorCondominio(condominioId, pageable).map(this::convertirIncidenciaResponse);
+            return incidenciaRepository.listarPorCondominio(condominioId, paginacion).map(this::convertirIncidenciaResponse);
         } else {
-            return incidenciaRepository.listarPorCondominioYEstado(condominioId, estado, pageable).map(this::convertirIncidenciaResponse);
+            return incidenciaRepository.listarPorCondominioYEstado(condominioId, estado, paginacion).map(this::convertirIncidenciaResponse);
         }
     }
 
@@ -121,8 +121,8 @@ public class IncidenciaService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized Page<IncidenciaResponse> listarTodas(Pageable pageable) {
-        return incidenciaRepository.findAll(pageable).map(this::convertirIncidenciaResponse);
+    public synchronized Page<IncidenciaResponse> listarTodas(Pageable paginacion) {
+        return incidenciaRepository.findAll(paginacion).map(this::convertirIncidenciaResponse);
     }
 
     @Transactional(readOnly = true)
@@ -181,14 +181,16 @@ public class IncidenciaService {
         Long condominioId = null;
         String torre = null;
 
-        if (incidencia instanceof IncidenciaAreaComun area) {
+        Incidencia incidenciaReal = (Incidencia) org.hibernate.Hibernate.unproxy(incidencia);
+        
+        if (incidenciaReal instanceof IncidenciaAreaComun area) {
             areaComunId = area.getAreaComun() != null ? area.getAreaComun().getId() : null;
             lugarAfectado = area.getAreaComun() != null ? "Área Común: " + area.getAreaComun().getNombre()
                     : "Área Común";
             condominioId = area.getAreaComun() != null && area.getAreaComun().getCondominio() != null
                     ? area.getAreaComun().getCondominio().getId()
                     : null;
-        } else if (incidencia instanceof IncidenciaUnidad unidad) {
+        } else if (incidenciaReal instanceof IncidenciaUnidad unidad) {
             unidadId = unidad.getUnidad() != null ? unidad.getUnidad().getId() : null;
             if (unidad.getUnidad() != null) {
                 String condNombre = (unidad.getUnidad().getCondominio() != null)

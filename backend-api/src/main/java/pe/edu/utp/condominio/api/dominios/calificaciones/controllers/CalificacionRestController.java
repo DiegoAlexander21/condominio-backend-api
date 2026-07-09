@@ -49,9 +49,9 @@ public class CalificacionRestController {
             Map<String, String> respuesta = new HashMap<>();
             respuesta.put("mensaje", "¡Gracias por tu calificación!");
             return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
+            error.put("error", ex.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
     }
@@ -63,9 +63,9 @@ public class CalificacionRestController {
             Map<String, String> respuesta = new HashMap<>();
             respuesta.put("mensaje", "Estado del área actualizado manualmente.");
             return ResponseEntity.ok(respuesta);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
+            error.put("error", ex.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
     }

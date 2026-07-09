@@ -16,7 +16,7 @@ public class HistorialTitularidadService {
         this.historialRepository = historialRepository;
     }
 
-    public Page<HistorialTitularidad> obtenerHistorialPaginado(String termino, Pageable pageable) {
-        return historialRepository.buscarHistorialPaginado(termino, pageable);
+    public Page<HistorialTitularidad> obtenerHistorialPaginado(String termino, Pageable paginacion) {
+        return historialRepository.buscarHistorialPaginado(termino, paginacion);
     }
 }

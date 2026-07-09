@@ -90,7 +90,7 @@ public class EstadoCuentaRestController {
             return ResponseEntity.ok(Map.of("mensaje", "Estado de cuenta eliminado."));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error al eliminar estado de cuenta."));
         }
     }

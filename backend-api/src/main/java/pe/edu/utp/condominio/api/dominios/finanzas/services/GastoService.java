@@ -134,12 +134,12 @@ public class GastoService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized Page<GastoResponse> listarGastosPorTipo(TipoGasto tipo, Pageable pageable) {
+    public synchronized Page<GastoResponse> listarGastosPorTipo(TipoGasto tipo, Pageable paginacion) {
         if (tipo == null) {
-            return gastoRepository.findAll(pageable)
+            return gastoRepository.findAll(paginacion)
                     .map(this::convertirGastoResponse);
         }
-        return gastoRepository.listarPorTipo(tipo, pageable)
+        return gastoRepository.listarPorTipo(tipo, paginacion)
                 .map(this::convertirGastoResponse);
     }
 
