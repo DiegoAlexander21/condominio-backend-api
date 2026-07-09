@@ -52,6 +52,7 @@ public class SeguridadWebConfig {
                         .hasAnyRole("ADMINISTRADOR", "RESIDENTE", "CONSERJERIA")
                         .requestMatchers("/api/areas-comunes/**", "/api/incidencias/**",
                                 "/api/comunicados/**", "/api/asambleas/**",
+                                "/api/calificaciones/**",
                                 "/api/finanzas/estados-cuenta/mis-estados", 
                                 "/api/finanzas/pagos/unidad/**", "/api/finanzas/estados-cuenta/*/desglose", 
                                 "/api/finanzas/estados-cuenta/*/pagos")

@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 public class EstadoAreaResponse {
 
     private Long id;
+    private Long areaId;
+    private Long condominioId;
+    private String condominioNombre;
     private String nombreArea;
     private double calificacionPromedio;
     private int totalIncidencias;
@@ -13,8 +16,11 @@ public class EstadoAreaResponse {
 
     public EstadoAreaResponse() {}
 
-    public EstadoAreaResponse(Long id, String nombreArea, double calificacionPromedio, int totalIncidencias, int totalChecklistsNoAprobados, LocalDateTime fechaCalculo) {
+    public EstadoAreaResponse(Long id, Long areaId, Long condominioId, String condominioNombre, String nombreArea, double calificacionPromedio, int totalIncidencias, int totalChecklistsNoAprobados, LocalDateTime fechaCalculo) {
         this.id = id;
+        this.areaId = areaId;
+        this.condominioId = condominioId;
+        this.condominioNombre = condominioNombre;
         this.nombreArea = nombreArea;
         this.calificacionPromedio = calificacionPromedio;
         this.totalIncidencias = totalIncidencias;
@@ -24,6 +30,12 @@ public class EstadoAreaResponse {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public Long getAreaId() { return areaId; }
+    public void setAreaId(Long areaId) { this.areaId = areaId; }
+    public Long getCondominioId() { return condominioId; }
+    public void setCondominioId(Long condominioId) { this.condominioId = condominioId; }
+    public String getCondominioNombre() { return condominioNombre; }
+    public void setCondominioNombre(String condominioNombre) { this.condominioNombre = condominioNombre; }
     public String getNombreArea() { return nombreArea; }
     public void setNombreArea(String nombreArea) { this.nombreArea = nombreArea; }
     public double getCalificacionPromedio() { return calificacionPromedio; }

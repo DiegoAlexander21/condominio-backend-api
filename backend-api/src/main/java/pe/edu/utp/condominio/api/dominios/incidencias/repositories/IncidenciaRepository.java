@@ -25,6 +25,6 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
     Page<Incidencia> listarPorCondominioYEstado(@Param("condominioId") Long condominioId, @Param("estado") EstadoIncidencia estado,
             Pageable pageable);
 
-    @Query("select count(i) from Incidencia i where i.areaComun.id = :areaComunId")
+    @Query("select count(iac) from IncidenciaAreaComun iac where iac.areaComun.id = :areaComunId")
     long contarPorArea(@Param("areaComunId") Long areaComunId);
 }

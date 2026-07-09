@@ -1,6 +1,7 @@
 package pe.edu.utp.condominio.api.dominios.reportes.dto.response;
 
 import java.util.List;
+import pe.edu.utp.condominio.api.dominios.calificaciones.dto.response.EstadoAreaResponse;
 
 public class ReporteDashboardResponse {
 
@@ -8,6 +9,7 @@ public class ReporteDashboardResponse {
     private List<AreaGastoResponse> areasConMayorGasto;
     private List<UnidadMorosaResponse> unidadesMorosas;
     private List<UnidadMorosaResponse> unidadesConMayorDeuda;
+    private List<EstadoAreaResponse> rankingAreas;
 
     public ReporteDashboardResponse() {
     }
@@ -15,11 +17,13 @@ public class ReporteDashboardResponse {
     public ReporteDashboardResponse(List<IncidenciaFrecuenteResponse> incidenciasFrecuentes,
             List<AreaGastoResponse> areasConMayorGasto,
             List<UnidadMorosaResponse> unidadesMorosas,
-            List<UnidadMorosaResponse> unidadesConMayorDeuda) {
+            List<UnidadMorosaResponse> unidadesConMayorDeuda,
+            List<EstadoAreaResponse> rankingAreas) {
         this.incidenciasFrecuentes = incidenciasFrecuentes;
         this.areasConMayorGasto = areasConMayorGasto;
         this.unidadesMorosas = unidadesMorosas;
         this.unidadesConMayorDeuda = unidadesConMayorDeuda;
+        this.rankingAreas = rankingAreas;
     }
 
     public List<IncidenciaFrecuenteResponse> getIncidenciasFrecuentes() {
@@ -52,5 +56,13 @@ public class ReporteDashboardResponse {
 
     public void setUnidadesConMayorDeuda(List<UnidadMorosaResponse> unidadesConMayorDeuda) {
         this.unidadesConMayorDeuda = unidadesConMayorDeuda;
+    }
+
+    public List<EstadoAreaResponse> getRankingAreas() {
+        return rankingAreas;
+    }
+
+    public void setRankingAreas(List<EstadoAreaResponse> rankingAreas) {
+        this.rankingAreas = rankingAreas;
     }
 }
