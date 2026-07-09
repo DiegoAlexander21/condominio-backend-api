@@ -69,4 +69,9 @@ public class CalificacionRestController {
             return ResponseEntity.badRequest().body(error);
         }
     }
+
+    @GetMapping("/ranking")
+    public ResponseEntity<List<EstadoAreaResponse>> mostrarRankingAreas() {
+        return ResponseEntity.ok(estadoAreaService.obtenerRankingAreas());
+    }
 }
