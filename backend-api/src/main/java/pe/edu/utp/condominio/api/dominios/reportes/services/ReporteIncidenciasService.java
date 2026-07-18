@@ -33,7 +33,8 @@ public class ReporteIncidenciasService {
 
         Map<Long, Long> conteo = new HashMap<>();
         for (Incidencia incidencia : incidenciaRepository.findAll()) {
-            if (!(incidencia instanceof IncidenciaAreaComun incidenciaArea)) {
+            Object incidenciaReal = org.hibernate.Hibernate.unproxy(incidencia);
+            if (!(incidenciaReal instanceof IncidenciaAreaComun incidenciaArea)) {
                 continue;
             }
             Long areaId = incidenciaArea.getAreaComun().getId();

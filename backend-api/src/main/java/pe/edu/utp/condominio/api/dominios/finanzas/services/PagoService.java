@@ -104,12 +104,12 @@ public class PagoService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized Page<PagoResponse> listarPagos(EstadoPago estado, Pageable pageable) {
+    public synchronized Page<PagoResponse> listarPagos(EstadoPago estado, Pageable paginacion) {
         if (estado != null) {
-            return pagoRepository.findByEstado(estado, pageable)
+            return pagoRepository.findByEstado(estado, paginacion)
                     .map(this::convertirPagoResponse);
         }
-        return pagoRepository.findAll(pageable)
+        return pagoRepository.findAll(paginacion)
                 .map(this::convertirPagoResponse);
     }
 

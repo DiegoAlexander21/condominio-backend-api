@@ -11,19 +11,19 @@ import org.springframework.data.domain.Pageable;
 public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
 
     @Query("select i from Incidencia i where i.estado = :estado")
-    Page<Incidencia> listarPorEstado(@Param("estado") EstadoIncidencia estado, Pageable pageable);
+    Page<Incidencia> listarPorEstado(@Param("estado") EstadoIncidencia estado, Pageable paginacion);
 
     @Query("select i from Incidencia i where " +
            "i.id in (select iac.id from IncidenciaAreaComun iac where iac.areaComun.condominio.id = :condominioId) or " +
            "i.id in (select iu.id from IncidenciaUnidad iu where iu.unidad.condominio.id = :condominioId)")
-    Page<Incidencia> listarPorCondominio(@Param("condominioId") Long condominioId, Pageable pageable);
+    Page<Incidencia> listarPorCondominio(@Param("condominioId") Long condominioId, Pageable paginacion);
 
     @Query("select i from Incidencia i where " +
            "(i.id in (select iac.id from IncidenciaAreaComun iac where iac.areaComun.condominio.id = :condominioId) or " +
            "i.id in (select iu.id from IncidenciaUnidad iu where iu.unidad.condominio.id = :condominioId)) " +
            "and i.estado = :estado")
     Page<Incidencia> listarPorCondominioYEstado(@Param("condominioId") Long condominioId, @Param("estado") EstadoIncidencia estado,
-            Pageable pageable);
+            Pageable paginacion);
 
     @Query("select count(iac) from IncidenciaAreaComun iac where iac.areaComun.id = :areaComunId")
     long contarPorArea(@Param("areaComunId") Long areaComunId);

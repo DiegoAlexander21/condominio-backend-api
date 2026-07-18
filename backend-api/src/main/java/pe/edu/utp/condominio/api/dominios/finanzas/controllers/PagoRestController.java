@@ -72,10 +72,10 @@ public class PagoRestController {
     @GetMapping
     public ResponseEntity<Page<PagoResponse>> listarPagos(
             @RequestParam(value = "estado", required = false) EstadoPago estado,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "fechaPago"));
-        return ResponseEntity.ok(pagoService.listarPagos(estado, pageable));
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamano) {
+        Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "fechaPago"));
+        return ResponseEntity.ok(pagoService.listarPagos(estado, paginacion));
     }
 
     @GetMapping("/pendientes")

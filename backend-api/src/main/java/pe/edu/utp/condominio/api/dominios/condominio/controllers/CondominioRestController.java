@@ -38,8 +38,8 @@ public class CondominioRestController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
 
-        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("id").descending());
-        Page<Condominio> paginaCondominios = condominioService.obtenerCondominiosPaginados(pageable);
+        Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by("id").descending());
+        Page<Condominio> paginaCondominios = condominioService.obtenerCondominiosPaginados(paginacion);
 
         Page<CondominioResponse> paginaRespuesta = paginaCondominios.map(this::mapearAcondominioResponse);
         return ResponseEntity.ok(new RespuestaPaginada<>(paginaRespuesta));
@@ -88,7 +88,7 @@ public class CondominioRestController {
         try {
             condominioService.eliminarCondominio(id);
             return ResponseEntity.ok(Map.of("mensaje", "Condominio eliminado correctamente."));
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error al eliminar el condominio."));
         }
     }

@@ -9,6 +9,7 @@ import pe.edu.utp.condominio.api.dominios.seguridad.models.Rol;
 import pe.edu.utp.condominio.api.dominios.seguridad.models.Usuario;
 import pe.edu.utp.condominio.api.dominios.seguridad.repositories.RolRepository;
 import pe.edu.utp.condominio.api.dominios.seguridad.repositories.UsuarioRepository;
+import pe.edu.utp.condominio.api.dominios.seguridad.enums.TipoDocumento;
 
 @Service
 public class AutenticacionService {
@@ -65,11 +66,11 @@ public class AutenticacionService {
             throw new IllegalArgumentException("El teléfono debe tener 9 dígitos numéricos.");
         }
 
-        if (peticion.getTipoDocumento() == pe.edu.utp.condominio.api.dominios.seguridad.enums.TipoDocumento.DNI) {
+        if (peticion.getTipoDocumento() == TipoDocumento.DNI) {
             if (!peticion.getNumeroDocumento().trim().matches("\\d{8}")) {
                 throw new IllegalArgumentException("El DNI debe tener exactamente 8 dígitos numéricos.");
             }
-        } else if (peticion.getTipoDocumento() == pe.edu.utp.condominio.api.dominios.seguridad.enums.TipoDocumento.CE) {
+        } else if (peticion.getTipoDocumento() == TipoDocumento.CE) {
             if (peticion.getNumeroDocumento().trim().length() < 9) {
                 throw new IllegalArgumentException("El Carné de Extranjería (CE) debe tener al menos 9 caracteres.");
             }

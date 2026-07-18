@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import jakarta.validation.Valid;
+import java.util.stream.Collectors;
 import pe.edu.utp.condominio.api.compartido.dto.RespuestaPaginada;
 import pe.edu.utp.condominio.api.dominios.unidades.dto.request.UnidadForm;
 import pe.edu.utp.condominio.api.dominios.unidades.dto.response.UnidadResponse;
+import pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto;
 import pe.edu.utp.condominio.api.dominios.unidades.models.Unidad;
 import pe.edu.utp.condominio.api.dominios.unidades.services.UnidadService;
 
@@ -42,8 +44,8 @@ public class UnidadRestController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
 
-        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("id").descending());
-        Page<Unidad> paginaUnidades = unidadService.obtenerUnidadesPaginadas(pageable);
+        Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by("id").descending());
+        Page<Unidad> paginaUnidades = unidadService.obtenerUnidadesPaginadas(paginacion);
 
         Page<UnidadResponse> paginaRespuesta = paginaUnidades.map(this::mapearAUnidadResponse);
         return ResponseEntity.ok(new RespuestaPaginada<>(paginaRespuesta));
@@ -92,27 +94,27 @@ public class UnidadRestController {
         try {
             unidadService.eliminarUnidad(id);
             return ResponseEntity.ok(Map.of("mensaje", "Unidad eliminada correctamente."));
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error al eliminar la unidad."));
         }
     }
 
     @PostMapping("/busqueda/torres")
-    public ResponseEntity<List<pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto>> buscarTorres(@RequestBody List<Long> condominioIds) {
+    public ResponseEntity<List<TorreDto>> buscarTorres(@RequestBody List<Long> condominioIds) {
         return ResponseEntity.ok(unidadService.buscarTorresPorCondominios(condominioIds));
     }
 
     @PostMapping("/busqueda/viviendas")
-    public ResponseEntity<List<UnidadResponse>> buscarViviendas(@RequestBody List<pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto> torresDto) {
+    public ResponseEntity<List<UnidadResponse>> buscarViviendas(@RequestBody List<TorreDto> torresDto) {
         if (torresDto == null || torresDto.isEmpty()) {
             return ResponseEntity.ok(List.of());
         }
-        List<Long> condominioIds = torresDto.stream().map(pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto::getCondominioId).collect(java.util.stream.Collectors.toList());
-        List<String> torres = torresDto.stream().map(pe.edu.utp.condominio.api.dominios.unidades.dto.response.TorreDto::getTorre).collect(java.util.stream.Collectors.toList());
+        List<Long> condominioIds = torresDto.stream().map(TorreDto::getCondominioId).collect(Collectors.toList());
+        List<String> torres = torresDto.stream().map(TorreDto::getTorre).collect(Collectors.toList());
         
         List<UnidadResponse> respuestas = unidadService.buscarUnidadesPorTorres(condominioIds, torres).stream()
             .map(this::mapearAUnidadResponse)
-            .collect(java.util.stream.Collectors.toList());
+            .collect(Collectors.toList());
         return ResponseEntity.ok(respuestas);
     }
 

@@ -43,10 +43,10 @@ public class GastoRestController {
     @GetMapping
     public ResponseEntity<Page<GastoResponse>> listarGastos(
             @RequestParam(value = "tipo", required = false) TipoGasto tipo,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        return ResponseEntity.ok(gastoService.listarGastosPorTipo(tipo, pageable));
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamano) {
+        Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "id"));
+        return ResponseEntity.ok(gastoService.listarGastosPorTipo(tipo, paginacion));
     }
 
     @GetMapping("/{id}")
@@ -85,7 +85,7 @@ public class GastoRestController {
             return ResponseEntity.ok(Map.of("mensaje", "Gasto eliminado correctamente."));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error al eliminar el gasto."));
         }
     }

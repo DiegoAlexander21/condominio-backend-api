@@ -17,5 +17,5 @@ public interface HistorialTitularidadRepository extends JpaRepository<HistorialT
            "LOWER(u.numeroUnidad) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
            "LOWER(h.propietarioAnterior) LIKE LOWER(CONCAT('%', :termino, '%')) OR " +
            "LOWER(h.nuevoPropietario) LIKE LOWER(CONCAT('%', :termino, '%')))")
-    Page<HistorialTitularidad> buscarHistorialPaginado(@Param("termino") String termino, Pageable pageable);
+    Page<HistorialTitularidad> buscarHistorialPaginado(@Param("termino") String termino, Pageable paginacion);
 }

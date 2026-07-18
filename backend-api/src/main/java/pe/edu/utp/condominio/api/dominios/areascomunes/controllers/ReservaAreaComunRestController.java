@@ -43,8 +43,8 @@ public class ReservaAreaComunRestController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
 
-        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("fechaReserva").descending().and(Sort.by("horaInicio").descending()));
-        Page<ReservaAreaComunResponse> paginaReservas = reservaAreaComunService.listarReservasPaginado(areaComunId, fecha, unidadId, pageable);
+        Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by("fechaReserva").descending().and(Sort.by("horaInicio").descending()));
+        Page<ReservaAreaComunResponse> paginaReservas = reservaAreaComunService.listarReservasPaginado(areaComunId, fecha, unidadId, paginacion);
         
         return ResponseEntity.ok(new RespuestaPaginada<>(paginaReservas));
     }
@@ -75,11 +75,11 @@ public class ReservaAreaComunRestController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+    public ResponseEntity<Map<String, String>> manejarExcepcionesDeValidacion(MethodArgumentNotValidException ex) {
+        String mensajeError = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .findFirst()
                 .orElse("Datos inválidos.");
-        return ResponseEntity.badRequest().body(Map.of("error", errorMessage));
+        return ResponseEntity.badRequest().body(Map.of("error", mensajeError));
     }
 }

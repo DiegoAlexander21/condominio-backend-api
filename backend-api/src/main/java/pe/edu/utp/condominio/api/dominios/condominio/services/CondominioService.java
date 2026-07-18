@@ -60,8 +60,8 @@ public class CondominioService {
         return formulario;
     }
 
-    public synchronized Page<Condominio> obtenerCondominiosPaginados(Pageable pageable) {
-        return condominioRepository.findAll(pageable);
+    public synchronized Page<Condominio> obtenerCondominiosPaginados(Pageable paginacion) {
+        return condominioRepository.findAll(paginacion);
     }
 
     public synchronized List<Condominio> obtenerCondominios() {

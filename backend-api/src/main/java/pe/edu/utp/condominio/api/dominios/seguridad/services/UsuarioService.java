@@ -98,7 +98,7 @@ public class UsuarioService implements UserDetailsService {
         Long condominioId = null;
 
         if (unidadId != null) {
-            pe.edu.utp.condominio.api.dominios.unidades.models.Unidad unidad = residenteOpt.get().getUnidad();
+            Unidad unidad = residenteOpt.get().getUnidad();
             if (unidad.getCondominio() != null) {
                 condominioId = unidad.getCondominio().getId();
                 nombreCondominio = unidad.getCondominio().getNombre();

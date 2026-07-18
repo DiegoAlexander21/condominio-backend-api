@@ -49,16 +49,16 @@ public class IncidenciaRestController {
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
 
-        Pageable pageable = PageRequest.of(pagina, tamano, Sort.by("id").descending());
+        Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by("id").descending());
 
         Page<IncidenciaResponse> paginaRespuesta;
         if (unidadId != null) {
-            paginaRespuesta = incidenciaService.listarPorUnidadYEstado(unidadId, estado, pageable);
+            paginaRespuesta = incidenciaService.listarPorUnidadYEstado(unidadId, estado, paginacion);
         } else {
             if (estado == null) {
-                paginaRespuesta = incidenciaService.listarTodas(pageable);
+                paginaRespuesta = incidenciaService.listarTodas(paginacion);
             } else {
-                paginaRespuesta = incidenciaService.listarPorEstado(estado, pageable);
+                paginaRespuesta = incidenciaService.listarPorEstado(estado, paginacion);
             }
         }
 
@@ -77,7 +77,7 @@ public class IncidenciaRestController {
     @GetMapping("/{id}/evidencias")
     public ResponseEntity<List<String>> obtenerEvidencias(@PathVariable Long id) {
         List<String> urls = evidenciaIncidenciaService.listarEvidencias(id).stream()
-                .map(e -> e.getUrlArchivo())
+                .map(evidencia -> evidencia.getUrlArchivo())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(urls);
     }
