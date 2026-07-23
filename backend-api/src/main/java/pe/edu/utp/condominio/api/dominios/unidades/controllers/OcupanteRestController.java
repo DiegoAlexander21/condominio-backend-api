@@ -45,6 +45,7 @@ public class OcupanteRestController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         } catch (Exception ex) {
+            ex.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", "Error interno al asignar ocupantes"));
         }
