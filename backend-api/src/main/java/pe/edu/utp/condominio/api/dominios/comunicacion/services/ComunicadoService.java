@@ -71,7 +71,7 @@ public class ComunicadoService {
         if (condominioId == null) {
             throw new IllegalArgumentException("Debe proporcionar un condominio.");
         }
-        return comunicadoRepository.findAll().stream()
+        return comunicadoRepository.listarPorCondominio(condominioId).stream()
                 .map(this::convertirComunicadoResponse)
                 .collect(Collectors.toList());
     }
