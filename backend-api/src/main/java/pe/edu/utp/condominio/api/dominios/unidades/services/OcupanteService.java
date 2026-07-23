@@ -183,6 +183,10 @@ public class OcupanteService {
             unidad.setResidente(null);
         }
         
-        return unidadRepository.save(unidad);
+        Unidad guardada = unidadRepository.save(unidad);
+        if (guardada.getCondominio() != null) {
+            org.hibernate.Hibernate.initialize(guardada.getCondominio());
+        }
+        return guardada;
     }
 }
