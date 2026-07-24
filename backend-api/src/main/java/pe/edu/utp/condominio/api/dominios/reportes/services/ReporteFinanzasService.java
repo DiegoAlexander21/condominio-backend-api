@@ -68,10 +68,8 @@ public class ReporteFinanzasService {
 
     @Transactional(readOnly = true)
     public List<UnidadMorosaResponse> obtenerUnidadesMorosas(int limite) {
-        LocalDate hoy = LocalDate.now();
         Map<Long, List<EstadoCuenta>> estadosPorUnidad = estadoCuentaRepository.findAll().stream()
-                .filter(estado -> estado.getUnidad() != null && estado.getSaldo() > 0 &&
-                        (estado.getFechaVencimiento() == null || !estado.getFechaVencimiento().isAfter(hoy)))
+                .filter(estado -> estado.getUnidad() != null && estado.getSaldo() > 0)
                 .collect(Collectors.groupingBy(estado -> estado.getUnidad().getId()));
 
         return estadosPorUnidad.entrySet().stream()
