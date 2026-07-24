@@ -39,7 +39,7 @@ public class SeguridadWebConfig {
                 .sessionManagement(sesion -> sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(autenticacion -> autenticacion
                         .requestMatchers("/auth/**", "/api/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**",
-                                "/webjars/**", "/ws/**",
+                                "/webjars/**", "/api/ws/**",
                                 "/error")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/finanzas/pagos")
