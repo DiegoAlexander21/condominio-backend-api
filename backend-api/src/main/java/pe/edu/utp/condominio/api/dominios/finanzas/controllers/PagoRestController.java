@@ -26,6 +26,7 @@ import pe.edu.utp.condominio.api.dominios.finanzas.dto.response.PagoResponse;
 import pe.edu.utp.condominio.api.dominios.finanzas.enums.EstadoPago;
 import pe.edu.utp.condominio.api.dominios.finanzas.services.EvidenciaPagoService;
 import pe.edu.utp.condominio.api.dominios.finanzas.services.PagoService;
+import pe.edu.utp.condominio.api.compartido.dto.RespuestaPaginada;
 
 @RestController
 @RequestMapping("/api/finanzas/pagos")
@@ -70,12 +71,13 @@ public class PagoRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PagoResponse>> listarPagos(
+    public ResponseEntity<RespuestaPaginada<PagoResponse>> listarPagos(
             @RequestParam(value = "estado", required = false) EstadoPago estado,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
         Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "fechaPago"));
-        return ResponseEntity.ok(pagoService.listarPagos(estado, paginacion));
+        Page<PagoResponse> paginaPagos = pagoService.listarPagos(estado, paginacion);
+        return ResponseEntity.ok(new RespuestaPaginada<>(paginaPagos));
     }
 
     @GetMapping("/pendientes")

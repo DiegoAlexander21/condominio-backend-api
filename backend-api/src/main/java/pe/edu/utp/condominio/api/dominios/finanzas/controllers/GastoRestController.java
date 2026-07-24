@@ -25,6 +25,7 @@ import pe.edu.utp.condominio.api.dominios.finanzas.dto.request.GastoForm;
 import pe.edu.utp.condominio.api.dominios.finanzas.dto.response.DetalleGastoUnidadResponse;
 import pe.edu.utp.condominio.api.dominios.finanzas.dto.response.GastoResponse;
 import pe.edu.utp.condominio.api.dominios.finanzas.enums.TipoGasto;
+import pe.edu.utp.condominio.api.compartido.dto.RespuestaPaginada;
 import pe.edu.utp.condominio.api.dominios.finanzas.services.DistribucionGastoService;
 import pe.edu.utp.condominio.api.dominios.finanzas.services.GastoService;
 
@@ -41,12 +42,13 @@ public class GastoRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<GastoResponse>> listarGastos(
+    public ResponseEntity<RespuestaPaginada<GastoResponse>> listarGastos(
             @RequestParam(value = "tipo", required = false) TipoGasto tipo,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano) {
         Pageable paginacion = PageRequest.of(pagina, tamano, Sort.by(Sort.Direction.DESC, "id"));
-        return ResponseEntity.ok(gastoService.listarGastosPorTipo(tipo, paginacion));
+        Page<GastoResponse> paginaGastos = gastoService.listarGastosPorTipo(tipo, paginacion);
+        return ResponseEntity.ok(new RespuestaPaginada<>(paginaGastos));
     }
 
     @GetMapping("/{id}")
