@@ -9,8 +9,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: "stardust.alx25@gmail.com"
-    password: "gyhndkfaoiuekhin"
+    username: ${MAIL_USERNAME:your_email@gmail.com}
+    password: ${MAIL_PASSWORD:your_app_password}
     properties:
       mail:
         smtp:
@@ -32,7 +32,7 @@ spring:
     open-in-view: false
   ai:
     openai:
-      api-key: "AQ.Ab8RN6KKGn_QyNy1oNS1_3ksfvinAP0KLbHpPxvQ5M-7_B2oqA"
+      api-key: ${AI_API_KEY:your_api_key}
       base-url: "https://generativelanguage.googleapis.com/v1beta/openai/"
       chat:
         options:
@@ -42,5 +42,5 @@ spring:
 
 seguridad:
   jwt:
-    secreto: "${JWT_SECRETO:eq73qfrTPO0cRtZrBjMzPWsSV41Z8DyoRpvixW9QG6Bea4NKYYQSj19c2FZgqJD6ETuN9SVIA31JV98VFwFZcd}"
+    secreto: "${JWT_SECRETO:your_jwt_secret_key_must_be_very_long_for_security_purposes}"
     expiracion-minutos: 36000
